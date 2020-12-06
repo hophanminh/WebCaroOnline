@@ -15,6 +15,7 @@ import {
 import useTitle from "../../utils/title.service";
 import AuthService from "../../utils/auth.service";
 import store from '../../utils/store.service';
+import socket from "../../utils/socket.service";
 
 const drawerWidth = 240;
 
@@ -71,6 +72,7 @@ function Topbar(props) {
       e.preventDefault();
       AuthService.logout();
       props.dispatch({ type: 'user/updateUser' })
+      socket.emit("manually_disconnect");
     };
   
     const open = props.open;

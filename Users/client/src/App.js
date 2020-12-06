@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Provider } from 'react-redux'
 
 import Menu from "./components/Menu/Menu";
-import Home from "./components/Home";
+import Home from "./components/Home/Home";
 import Account from "./components//User/Account";
 import Login from "./components/Authenticate/Login";
 import SignUp from "./components/Authenticate/SignUp";
@@ -18,6 +18,8 @@ import PrivateRoute from "./PrivateRoute.js";
 import ChangePass from "./components/User/ChangePass";
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
+
+import socket from "./utils/socket.service";
 
 const routes = [
   {
@@ -60,9 +62,12 @@ export default function App() {
 
 
   useEffect(() => {
-    store.dispatch({ type: 'user/updateUser' })
+    store.dispatch({ type: 'user/updateUser' });
+    const user = store.getState();
+    if (user) {
+      socket.emit("online", {ID: user.ID, name: user.name});
+    }
   }, []);
-
 
   return (
     <Provider store={store}>

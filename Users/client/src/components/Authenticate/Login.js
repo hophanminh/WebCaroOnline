@@ -15,6 +15,8 @@ import { connect } from 'react-redux'
 
 import Container from '@material-ui/core/Container';
 import AuthService from "../../utils/auth.service";
+import socket from "../../utils/socket.service";
+import store from '../../utils/store.service';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -67,6 +69,10 @@ function Login(props) {
       try {
         await AuthService.login(username, password)
         props.dispatch({ type: 'user/updateUser' })
+
+        const user = store.getState();
+        socket.emit("online", {ID: user.ID, name: user.name});
+                
         history.replace(from);
       }
       catch (error) {

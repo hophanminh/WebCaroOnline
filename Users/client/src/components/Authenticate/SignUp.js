@@ -15,6 +15,8 @@ import { connect } from 'react-redux';
 
 import Container from '@material-ui/core/Container';
 import AuthService from "../../utils/auth.service";
+import socket from "../../utils/socket.service";
+import store from '../../utils/store.service';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -95,6 +97,10 @@ function SignUp(props) {
       try {
         await AuthService.register(username, fullname, email, password)
         props.dispatch({ type: 'user/updateUser' })
+
+        const user = store.getState();
+        socket.emit("online", {ID: user.ID, name: user.name});
+
         history.push("/");
       }
       catch (error) {
