@@ -6,7 +6,6 @@ import {
 } from "react-router-dom";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
-import { Provider } from 'react-redux'
 
 import Menu from "./components/Menu/Menu";
 import Home from "./components/Home/Home";
@@ -52,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function App() {
+export default function App(props) {
   const classes = useStyles();
   const [currentUser, setCurrentUser] = useState(AuthService.getCurrentUser);
 
@@ -62,16 +61,28 @@ export default function App() {
 
 
   useEffect(() => {
+    // check if user is already logged in
     store.dispatch({ type: 'user/updateUser' });
     const user = store.getState();
     if (user) {
-      socket.emit("online", {ID: user.ID, name: user.name});
+      socket.emit("online", { ID: user.ID, name: user.name });
+    }
+
+    // auto sign-out all tabs 
+    const handleInvalidToken = e => {
+      if (e.key === 'user' && e.oldValue && !e.newValue) {
+        AuthService.logout();
+        store.dispatch({ type: 'user/updateUser' })
+        socket.emit("manually_disconnect");
+      }
+    }
+    window.addEventListener('storage', handleInvalidToken);
+    return function cleanup() {
+      window.removeEventListener('storage', handleInvalidToken)
     }
   }, []);
 
   return (
-    <Provider store={store}>
-
       <Router>
         <div className={classes.root}>
           <CssBaseline />
@@ -101,6 +112,5 @@ export default function App() {
           </Switch>
         </div>
       </Router>
-    </Provider>
   );
 }
