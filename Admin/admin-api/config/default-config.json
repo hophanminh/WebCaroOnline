@@ -1,0 +1,19 @@
+{
+  "mysql-local": {
+    "connectionLimit": 10,
+    "host": "localhost",
+    "port": 3012,
+    "user": "root",
+    "password": "root",
+    "database": "caro_online"
+  },
+  "mysql-cloud": {
+
+  },
+  "paginate": {
+    "limit": 10
+  },
+  "saltBcryptjs": 10,
+  "secret-key": "your-jwt-secret",
+  "admin-permission": 1
+}
