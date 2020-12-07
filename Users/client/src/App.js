@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Menu from "./components/Menu/Menu";
 import Home from "./components/Home/Home";
-import Account from "./components//User/Account";
+import Account from "./components/User/Account";
 import Login from "./components/Authenticate/Login";
 import SignUp from "./components/Authenticate/SignUp";
 import NotFound from "./components/NotFound";
