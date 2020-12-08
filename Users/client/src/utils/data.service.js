@@ -1,8 +1,8 @@
 import axios from "axios";
-import HostManagement from "./host.service"
 
 // test
-const API_URL = HostManagement.getHost;
+const API_URL = "http://localhost:9000/";
+//const API_URL = "https://midterm596server.herokuapp.com/";
 
 const user = JSON.parse(localStorage.getItem('user'));
 if (user) {
