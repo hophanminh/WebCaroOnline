@@ -1,7 +1,6 @@
 import socketIOClient from "socket.io-client";
-
-// test
-const API_URL = "http://localhost:9000/";
+import HostURL from "./host.service"
+const API_URL = HostURL.getHostURL();
 
 // connect to server
 const socket = socketIOClient(API_URL);

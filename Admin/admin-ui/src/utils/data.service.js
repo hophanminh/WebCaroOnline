@@ -1,6 +1,6 @@
 import axios from "axios";
-
-const API_URL = "http://localhost:9000/";
+import HostURL from "./host.service"
+const API_URL = HostURL.getHostURL();
 
 const user = JSON.parse(localStorage.getItem('user'));
 if (user) {
