@@ -20,9 +20,5 @@
   },
   "saltBcryptjs": 10,
   "secret-key": "your-jwt-secret",
-  "admin-permission": 1,
-  "host": {
-    "URL_1": "http://localhost:3000",
-    "URL": "https://caroonline-admin.herokuapp.com/"
-  }
+  "admin-permission": 1
 }

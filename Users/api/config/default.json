@@ -17,9 +17,5 @@
   },
   "paginate": {
     "limit": 6
-  },
-  "host": {
-    "URL_1": "http://localhost:3000",
-    "URL": "https://caroonline-user.herokuapp.com/"
   }
 }
