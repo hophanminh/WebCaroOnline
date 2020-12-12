@@ -55,7 +55,7 @@ export default function Home() {
             <MenuGame />
           </Grid>
           <Grid item sm={4} xs={12}>
-            <ListUser onlineUsers={onlineUsers}/>
+            <ListUser socket={socket} onlineUsers={onlineUsers}/>
           </Grid>
         </Grid>
       </Container>
