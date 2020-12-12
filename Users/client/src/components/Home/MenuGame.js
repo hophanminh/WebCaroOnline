@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const GameContainer = ({ className, ...rest }) => {
+const MenuGame = ({ className, ...rest }) => {
   const classes = useStyles();
 
   return (
@@ -27,12 +27,9 @@ const GameContainer = ({ className, ...rest }) => {
       <CardContent>
         <Box height={300} position="relative" >
         </Box>
-        <Box display="flex" justifyContent="center" mt={2} >
-
-        </Box>
       </CardContent>
     </Card>
   );
 };
 
-export default GameContainer;
+export default MenuGame;

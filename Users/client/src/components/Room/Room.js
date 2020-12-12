@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import ListUser from './ListUser';
-import MenuGame from './MenuGame';
+import React from "react";
+import { 
+  makeStyles,
+  Typography, 
+  Container, 
+  Grid,
+  Card,
+  CardHeader,
+  Divider,
+  CardContent
+} from '@material-ui/core';
+import Game from './Game/game';
 
-import socket from "../../utils/socket.service";
 
 const useStyles = makeStyles((theme) => ({
   appBarSpacer: theme.mixins.toolbar,
@@ -30,32 +34,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+export default function Room() {
   const classes = useStyles();
-
-  const [onlineUsers, setOnlineUsers] = useState();   // data board
-
-  useEffect(() => {
-      socket.emit("alert_online_users");
-      socket.on("get_online_users", setOnlineUsers);
-      return () => {
-          socket.off("get_online_users");
-      }
-  }, [])
-
   return (
     <main className={classes.content}>
       <div className={classes.appBarSpacer} />
       <Container maxWidth="lg" className={classes.container}>
         <Typography variant="h3" component="h2" gutterBottom align="center">
-          Play Caro with your friends1
+          Room
           </Typography>
         <Grid container spacing={3} >
           <Grid item sm={8} xs={12} >
-            <MenuGame />
-          </Grid>
-          <Grid item sm={4} xs={12}>
-            <ListUser onlineUsers={onlineUsers}/>
+            <Card className={classes.root}>
+              <CardHeader title="Caro Online" />
+              <Divider />
+              <CardContent>
+                <Game />
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
       </Container>

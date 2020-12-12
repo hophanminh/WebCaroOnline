@@ -7,14 +7,16 @@ import {
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 
+import PrivateRoute from "./PrivateRoute.js";
 import Menu from "./components/Menu/Menu";
 import Home from "./components/Home/Home";
 import Account from "./components/User/Account";
 import Login from "./components/Authenticate/Login";
 import SignUp from "./components/Authenticate/SignUp";
 import NotFound from "./components/NotFound";
-import PrivateRoute from "./PrivateRoute.js";
 import ChangePass from "./components/User/ChangePass";
+import Room from "./components/Room/Room"
+
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
 
@@ -43,6 +45,10 @@ const routes = [
   {
     path: "/Signup",
     main: (props) => <SignUp />
+  },
+  {
+    path: "/Room",
+    main: (props) => <Room />
   },
 ];
 const useStyles = makeStyles((theme) => ({
@@ -83,34 +89,34 @@ export default function App(props) {
   }, []);
 
   return (
-      <Router>
-        <div className={classes.root}>
-          <CssBaseline />
-          <Menu />
-          <Switch>
-            {routes.map((route, index) => {
-              return (route.private ?
-                <PrivateRoute
-                  isAuthenticated={currentUser}
-                  key={index}
-                  path={route.path}
-                  exact={route.exact}
-                  children={<route.main />}
-                />
-                :
-                <Route
-                  key={index}
-                  path={route.path}
-                  exact={route.exact}
-                  children={<route.main />}
-                />
-              )
-            })}
-            <Route path="*">
-              <NotFound />
-            </Route>
-          </Switch>
-        </div>
-      </Router>
+    <Router>
+      <div className={classes.root}>
+        <CssBaseline />
+        <Menu />
+        <Switch>
+          {routes.map((route, index) => {
+            return (route.private ?
+              <PrivateRoute
+                isAuthenticated={currentUser}
+                key={index}
+                path={route.path}
+                exact={route.exact}
+                children={<route.main />}
+              />
+              :
+              <Route
+                key={index}
+                path={route.path}
+                exact={route.exact}
+                children={<route.main />}
+              />
+            )
+          })}
+          <Route path="*">
+            <NotFound />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
