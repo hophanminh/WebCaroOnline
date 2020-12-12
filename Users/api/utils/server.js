@@ -5,7 +5,7 @@ require('express-async-errors');
 module.exports = function (io) {
   let listOnlineUser = {};
 
-  io.on("connection", socket => {
+  io.on("connection", (socket) => {
 
     socket.on("online", (user) => {
       socket.user = user;
@@ -53,8 +53,8 @@ module.exports = function (io) {
       // Disconnect from chat room
       const user = removeUserFromRoom(socket.id);
       if(user) {
-        io.to(user.roomId).emit('message', { user: 'Admin', text: `${user.username} has left.` });
-        io.to(user.roomId).emit('roomData', { room: user.roomId, users: getUsersInRoom(user.roomId)});
+        io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
+        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
       }
 
       // decrease i of disconnected user. if i == 0 remove user from online list
@@ -75,24 +75,25 @@ module.exports = function (io) {
       /* Model User of chat room
        * User {socketId, username, roomId}
        */
-      console.log(name);
-      console.log(room);
-      const {error, user} = addUserToRoom({id: socket.id, name, room});
+      const { error, user } = addUserToRoom({ id: socket.id, name, room });
 
-      if(error){
-        return callback(error)
-      }
-      socket.join(user.roomId);
-      socket.emit("message", {user: "Admin", text:`${user.username}, welcome to the ${user.roomId}`});
-      socket.broadcast.to(user.roomId).emit("message", {user: `${user.username} has joined!`});
-      io.to(user.roomId).emit("roomData", {room: user.roomId, users: getUsersInRoom(user.roomId)});
+      if(error) return callback(error);
+
+      socket.join(user.room);
+
+      socket.emit('message', { user: 'admin', text: `${user.name}, welcome to room ${user.room}.`});
+      socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
+
+      io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+
       callback();
     })
 
     socket.on('sendMessage', (message, callback) => {
       const user = getUser(socket.id);
-      console.log(user);
-      io.to(user.roomId).emit('message', { user: user.username, text: message });
+
+      io.to(user.room).emit('message', { user: user.name, text: message });
+
       callback();
     });
 

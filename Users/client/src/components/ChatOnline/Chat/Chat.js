@@ -10,28 +10,25 @@ import HostURL from "../../../utils/host.service";
 import './Chat.css';
 
 export const Chat = ({ location }) => {
-    const [nameR, setName] = useState('');
+    const [name, setName] = useState('');
     const [room, setRoom] = useState('');
     const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
-        console.log(window.location.href);
-        console.log(window.location.href.search);
-        const { name , room } = queryString.parse(window.location.href);
-        console.log(room);
-        console.log(name);
 
-        setRoom(room);
-        setName(name)
+        const params = new URLSearchParams(window.location.search);
 
-        socket.emit('join', { name, room }, (error) => {
+        setRoom(params.get('room'));
+        setName(params.get('name'))
+
+        socket.emit('join', { name: params.get('name'), room: params.get('room') }, (error) => {
             if(error) {
                 alert(error);
             }
         });
-    }, [HostURL, window.location.href.search]);
+    }, [HostURL, window.location.href]);
 
     useEffect(() => {
         socket.on('message', message => {
@@ -56,7 +53,7 @@ export const Chat = ({ location }) => {
             <TextContainer users={users} />
             <div className="container">
                 <InfoBar room={room} />
-                <Messages messages={messages} name={nameR} />
+                <Messages messages={messages} name={name} />
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
             </div>
         </div>

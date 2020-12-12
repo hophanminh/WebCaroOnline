@@ -15,12 +15,10 @@ export const Input = ({ message, setMessage, sendMessage }) => (
             onKeyPress={e => e.key === 'Enter' ? sendMessage(e) : null }
         />
         <button className="sendButton" onClick={(e) => sendMessage(e)}>
-            <div>
-                <SendIcon
-                    fontSize="small"
-                    style={{ color: green[500] }}
-                />
-            </div>
+            <SendIcon
+                fontSize="small"
+                style={{ color: green[500] }}
+            />
         </button>
     </form>
 );

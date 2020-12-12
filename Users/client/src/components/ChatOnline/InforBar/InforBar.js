@@ -7,6 +7,13 @@ import './InforBar.css';
 
 export const InfoBar = ({ room }) => (
     <div className="infoBar">
+        <div className="leftInnerContainer">
+            <Brightness1Icon
+                fontSize="small"
+                style={{ color: green[500] }}
+            />
+            <h3>{room}</h3>
+        </div>
         <div className="rightInnerContainer">
             <a href="/">
                 <CloseIcon
@@ -14,13 +21,6 @@ export const InfoBar = ({ room }) => (
                     style={{ color: red[500] }}
                 />
             </a>
-        </div>
-        <div className="leftInnerContainer">
-            <Brightness1Icon
-                fontSize="small"
-                style={{ color: green[500] }}
-            />
-            <h3>{room}</h3>
         </div>
     </div>
 );
