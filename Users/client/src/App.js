@@ -12,6 +12,7 @@ import Home from "./components/Home/Home";
 import Account from "./components/User/Account";
 import Login from "./components/Authenticate/Login";
 import SignUp from "./components/Authenticate/SignUp";
+import {Chat, Join} from "./components/ChatOnline";
 import NotFound from "./components/NotFound";
 import PrivateRoute from "./PrivateRoute.js";
 import ChangePass from "./components/User/ChangePass";
@@ -44,6 +45,14 @@ const routes = [
     path: "/Signup",
     main: (props) => <SignUp />
   },
+  {
+    path: "/Join",
+    main: (props) => <Join/>
+  },
+  {
+    path: "/Chat",
+    main: (props) => <Chat/>
+  }
 ];
 const useStyles = makeStyles((theme) => ({
   root: {
