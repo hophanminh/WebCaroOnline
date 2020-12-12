@@ -1,8 +1,6 @@
 import axios from "axios";
-
-// test
-const API_URL = "http://localhost:9000/auth/";
-//const API_URL = "https://midterm596server.herokuapp.com/auth/";
+import HostURL from "./host.service"
+const API_URL = HostURL.getHostURL() + "auth/";
 
 const register = (username, fullname, email, password) => {
   return axios.post(API_URL + "signup", {

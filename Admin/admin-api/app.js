@@ -11,11 +11,11 @@ const socketIO = require('socket.io');
 require('express-async-errors');
 require('./utils/passport');
 
+const URL =  "http://localhost:3000";
+//const URL = /caroonline-admin.herokuapp\.com$/;
 
 const corsOptions = {
-  // test
-  origin: "http://localhost:3000"
-  //origin: /midterm596.herokuapp\.com$/,
+  origin: URL
 };
 
 
@@ -23,9 +23,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    // test
-    origin: "http://localhost:3000",
-    //origin: /midterm596.herokuapp\.com$/,
+    origin: URL,
     methods: ["GET", "POST"]
   }
 });
