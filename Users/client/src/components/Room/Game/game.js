@@ -19,7 +19,6 @@ function Game(props) {
         [{
             squares: Array(column * row).fill(null),
             move: -1,
-            last: -1,
         }]);
     const [stepNumber, setStepNumber] = useState(0);
     const [xIsNext, setXIsNext] = useState(true);
@@ -177,7 +176,6 @@ function Game(props) {
             newHistory.concat([{
                 squares: squares,
                 move: i,
-                last: squares[i],
             }])
         );
         setStepNumber(newHistory.length);
@@ -199,8 +197,10 @@ function Game(props) {
         const x = Math.floor(turn.move / column);
         const y = turn.move % column;
 
+        const player = (i % 2) === 0 ? "O" : "X";
+
         const desc = i ?
-            'Turn ' + i + ': (' + x + ',' + y + ') - ' + turn.last:
+            'Turn ' + i + ': (' + x + ',' + y + ') - ' + player:
             'Game start';
         /*
         // undo

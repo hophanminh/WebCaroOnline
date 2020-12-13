@@ -42,4 +42,16 @@ module.exports = {
         }
         return db.add(`user`, newUser)
     },
+
+    createBoard: ([boardID, ID]) => {
+        const dateCreate = new Date();
+        const newBoard = {
+            ID: boardID,
+            dateCreate: dateCreate,
+            idUser1: ID,
+            winner: -1,
+        }
+        return db.add(`board`, newBoard)
+    },
+
 };

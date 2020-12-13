@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import ListUser from './ListUser';
+import ListUser from '../ListUser';
 import MenuGame from './MenuGame';
 
 import socket from "../../utils/socket.service";
