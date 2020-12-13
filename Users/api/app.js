@@ -24,14 +24,12 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    // test
     origin: URL,
     methods: ["GET", "POST"]
   }
 });
 
 const ioConfig = require('./utils/server')(io);
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -51,6 +49,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
+
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/user', passport.authenticate('jwt', { session: false }), userRouter);
