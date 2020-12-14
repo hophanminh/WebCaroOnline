@@ -8,12 +8,12 @@ import {
   Container,
   Grid,
   Card,
-  CardHeader,
   Divider,
-  CardContent
+  CardContent,
 } from '@material-ui/core';
 import Game from './Game/game';
 import ListUser from '../ListUser';
+import { Chat } from '../ChatOnline/'
 import socket from "../../utils/socket.service";
 import store from '../../utils/store.service';
 
@@ -35,61 +35,107 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     flexDirection: 'column',
   },
+  playerName: {
+    maxWidth: "100%",
+    wordWrap: 'break-word',
+  },
   fixedHeight: {
     height: 240,
   },
+  winColor: {
+    color: "green",
+  }
 }));
 
-export default function Room() {
+export default function Room(props) {
   const classes = useStyles();
   const ID = useParams().id;
-
-  const [onlineUsers, setOnlineUsers] = useState();   // data board
   const [room, setRoom] = useState();
+  const [gameData, setGameData] = useState();
+  const [onlineUsers, setOnlineUsers] = useState();   // list of online user
+  const [user, setUser] = useState(store.getState());
+  store.subscribe(() => {
+    setUser(store.getState());
+  });
 
+  // join room
+  useEffect(() => {
+    if (user) {
+      socket.emit('join', { name: user.name, room: ID }, (error) => {
+        if (error) {
+          alert(error);
+        }
+      });
+    }
+  }, [ID, user]);
+
+  // get room data
+  useEffect(() => {
+    socket.emit("get_room_data", ID);
+    socket.on('roomData', ({ data, gameData }) => {
+      setRoom(data[0]);
+      setGameData(gameData);
+    });
+    return () => {
+      socket.off("roomData");
+    }
+  }, [ID]);
+
+  // get online users
   useEffect(() => {
     socket.emit("alert_online_users");
     socket.on("get_online_users", setOnlineUsers);
 
-    // join room
-    const user = store.getState();
-    const userID = user ? user.ID : null;
-    const userName = user ? user.name : null;
+    return () => {
+      socket.off("get_online_users");
+    }
+  }, [])
 
-    socket.emit("join", { userID: userID, userName: userName, roomID: ID });
+  return (
+    <main className={classes.content}>
+      <div className={classes.appBarSpacer} />
+      <Container maxWidth="lg" className={classes.container}>        
+        <Grid container spacing={3} >
+          <Grid item sm={8} xs={12} >
+            <Card>
+              <CardContent>
+                {room
+                  ?
+                  <Grid container spacing={3} >
+                    <Grid container item xs={4} zeroMinWidth>
+                      {room.winner === 1
+                        ? <Typography variant="h5" noWrap className={classes.winColor}>{room.name1 ? "(X) " + room.name1 : "(X) Waiting"}</Typography>
+                        : <Typography variant="h5" noWrap>{room.name1 ? "(X) " + room.name1 : "(X) Waiting"}</Typography>
+                      }
 
-  const getAddress = "get_room";
-  socket.on(getAddress, setRoom);
+                    </Grid>
+                    <Grid container item xs={4} justify="center">
+                      <Typography variant="h5">VS</Typography>
+                    </Grid>
+                    <Grid container item xs={4} justify="flex-end" zeroMinWidth>
+                      {room.winner === 2
+                        ? <Typography variant="h5" noWrap className={classes.winColor}>{room.name2 ? "(X) " + room.name2 : "(X) Waiting"}</Typography>
+                        : <Typography variant="h5" noWrap>{room.name2 ? "(X) " + room.name2 : "(X) Waiting"}</Typography>
+                      }
+                    </Grid>
 
-  return () => {
-    socket.off("get_online_users");
-    socket.off(getAddress);
-  }
-}, [ID])
-
-console.log(room);
-return (
-  <main className={classes.content}>
-    <div className={classes.appBarSpacer} />
-    <Container maxWidth="lg" className={classes.container}>
-      <Typography variant="h3" component="h2" gutterBottom align="center">
-        Room
-          </Typography>
-      <Grid container spacing={3} >
-        <Grid item sm={8} xs={12} >
-          <Card>
-            <CardHeader title="Caro Online" />
-            <Divider />
-            <CardContent>
-              <Game />
-            </CardContent>
-          </Card>
+                  </Grid>
+                  : <></>
+                }
+                <Divider />
+                <Game roomID={ID} roomData={room} gameData={gameData} />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item sm={4} xs={12}>
+            {user
+              ? <Chat name={user.name} room={ID} />
+              : <Chat name={null} room={ID} />}
+            {true ? <></> :
+              <ListUser socket={socket} onlineUsers={onlineUsers} />}
+          </Grid>
         </Grid>
-        <Grid item sm={4} xs={12}>
-          <ListUser socket={socket} onlineUsers={onlineUsers} />
-        </Grid>
-      </Grid>
-    </Container>
-  </main>
-);
+      </Container>
+    </main>
+  );
 }

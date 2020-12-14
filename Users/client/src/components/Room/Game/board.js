@@ -19,7 +19,6 @@ function Board(props) {
     let count = 0;
     const board = [];
     let color = false;
-  
     // create
     for (var i = 0; i < props.row; i++) {
       var row = [];

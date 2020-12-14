@@ -38,7 +38,6 @@ export default function Account() {
   const [fullname, setFullname] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("error");
-
   useEffect(() => {
     async function fetchData() {
       try {

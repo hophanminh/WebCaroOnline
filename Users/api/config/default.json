@@ -2,7 +2,7 @@
   "mysql": {
     "connectionLimit": 50,
     "host": "localhost",
-    "port": 3012,
+    "port": 3306,
     "user": "root",
     "password": "root",
     "database": "caro_online"
@@ -17,5 +17,8 @@
   },
   "paginate": {
     "limit": 6
-  }
+  },
+  "column": 50,
+  "row": 50,
+  "win": 5
 }

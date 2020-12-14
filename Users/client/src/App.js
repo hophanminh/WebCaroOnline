@@ -48,7 +48,7 @@ const routes = [
     main: (props) => <SignUp />
   },
   {
-    path: "/Room",
+    path: "/Room/:id",
     main: (props) => <Room />
   },
   {
@@ -69,11 +69,10 @@ const useStyles = makeStyles((theme) => ({
 export default function App(props) {
   const classes = useStyles();
   const [currentUser, setCurrentUser] = useState(AuthService.getCurrentUser);
-
   store.subscribe(() => {
     setCurrentUser(store.getState());
   });
-
+  console.log(store.getState());
 
   useEffect(() => {
     // check if user is already logged in

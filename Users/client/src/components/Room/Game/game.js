@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import '../../../css/game.css'
+import React, { useState, useEffect } from "react";
+import './game.css';
 import Board from './board.js';
 import {
     Box,
     Grid,
+    CircularProgress
 } from '@material-ui/core';
+import socket from "../../../utils/socket.service";
+import store from "../../../utils/store.service";
 
 
 
@@ -14,152 +17,30 @@ function Game(props) {
     const column = 50;
     const row = 50;
     const win = 5;
+    const gameData = props.gameData;
+    const roomData = props.roomData;
 
-    const [history, setHistory] = useState(
-        [{
-            squares: Array(column * row).fill(null),
-            move: -1,
-        }]);
-    const [stepNumber, setStepNumber] = useState(0);
-    const [xIsNext, setXIsNext] = useState(true);
+    const [history, setHistory] = useState();
+    const [stepNumber, setStepNumber] = useState();
+    const [xIsNext, setXIsNext] = useState();
 
-    const calculateWinner = (squares, stepNumber, move) => {
-        //  illegal move
-        if (move === -1) {
-            return ({
-                line: null,
-                status: 0,
-            })
+    useEffect(() => {
+        if (gameData) {
+            setHistory(gameData.history);
+            setStepNumber(gameData.stepNumber);
+            setXIsNext(gameData.xIsNext);
         }
 
-        // 1d array to 2d array
-        const x = Math.floor(move / column);
-        const y = move % column;
+    }, [gameData]);
 
-        // check column
-        let line = [];
-        for (let i = 0 - win; i < win; i++) {
-            const tempX = x + i;
-            // skip line start from outside and line too short
-            if (tempX < 0 || tempX > row) {
-                continue;
-            }
-            // if line has at least 1 square, check next square
-            if (line.length !== 0 && squares[line[0]] !== squares[tempX * column + y]) {
-                line = [];
-            }
-            // ignore empty square
-            if (squares[tempX * column + y] !== null) {
-                line.push(tempX * column + y);
-            }
-            // check if line's length == win
-            if (line.length === win) {
-                return ({
-                    line: line,
-                    status: squares[x * column + y],
-                })
 
-            }
-        }
 
-        // check row
-        line = [];
-        for (let i = 0 - win; i < win; i++) {
-            const tempY = y + i;
-            // skip line start from outside and line too short
-            if (tempY < 0 || tempY > column) {
-                continue;
-            }
-            // if line has at least 1 square, check next square
-            if (line.length !== 0 && squares[line[0]] !== squares[x * column + tempY]) {
-                line = [];
-            }
-            // ignore empty square
-            if (squares[x * column + tempY] !== null) {
-                line.push(x * column + tempY);
-            }
-            // check if line's length == win
-            if (line.length === win) {
-                return ({
-                    line: line,
-                    status: squares[x * column + y],
-                })
 
-            }
-        }
-
-        // check diagonal
-        line = [];
-        for (let i = 0 - win; i < win; i++) {
-            const tempX = x + i;
-            const tempY = y + i;
-
-            // skip line start from outside and line too short
-            if (tempX < 0 || tempX > row || tempY < 0 || tempY > column) {
-                continue;
-            }
-            // if line has at least 1 square, check next square
-            if (line.length !== 0 && squares[line[0]] !== squares[tempX * column + tempY]) {
-                line = [];
-            }
-            // ignore empty square
-            if (squares[tempX * column + tempY] !== null) {
-                line.push(tempX * column + tempY);
-            }
-            // check if line's length == win
-            if (line.length === win) {
-                return ({
-                    line: line,
-                    status: squares[x * column + y],
-                })
-
-            }
-        }
-
-        // check anti-diagonal
-        line = [];
-        for (let i = 0 - win; i < win; i++) {
-            const tempX = x + i;
-            const tempY = y - i;
-
-            // skip line start from outside and line too short
-            if (tempX < 0 || tempX > row || tempY < 0 || tempY > column) {
-                continue;
-            }
-            // if line has at least 1 square, check next square
-            if (line.length !== 0 && squares[line[0]] !== squares[tempX * column + tempY]) {
-                line = [];
-            }
-            // ignore empty square
-            if (squares[tempX * column + tempY] !== null) {
-                line.push(tempX * column + tempY);
-            }
-            // check if line's length == win
-            if (line.length === win) {
-                return ({
-                    line: line,
-                    status: squares[x * column + y],
-                })
-
-            }
-        }
-
-        // check draw
-        if (stepNumber === column * row) {
-            return ({
-                line: null,
-                status: -1,
-            })
-        }
-
-        // game continues
-        return ({
-            line: null,
-            status: 0,
-        })
+    const handleClick = (move) => {
+        const user = store.getState();
+        socket.emit("play", { move: move, userID: user.ID, boardID: props.roomID, turn: stepNumber + 1 });
     }
-
-
+    /*
     const handleClick = (i, previous) => {
         const newHistory = history.slice(0, stepNumber + 1);
         const current = newHistory[newHistory.length - 1];
@@ -181,6 +62,7 @@ function Game(props) {
         setStepNumber(newHistory.length);
         setXIsNext(!xIsNext);
     }
+    */
 
     /*     
     //undo
@@ -190,75 +72,85 @@ function Game(props) {
     }
     */
 
-    const current = history[stepNumber];
-    const winner = calculateWinner(current.squares, stepNumber, current.move);
-
-    const moves = history.map((turn, i) => {
-        const x = Math.floor(turn.move / column);
-        const y = turn.move % column;
-
-        const player = (i % 2) === 0 ? "O" : "X";
-
-        const desc = i ?
-            'Turn ' + i + ': (' + x + ',' + y + ') - ' + player:
-            'Game start';
-        /*
-        // undo
-        return (
-            <li key={move}>
-                <button onClick={() => jumpTo(move)}>
-                    {current === turn ? <b>{desc}</b> : <>{desc}</>}
-                </button>
-            </li>
-        );
-        */
-        return (
-            <li key={i}>
-                {current === turn ? <b>{desc}</b> : <>{desc}</>}
-            </li>
-        );
-    });
-
-    let statusDes;
-    const finalMoves = moves.slice().reverse();
-    if (winner.status === 0) {
-        statusDes = 'Next player: ' + (xIsNext ? 'X' : 'O');
-    }
-    else if (winner.status === -1) {
-        statusDes = 'Draw';
+    if (!history || !roomData) {
+        return (<CircularProgress />)
     }
     else {
-        statusDes = 'Winner: ' + winner.status;
-    }
+        const current = history[stepNumber];
+        const moves = history.map((turn, i) => {
+            const x = Math.floor(turn.move / column);
+            const y = turn.move % column;
 
-    return (
-        <Box className="game" >
-            <Grid container spacing={3} >
-                <Grid item xs={8} >
-                    <Box width="95%" height={290} overflow="auto">
-                        <Box className="gameContainer" height={squareSize * row} width={squareSize * column}>
-                            <Board
-                                column={column}
-                                row={row}
-                                squares={current.squares}
-                                onClick={(i) => handleClick(i, current.move)}
-                                winnerLine={winner.line}
-                            />
+            const player = (i % 2) === 0 ? "O" : "X";
+
+            const desc = i ?
+                'Turn ' + i + ': (' + x + ',' + y + ') - ' + player :
+                'Game start';
+            /*
+            // undo
+            return (
+                <li key={move}>
+                    <button onClick={() => jumpTo(move)}>
+                        {current === turn ? <b>{desc}</b> : <>{desc}</>}
+                    </button>
+                </li>
+            );
+            */
+            return (
+                <li key={i}>
+                    {current === turn ? <b>{desc}</b> : <>{desc}</>}
+                </li>
+            );
+        });
+
+        let statusDes;
+        const finalMoves = moves.slice().reverse();
+        console.log(roomData.winner);
+        if (roomData.winner === -1) {
+            statusDes = 'Next player: ' + (xIsNext ? 'X' : 'O');
+        }
+        else if (roomData.winner === 0) {
+            statusDes = 'Draw';
+        }
+        else {
+            const winner = (roomData.winner === 1) ? 'X' : 'O';
+            statusDes = 'Winner: ' + winner;
+        }
+
+        return (
+            <Box className="game" >
+                <Grid container spacing={3} >
+                    <Grid item xs={8} >
+                        <Box width="95%" height={290} overflow="auto">
+                            <Box className="gameContainer" height={squareSize * row} width={squareSize * column}>
+                                <Board
+                                    column={column}
+                                    row={row}
+                                    squares={current.squares}
+                                    onClick={(i) => handleClick(i)}
+                                    winnerLine={gameData.winningLine}
+                                />
+                            </Box>
                         </Box>
-                    </Box>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Box width="95%" height={290} overflow="auto">
+                            <div>
+                                <div>
+                                    {gameData.winningLine
+                                        ? <b>{statusDes}</b>
+                                        : <>{statusDes}</>
+                                    }
+                                </div>
+                                <div>History: </div>
+                                <ol>{finalMoves}</ol>
+                            </div>
+                        </Box>
+                    </Grid>
                 </Grid>
-                <Grid item xs={4}>
-                    <Box width="95%" height={290} overflow="auto">
-                        <div>
-                            <div>{statusDes}</div>
-                            <div>History: </div>
-                            <ol>{finalMoves}</ol>
-                        </div>
-                    </Box>
-                </Grid>
-            </Grid>
-        </Box>
+            </Box>
 
-    );
+        );
+    }
 }
 export default Game;

@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Home() {
   const classes = useStyles();
 
-  const [onlineUsers, setOnlineUsers] = useState();   // data board
+  const [onlineUsers, setOnlineUsers] = useState();  
 
   useEffect(() => {
       socket.emit("alert_online_users");

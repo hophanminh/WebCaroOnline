@@ -33,16 +33,11 @@ const MenuGame = ({ className, ...rest }) => {
 
   const createRoom = async () => {
     try {
-      const res = await DataService.createBoard();
+      const res = await DataService.createRoom();
       history.push("/Room/" + res.data.ID);
     }
     catch (error) {
-      const resMessage =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      alert(error);
     }
 
   }

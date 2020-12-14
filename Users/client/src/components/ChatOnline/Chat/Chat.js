@@ -1,61 +1,60 @@
 import React, { useState, useEffect } from "react";
-import queryString from 'query-string';
+import {
+    Card,
+    CardContent
+} from '@material-ui/core';
 
-import {InfoBar} from '../InforBar/InforBar';
-import {Input} from '../Input/Input';
-import {Messages} from '../Messages/Messages';
-import {TextContainer} from '../TextContainter/TextContainer'
+import { InfoBar } from '../InforBar/InforBar';
+import { Input } from '../Input/Input';
+import { Messages } from '../Messages/Messages';
+import { TextContainer } from '../TextContainter/TextContainer'
 import socket from "../../../utils/socket.service";
-import HostURL from "../../../utils/host.service";
 import './Chat.css';
 
-export const Chat = ({ location }) => {
-    const [name, setName] = useState('');
-    const [room, setRoom] = useState('');
+export const Chat = (props) => {
     const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
-
-        const params = new URLSearchParams(window.location.search);
-
-        setRoom(params.get('room'));
-        setName(params.get('name'))
-
-        socket.emit('join', { name: params.get('name'), room: params.get('room') }, (error) => {
-            if(error) {
-                alert(error);
-            }
-        });
-    }, [HostURL, window.location.href]);
-
-    useEffect(() => {
         socket.on('message', message => {
-            setMessages(msgs => [ ...msgs, message ]);
+            setMessages(msgs => [...msgs, message]);
         });
 
-        socket.on("roomData", ({ users }) => {
+        socket.on("usersInRoom", ({ users }) => {
             setUsers(users);
         });
+
+        return () => {
+            socket.off("message");
+            socket.off("usersInRoom");
+
+        }
+
     }, []);
 
     const sendMessage = (event) => {
         event.preventDefault();
 
-        if(message) {
+        if (message) {
             socket.emit('sendMessage', message, () => setMessage(''));
         }
     }
 
     return (
-        <div className="outerContainer">
-            <TextContainer users={users} />
+        <Card className="outerContainer">
+            {true ? <></> :
+                <TextContainer users={users} />}
             <div className="container">
-                <InfoBar room={room} />
-                <Messages messages={messages} name={name} />
-                <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
+                <InfoBar room={props.room} />
+                {props.name
+                    ? <>
+                        <Messages messages={messages} name={props.name} />
+                        <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
+                    </>
+                    : <CardContent className="notLogin">Login to see chat</CardContent>
+                }
             </div>
-        </div>
+        </Card>
     );
 }

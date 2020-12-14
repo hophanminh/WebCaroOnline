@@ -20,16 +20,15 @@ const changePassword = (oldPass, newPass) => {
   return axios.post(API_URL + "user/changepass/", { oldPass, newPass });
 }
 
-const createBoard = () => {
-  return axios.post(API_URL + "user/board/create/");
+const createRoom = () => {
+  return axios.post(API_URL + "user/room/create/");
 };
 
-// detail board
 const DataService = {
   getUserInfo,
   changeUserInfo,
   changePassword,
-  createBoard,
+  createRoom,
 }
 
 export default DataService;
