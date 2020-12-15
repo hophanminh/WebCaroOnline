@@ -24,11 +24,21 @@ const createRoom = () => {
   return axios.post(API_URL + "user/room/create/");
 };
 
+const joinRoomAsPlayer = (roomId) => {
+  return axios.post(API_URL + "user/room/joinRequest/player", {roomId});
+}
+
+const joinRoomAsViewer = (roomId) => {
+  return axios.post(API_URL + "user/room/joinRequest/viewer", {roomId});
+}
+
 const DataService = {
   getUserInfo,
   changeUserInfo,
   changePassword,
   createRoom,
+  joinRoomAsPlayer,
+  joinRoomAsViewer,
 }
 
 export default DataService;
