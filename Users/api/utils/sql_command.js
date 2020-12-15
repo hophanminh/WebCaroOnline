@@ -75,6 +75,10 @@ module.exports = {
                     SET winner = ?
                     WHERE ID = ?`, [winner, roomID]),
 
+    joinRoomAsPlayer: (roomID, user) =>
+        db.loadSafe(`UPDATE room
+                    SET idUser2 = ?
+                    WHERE ID = ?`, [user.ID, roomID]),
 
     createMove: (move, userID, boardID, turn) => {
         const newMove = {

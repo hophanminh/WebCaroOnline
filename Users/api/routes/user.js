@@ -69,6 +69,29 @@ router.post("/room/create/", async (req, res) => {
   res.status(200).send({
     ID: roomID,
   });
-
 });
+
+router.post("/room/joinRequest/player", async (req, res) => {
+  const user = req.user.user[0];
+  console.log("Room uuid: "+ req.user.input.roomId);
+  const roomID = req.user.input.roomId;
+  const room  = await model.getRoomByID(roomID);
+  console.log(room.idUser2);
+  if(room && room.length === 0)
+    res.status(404).send("Room not found");
+  if(!room.idUser2){
+    await model.joinRoomAsPlayer(roomID, user);
+    res.status(200).send({ID: roomID});
+  }
+  res.status(200).send({ID: roomID});
+});
+
+router.post("/room/joinRequest/viewer", async (req, res) => {
+  const roomID = req.user.input.roomId;
+  const room  = await model.getRoomByID(roomID);
+  if(room && room.length === 0)
+    res.status(404).send("Room not found");
+  res.status(200).send({ID: roomID});
+});
+
 module.exports = router;
