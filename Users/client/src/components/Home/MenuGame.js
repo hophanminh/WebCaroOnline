@@ -1,5 +1,5 @@
 
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   useHistory,
 } from "react-router-dom";
@@ -30,6 +30,10 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+  },
+  button: {
+    marginBottom: "10px",
+    width: "200px",
   }
 }));
 
@@ -63,27 +67,40 @@ const MenuGame = ({ className, ...rest }) => {
       history.push("/Room/" + res.data.ID);
     }
     catch (error) {
+      const resMessage =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+
       alert(error);
     }
   }
 
   const joinRoomAsPlayer = async () => {
-    try{
+    try {
       const result = await DataService.joinRoomAsPlayer(roomId);
-      console.log(result.data.ID)
       history.push("/Room/" + result.data.ID);
-    } catch (error){
-      alert(error)
+    } catch (error) {
+      const resMessage =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      alert(resMessage)
     }
   }
 
   const joinRoomAsViewer = async () => {
-    try{
+    try {
       const result = await DataService.joinRoomAsViewer(roomId);
-      console.log(result.data.ID)
       history.push("/Room/" + result.data.ID);
-    } catch (error){
-      alert(error)
+    } catch (error) {
+      const resMessage =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      alert(resMessage)
     }
   }
 
@@ -93,12 +110,10 @@ const MenuGame = ({ className, ...rest }) => {
       <Divider />
       <CardContent>
         <Box className={classes.menu} height={300} position="relative" >
-          <Button variant="contained" color="primary" onClick={createRoom}>
+          <Button className={classes.button} variant="contained" color="primary" onClick={createRoom}>
             Create new room
           </Button>
-        </Box>
-        <Box className={classes.menu} height={300} position="relative" >
-          <Button variant="contained" color="primary" onClick={handleClickOpenPlayer}>
+          <Button className={classes.button} variant="contained" color="primary" onClick={handleClickOpenPlayer}>
             Join room as Player
           </Button>
           <Dialog open={openPlayer} onClose={handleClosePlayer} aria-labelledby="form-dialog-title">
@@ -108,13 +123,13 @@ const MenuGame = ({ className, ...rest }) => {
                 Enter the RoomID
               </DialogContentText>
               <TextField
-                  autoFocus
-                  margin="dense"
-                  id="roomID"
-                  label="RoomID"
-                  type="roomID"
-                  fullWidth
-                  onChange={e => setRoomId(e.target.value)}
+                autoFocus
+                margin="dense"
+                id="roomID"
+                label="RoomID"
+                type="roomID"
+                fullWidth
+                onChange={e => setRoomId(e.target.value)}
               />
             </DialogContent>
             <DialogActions>
@@ -126,7 +141,7 @@ const MenuGame = ({ className, ...rest }) => {
               </Button>
             </DialogActions>
           </Dialog>
-          <Button variant="contained" color="primary" onClick={handleClickOpenViewer}>
+          <Button className={classes.button} variant="contained" color="primary" onClick={handleClickOpenViewer}>
             Join room as Viewer
           </Button>
           <Dialog open={openViewer} onClose={handleCloseViewer} aria-labelledby="form-dialog-title">
@@ -136,13 +151,13 @@ const MenuGame = ({ className, ...rest }) => {
                 Enter the RoomID
               </DialogContentText>
               <TextField
-                  autoFocus
-                  margin="dense"
-                  id="roomID"
-                  label="RoomID"
-                  type="roomID"
-                  fullWidth
-                  onChange={e => setRoomId(e.target.value)}
+                autoFocus
+                margin="dense"
+                id="roomID"
+                label="RoomID"
+                type="roomID"
+                fullWidth
+                onChange={e => setRoomId(e.target.value)}
               />
             </DialogContent>
             <DialogActions>

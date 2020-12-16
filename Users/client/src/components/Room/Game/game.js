@@ -105,7 +105,6 @@ function Game(props) {
 
         let statusDes;
         const finalMoves = moves.slice().reverse();
-        console.log(roomData.winner);
         if (roomData.winner === -1) {
             statusDes = 'Next player: ' + (xIsNext ? 'X' : 'O');
         }
@@ -135,16 +134,19 @@ function Game(props) {
                     </Grid>
                     <Grid item xs={4}>
                         <Box width="95%" height={290} overflow="auto">
-                            <div>
-                                <div>
-                                    {gameData.winningLine
-                                        ? <b>{statusDes}</b>
-                                        : <>{statusDes}</>
-                                    }
+                            {(roomData.idUser1 && roomData.idUser2)
+                                ? <div>
+                                    <div>
+                                        {gameData.winningLine
+                                            ? <b>{statusDes}</b>
+                                            : <>{statusDes}</>
+                                        }
+                                    </div>
+                                    <div>History: </div>
+                                    <ol>{finalMoves}</ol>
                                 </div>
-                                <div>History: </div>
-                                <ol>{finalMoves}</ol>
-                            </div>
+                                : <div>Waiting for both players</div>
+                            }
                         </Box>
                     </Grid>
                 </Grid>

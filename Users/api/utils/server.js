@@ -93,9 +93,9 @@ module.exports = function (io) {
       socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
 
 
-      // send room data
+      // send data to every user in room
       const { data, gameData } = await getRoomInfo(user.room);
-      socket.emit('roomData', { data, gameData });
+      io.to(user.room).emit('roomData', { data, gameData });
       io.to(user.room).emit('usersInRoom', { room: user.room, users: getUsersInRoom(user.room) });
 
       callback();
@@ -140,7 +140,7 @@ module.exports = function (io) {
         }
         if (result.line) {
           for (let i = 0; i < result.line.length; i++) {
-              model.updateMoveLine(result.line[i]);
+            await model.updateMoveLine(result.line[i]);
           }
         }
 

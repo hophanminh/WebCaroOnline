@@ -115,7 +115,7 @@ export default function Room(props) {
                     <Grid container item xs={4} justify="flex-end" zeroMinWidth>
                       {room.winner === 2
                         ? <Typography variant="h5" noWrap className={classes.winColor}>{room.name2 ? "(X) " + room.name2 : "(X) Waiting"}</Typography>
-                        : <Typography variant="h5" noWrap>{room.name2 ? "(X) " + room.name2 : "(X) Waiting"}</Typography>
+                        : <Typography variant="h5" noWrap>{room.name2 ? "(O) " + room.name2 : "(O) Waiting"}</Typography>
                       }
                     </Grid>
 

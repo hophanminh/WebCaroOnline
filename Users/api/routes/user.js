@@ -65,7 +65,6 @@ router.post("/room/create/", async (req, res) => {
   const user = req.user.user[0];
   const roomID = uuidv4();
   await model.createRoom([roomID, user.ID]);
-
   res.status(200).send({
     ID: roomID,
   });
@@ -73,25 +72,33 @@ router.post("/room/create/", async (req, res) => {
 
 router.post("/room/joinRequest/player", async (req, res) => {
   const user = req.user.user[0];
-  console.log("Room uuid: "+ req.user.input.roomId);
   const roomID = req.user.input.roomId;
-  const room  = await model.getRoomByID(roomID);
-  console.log(room.idUser2);
-  if(room && room.length === 0)
-    res.status(404).send("Room not found");
-  if(!room.idUser2){
-    await model.joinRoomAsPlayer(roomID, user);
-    res.status(200).send({ID: roomID});
+  const room = await model.getRoomByID(roomID);
+
+  if (room && room.length === 0) {                                // wrong id room
+    res.status(400).send({ message: "Room not found" });
   }
-  res.status(200).send({ID: roomID});
+  else if (room[0].idUser1 === user.ID) {                              // player 1 rejoin
+    res.status(200).send({ ID: roomID });
+  }
+  else if (!room[0].idUser2) {                                    // update db when no player 2
+    await model.joinRoomAsPlayer(roomID, user);
+    res.status(200).send({ ID: roomID });
+  }
+  else if (room[0].idUser2 && room[0].idUser2 != user.ID) {       /// player 2 rejoin
+    res.status(400).send({ message: "Room already had enough player" });
+  }
 });
 
 router.post("/room/joinRequest/viewer", async (req, res) => {
   const roomID = req.user.input.roomId;
-  const room  = await model.getRoomByID(roomID);
-  if(room && room.length === 0)
-    res.status(404).send("Room not found");
-  res.status(200).send({ID: roomID});
+  const room = await model.getRoomByID(roomID);
+  if (room && room.length === 0) {
+    res.status(400).send({ message: "Room not found" });
+  }
+  else {
+    res.status(200).send({ ID: roomID });
+  }
 });
 
 module.exports = router;

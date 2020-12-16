@@ -75,7 +75,7 @@ const transformGameData = (moves) => {
 }
 
 const checkValidMove = async (move, userID, data, moves) => {
-    if (data.winner != 0) {
+    if (data[0].winner != -1) {
         return false;                                                       // game was finished
     }
     if (!userID) {                                                          // not login
@@ -88,6 +88,9 @@ const checkValidMove = async (move, userID, data, moves) => {
         return false;
     }
     if (move >= config.row * config.column) {                               // move is out of bound
+        return false;
+    }
+    if (moves.length === 0 && data[0].idUser1 != userID) {
         return false;
     }
     if (moves.length != 0) {
