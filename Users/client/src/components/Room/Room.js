@@ -10,6 +10,9 @@ import {
   Card,
   Divider,
   CardContent,
+  Box,
+  Snackbar,
+  Button
 } from '@material-ui/core';
 import Game from './Game/game';
 import ListUser from '../ListUser';
@@ -44,16 +47,21 @@ const useStyles = makeStyles((theme) => ({
   },
   winColor: {
     color: "green",
+  },
+  shareButtonContainer: {
+    display: "flex",
+    flexDirection: "row-reverse",
   }
 }));
 
 export default function Room(props) {
   const classes = useStyles();
   const ID = useParams().id;
-  const [room, setRoom] = useState();
-  const [gameData, setGameData] = useState();
-  const [onlineUsers, setOnlineUsers] = useState();   // list of online user
+  const [room, setRoom] = useState();                   // room's data
+  const [gameData, setGameData] = useState();           //game's data
+  const [onlineUsers, setOnlineUsers] = useState();     // list of online user
   const [user, setUser] = useState(store.getState());
+  const [open, setOpen] = useState(false);             // snackbar's status
   store.subscribe(() => {
     setUser(store.getState());
   });
@@ -91,13 +99,43 @@ export default function Room(props) {
     }
   }, [])
 
+  // copy ID room to clipboard
+  const copyLink = () => {
+
+    const link = ID;
+    // create temporary DOM to hold link, copy to clipboard then remove it
+    const dummy = document.createElement('input');
+    dummy.value = link;
+    document.body.appendChild(dummy);
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
+
+    // show alert
+    setOpen(true);
+  }
+  const handleCloseSnackbar = () => {
+    setOpen(false);
+  };
+
   return (
     <main className={classes.content}>
       <div className={classes.appBarSpacer} />
-      <Container maxWidth="lg" className={classes.container}>        
+      <Container maxWidth="lg" className={classes.container}>
         <Grid container spacing={3} >
           <Grid item sm={8} xs={12} >
             <Card>
+              <Box className={classes.shareButtonContainer}>
+                <Button size="small" variant="contained" color="primary" onClick={() => copyLink()}>
+                  Get room's ID
+                </Button>
+                <Snackbar
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right"}}
+                  open={open}
+                  onClose={handleCloseSnackbar}
+                  message="ID copied to clipboard"
+                />
+              </Box>
               <CardContent>
                 {room
                   ?

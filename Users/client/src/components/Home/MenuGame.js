@@ -72,7 +72,7 @@ const MenuGame = ({ className, ...rest }) => {
         error.message ||
         error.toString();
 
-      alert(error);
+      alert(resMessage);
     }
   }
 

@@ -15,7 +15,6 @@ import {
 } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import socket from "../utils/socket.service";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -60,12 +59,6 @@ const ListUser = (props) => {
         setAnchorEl(null);
     };
 
-
-    // invite
-    const handleClickInvite = (event) => {
-
-    };
-
     return (
         <Card className={classes.root}>
             <CardHeader
@@ -79,18 +72,22 @@ const ListUser = (props) => {
                     userList.map((user, i) => (
                         <ListItem divider={i < userList.length - 1} key={user.ID} >
                             <ListItemText className={classes.nameCard} primary={user.name} />
-                            <IconButton edge="end" size="small" onClick={handleClickMenu}>
-                                <MoreVertIcon />
-                            </IconButton>
-                            <Menu
-                                id="simple-menu"
-                                anchorEl={anchorEl}
-                                keepMounted
-                                open={Boolean(anchorEl)}
-                                onClose={handleCloseMenu}
-                            >
-                                <MenuItem onClick={handleCloseMenu}>Invite</MenuItem>
-                            </Menu>
+                            {true ? <></> :
+                                <>
+                                    <IconButton edge="end" size="small" onClick={handleClickMenu}>
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                    <Menu
+                                        id="simple-menu"
+                                        anchorEl={anchorEl}
+                                        keepMounted
+                                        open={Boolean(anchorEl)}
+                                        onClose={handleCloseMenu}
+                                    >
+                                        <MenuItem>Invite</MenuItem>
+                                    </Menu>
+                                </>
+                            }
 
                         </ListItem>
                     )) : ""

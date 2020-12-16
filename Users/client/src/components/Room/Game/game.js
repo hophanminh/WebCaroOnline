@@ -16,7 +16,6 @@ function Game(props) {
     const squareSize = 25;
     const column = 50;
     const row = 50;
-    const win = 5;
     const gameData = props.gameData;
     const roomData = props.roomData;
 
