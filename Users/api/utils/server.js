@@ -1,5 +1,5 @@
 const model = require('../utils/sql_command');
-const { addUserToRoom, removeUserFromRoom, getUser, getUsersInRoom, getRoomInfo, checkValidMove, checkWinCondition } = require('../utils/chatroom.query');
+const { addUserToRoom, removeUserFromRoom, getUser, getUsersInRoom, getRoomInfo, checkValidMove, checkWinCondition, transformGameData } = require('../utils/chatroom.query');
 require('express-async-errors');
 
 module.exports = function (io) {
@@ -119,7 +119,7 @@ module.exports = function (io) {
       const moves = await model.getMoveByRoomID(boardID);
 
       // check if move's valid
-      if (await checkValidMove(move, userID, data, moves)) {
+      if (checkValidMove(move, userID, data, moves)) {
         // add new move to database
         await model.createMove(move, userID, boardID, turn);
 
@@ -130,24 +130,32 @@ module.exports = function (io) {
         const result = checkWinCondition(newMoves, turn, move);
         // update room when someone win
         if (result.status === 'X') {            // player 1 win
-          await model.updateRoomWinner(boardID, 1)
+          model.updateRoomWinner(boardID, 1);
+          data[0].winner = 1;
         }
         else if (result.status === 'O') {       // player 2 win
-          await model.updateRoomWinner(boardID, 2)
+          model.updateRoomWinner(boardID, 2);
+          data[0].winner = 2;
         }
         else if (result.status === '-1') {      // draw
-          await model.updateRoomWinner(boardID, 0)
+          model.updateRoomWinner(boardID, 0);
+          data[0].winner = 0;
         }
+        let winningLine = [];
         if (result.line) {
           for (let i = 0; i < result.line.length; i++) {
-            await model.updateMoveLine(result.line[i]);
+            model.updateMoveLine(result.line[i]);
+            winningLine.push(result.line[i])
           }
         }
 
+        // get game data
+        const gameData = transformGameData(newMoves);
+        gameData["winningLine"] = winningLine;
         // send data to every user in room
-        const { data, gameData } = await getRoomInfo(boardID);
         io.to(boardID).emit('roomData', { data, gameData });
       }
+
     });
 
   });

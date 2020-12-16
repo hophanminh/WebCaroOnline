@@ -74,7 +74,7 @@ const transformGameData = (moves) => {
     return { history, stepNumber, xIsNext };
 }
 
-const checkValidMove = async (move, userID, data, moves) => {
+const checkValidMove = (move, userID, data, moves) => {
     if (data[0].winner != -1) {
         return false;                                                       // game was finished
     }
@@ -254,4 +254,4 @@ const checkWinCondition = (moves, stepNumber, move) => {
 
 }
 
-module.exports = { addUserToRoom, removeUserFromRoom, getUser, getUsersInRoom, getRoomInfo, checkValidMove, checkWinCondition };
+module.exports = { addUserToRoom, removeUserFromRoom, getUser, getUsersInRoom, getRoomInfo, checkValidMove, checkWinCondition, transformGameData };
