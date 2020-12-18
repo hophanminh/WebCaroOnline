@@ -8,14 +8,14 @@ import {
 } from '@material-ui/core';
 import socket from "../../../utils/socket.service";
 import store from "../../../utils/store.service";
-
+import config from "../../../utils/config.json";
 
 
 function Game(props) {
     // change these to change the size of the board
-    const squareSize = 25;
-    const column = 50;
-    const row = 50;
+    const squareSize = config["square-size"];
+    const column = config.column;
+    const row = config.row;
     const gameData = props.gameData;
     const roomData = props.roomData;
 

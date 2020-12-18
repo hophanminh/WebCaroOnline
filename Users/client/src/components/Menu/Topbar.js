@@ -16,8 +16,9 @@ import useTitle from "../../utils/title.service";
 import AuthService from "../../utils/auth.service";
 import store from '../../utils/store.service';
 import socket from "../../utils/socket.service";
+import config from "../../utils/config.json";
 
-const drawerWidth = 240;
+const drawerWidth = config.drawerWidth;
 
 const useStyles = makeStyles((theme) => ({
     toolbar: {

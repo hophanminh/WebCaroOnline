@@ -13,7 +13,6 @@ import Home from "./components/Home/Home";
 import Account from "./components/User/Account";
 import Login from "./components/Authenticate/Login";
 import SignUp from "./components/Authenticate/SignUp";
-import {Chat, Join} from "./components/ChatOnline";
 import NotFound from "./components/NotFound";
 import ChangePass from "./components/User/ChangePass";
 import Room from "./components/Room/Room"
@@ -51,14 +50,6 @@ const routes = [
     path: "/Room/:id",
     main: (props) => <Room />
   },
-  {
-    path: "/Join",
-    main: (props) => <Join/>
-  },
-  {
-    path: "/Chat",
-    main: (props) => <Chat/>
-  }
 ];
 const useStyles = makeStyles((theme) => ({
   root: {
