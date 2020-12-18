@@ -57,4 +57,27 @@ router.post("/updatePassword", async (req,res)=>{
   }
 })
 
+router.get("/users",async (req, res) => {
+
+})
+
+router.post("/users/:email", async (req, res) => {
+
+})
+
+router.get("/users/:userId", async (req,res) => {
+
+})
+
+router.post("/users/:id/ban", async (req, res) => {
+
+})
+
+router.get("/matches", async (req,res ) => {
+
+})
+
+router.get("/matches/:uuidMatch", async (req,res ) => {
+
+})
 module.exports = router;

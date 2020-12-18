@@ -16,9 +16,10 @@
     "database": "x8e4B2JVaC"
   },
   "paginate": {
-    "limit": 10
+    "LIMIT": 10
   },
-  "saltBcryptjs": 10,
-  "secret-key": "your-jwt-secret",
-  "admin-permission": 1
+  "SALT-BCRYPTJS": 10,
+  "SECRET-KEY": "your-jwt-secret",
+  "ADMIN_PERMISSION": 1,
+  "ACTIVE": 1
 }

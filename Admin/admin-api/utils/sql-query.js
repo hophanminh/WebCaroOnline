@@ -5,7 +5,7 @@ module.exports = {
     getUserByID: (ID) =>
         db.loadSafe(`SELECT *
                 FROM user
-                WHERE ID = ? AND permission = ${config["admin-permission"]}`, [ID]),
+                WHERE ID = ? AND permission = ${config["ADMIN_PERMISSION"]}`, [ID]),
 
     getUserByUsername: (username) =>
         db.loadSafe(`SELECT *
@@ -25,7 +25,7 @@ module.exports = {
     login: ({ username, password }) =>
         db.loadSafe(`SELECT *
                 FROM user
-                WHERE username = ? AND password = ? AND permission = ${config["admin-permission"]}`, [username, password]),
+                WHERE username = ? AND password = ? AND permission = ${config["ADMIN_PERMISSION"]}`, [username, password]),
 
     updateUser: (entity) => {
         const condition = { ID: entity.ID };
@@ -39,8 +39,8 @@ module.exports = {
             password: password,
             email: email,
             fullname: fullname,
-            status: 1,
-            permission: config["admin-permission"]
+            status: config.ACTIVE,
+            permission: config.ADMIN_PERMISSION
         }
         return db.add(`user`, newUser)
     },

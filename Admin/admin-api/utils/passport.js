@@ -42,7 +42,7 @@ passport.use("local-signup", new LocalStrategy({
 
 passport.use(new JWTStrategy({
     jwtFromRequest: extractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config["secret-key"],
+    secretOrKey: config["SECRET-KEY"],
     passReqToCallback: true
 
 },
