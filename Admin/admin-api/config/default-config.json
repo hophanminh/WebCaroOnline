@@ -20,6 +20,12 @@
   },
   "SALT-BCRYPTJS": 10,
   "SECRET-KEY": "your-jwt-secret",
-  "ADMIN_PERMISSION": 1,
-  "ACTIVE": 1
+  "PERMISSION": {
+    "ADMIN": 1,
+    "USER": 0
+  },
+  "STATUS": {
+    "ACTIVE": 1,
+    "INACTIVE": 0
+  }
 }

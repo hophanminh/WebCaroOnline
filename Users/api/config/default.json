@@ -7,6 +7,14 @@
     "password": "root",
     "database": "caro_online"
   },
+  "mysqlPM": {
+    "connectionLimit": 50,
+    "host": "localhost",
+    "port": 3012,
+    "user": "root",
+    "password": "root",
+    "database": "caro_online"
+  },
   "mysql_cloud": {
     "connectionLimit": 50,
     "host": "remotemysql.com",

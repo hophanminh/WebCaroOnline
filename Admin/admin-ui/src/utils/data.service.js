@@ -19,12 +19,22 @@ const changePassword = (oldPass, newPass) => {
     return axios.post(API_URL + "admin/updatePassword/", { oldPass, newPass });
 }
 
+const getUsers = () => {
+    return axios.get(API_URL + "admin/users");
+}
+
+const getSpecificUser = (search) => {
+    return axios.post(API_URL + "admin/search", {search})
+}
+
 
 // detail board
 const DataService = {
     getUserInfo,
     changeUserInfo,
     changePassword,
+    getUsers,
+    getSpecificUser,
 }
 
 export default DataService;

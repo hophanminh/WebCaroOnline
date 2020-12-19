@@ -15,6 +15,7 @@ import SignUp from "./components/authenticate/register";
 import NotFound from "./components/NotFound";
 import PrivateRoute from "./privateRoute.js";
 import ChangePass from "./components/admin/updatePassword";
+import Users from "./components/home/managementUsers";
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
 
@@ -44,6 +45,10 @@ const routes = [
     path: "/Signup",
     main: (props) => <SignUp />
   },
+  {
+    path: "/users",
+    main: (props) => <Users />
+  }
 ];
 const useStyles = makeStyles((theme) => ({
   root: {
