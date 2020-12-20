@@ -18,7 +18,7 @@ import ChangePass from "./components/admin/updatePassword";
 import Users from "./components/home/managementUsers";
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
-
+import UserProfile from "./components/home/UserProfile";
 import socket from "./utils/socket.service";
 
 const routes = [
@@ -47,7 +47,12 @@ const routes = [
   },
   {
     path: "/users",
+    exact: true,
     main: (props) => <Users />
+  },
+  {
+    path: `/users/:id`,
+    main: (props) => <UserProfile />
   }
 ];
 const useStyles = makeStyles((theme) => ({

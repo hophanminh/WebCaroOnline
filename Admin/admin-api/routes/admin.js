@@ -4,8 +4,10 @@ const config = require("../config/default-config.json");
 const model = require("../utils/sql-query");
 
 /* GET PROFILE. */
-router.get('/', async function(req, res, next) {
+router.get('/', async (req, res, next) => {
+  console.log(req.user.user[0].ID);
   const user = await model.getUserByID(req.user.user[0].ID);
+  console.log(user);
   res.send(user);
 });
 
@@ -77,8 +79,8 @@ router.get("/users/:userId", async (req,res) => {
   const ID = req.params.userId;
   const user = await model.getUserByID(ID);
   if(user.length === 0)
-    res.send("User is not found");
-  res.send(user);
+    return res.status(400).send("User is not found");
+  return res.send(user);
 })
 
 router.post("/users/:id/ban", async (req, res) => {

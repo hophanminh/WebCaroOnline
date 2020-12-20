@@ -23,8 +23,12 @@ const getUsers = () => {
     return axios.get(API_URL + "admin/users");
 }
 
-const getSpecificUser = (search) => {
+const getSpecificUserBySearch = (search) => {
     return axios.post(API_URL + "admin/search", {search})
+}
+
+const getUserByUserId = (ID) => {
+    return axios.get(API_URL + `admin/users/${ID}`);
 }
 
 
@@ -34,7 +38,8 @@ const DataService = {
     changeUserInfo,
     changePassword,
     getUsers,
-    getSpecificUser,
+    getSpecificUserBySearch,
+    getUserByUserId,
 }
 
 export default DataService;

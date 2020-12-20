@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import {
+    useParams, useHistory,
+} from "react-router-dom";
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -38,21 +41,25 @@ export default function Account() {
     const [fullname, setFullname] = useState("");
     const [message, setMessage] = useState("");
     const [status, setStatus] = useState("error");
+    const ID = useParams().id;
+    const history = useHistory();
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const res = await DataService.getUserInfo();
+                console.log(ID);
+                const res = await DataService.getUserByUserId(ID);
                 console.log(res);
                 setUsername(res.data[0].username);
                 setEmail(res.data[0].email);
                 setFullname(res.data[0].fullname);
             }
             catch (error) {
+                history.back();
             }
         }
         fetchData();
-    }, [])
+    }, [ID])
 
     const onChangeUsername = (e) => {
         const username = e.target.value;

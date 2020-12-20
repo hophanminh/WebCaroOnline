@@ -1,5 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {Link} from 'react-router-dom';
+import {
+    useHistory,
+    useLocation
+} from "react-router-dom";
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentCreate from 'material-ui/svg-icons/content/create';
@@ -7,9 +10,13 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import {pink500, grey200, grey500} from 'material-ui/styles/colors';
 import DataService from '../../utils/data.service';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import {Button} from "@material-ui/core";
 
 const Users = () => {
     const styles = {
+        marginTable: {
+            margin: 50
+        },
         floatingActionButton: {
             margin: 0,
             top: 'auto',
@@ -67,16 +74,20 @@ const Users = () => {
         return "INACTIVE";
     }
 
-    return (
-            <div>
-                {/*<Link to="/form">*/}
+    const history = useHistory();
+    const profileUser = (ID) => {
+        const path_url = `/users/${ID}`
+        history.push(path_url);
 
-                {/*</Link>*/}
-                <MuiThemeProvider>
+    }
+
+    return (
+            <div style = {styles.margin}>
+                <MuiThemeProvider >
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHeaderColumn style={styles.columns.id}>ID</TableHeaderColumn>
+                            <TableHeaderColumn style={styles.columns.ID}>ID</TableHeaderColumn>
                             <TableHeaderColumn style={styles.columns.username}>Username</TableHeaderColumn>
                             <TableHeaderColumn style={styles.columns.email}>Email</TableHeaderColumn>
                             <TableHeaderColumn style={styles.columns.score}>Score</TableHeaderColumn>
@@ -88,21 +99,21 @@ const Users = () => {
                     <TableBody>
                         {users.map(item =>
                             <TableRow key={item.id}>
-                                <TableRowColumn style={styles.columns.id}>{item.id}</TableRowColumn>
+                                <TableRowColumn style={styles.columns.ID}>{item.ID}</TableRowColumn>
                                 <TableRowColumn style={styles.columns.username}>{item.username}</TableRowColumn>
                                 <TableRowColumn style={styles.columns.email}>{item.email}</TableRowColumn>
                                 <TableRowColumn style={styles.columns.score}>{item.score}</TableRowColumn>
                                 <TableRowColumn style={styles.columns.status}>{convertStatus(item.status.data)}</TableRowColumn>
                                 <TableRowColumn style={styles.columns.permission}>{typeAccount(item.permission)}</TableRowColumn>
-                                <TableRowColumn style={styles.columns.edit}> ABCDE
-                                    <Link className="button" to="/admin/users/{item.id}">
+                                <TableRowColumn style={styles.columns.edit}>
+                                    <Button onClick={() => profileUser(item.ID)}>
                                         <FloatingActionButton zDepth={0}
                                                               mini={true}
                                                               backgroundColor={grey200}
                                                               iconStyle={styles.editButton}>
                                             <ContentCreate/>
                                         </FloatingActionButton>
-                                    </Link>
+                                    </Button>
                                 </TableRowColumn>
                             </TableRow>
                         )}

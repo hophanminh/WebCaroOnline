@@ -10,7 +10,7 @@ module.exports = {
     getUserByID: (ID) =>
         db.loadSafe(`SELECT *
                 FROM user
-                WHERE ID = ? AND permission = ${config.PERMISSION.ADMIN}`, [ID]),
+                WHERE ID = ?`, [ID]),
 
     getUserByUsername: (username) =>
         db.loadSafe(`SELECT *
