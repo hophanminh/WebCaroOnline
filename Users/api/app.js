@@ -11,8 +11,8 @@ const socketIO = require('socket.io');
 require('express-async-errors');
 require('./utils/passport');
 
-//const URL =  "http://localhost:3000";
-const URL = /caroonline-user.herokuapp\.com$/;
+const URL =  "http://localhost:3000";
+//const URL = /caroonline-user.herokuapp\.com$/;
 
 const corsOptions = {
   // test
@@ -49,9 +49,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
+const roomRouter = require('./routes/room');
 
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
+app.use('/room', roomRouter);
 app.use('/user', passport.authenticate('jwt', { session: false }), userRouter);
 
 

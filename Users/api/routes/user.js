@@ -74,7 +74,7 @@ router.post("/room/joinRequest/player", async (req, res) => {
   const user = req.user.user[0];
   const roomID = req.user.input.roomId;
   const room = await model.getRoomByID(roomID);
-
+  console.log(roomID)
   if (room && room.length === 0) {                                // wrong id room
     res.status(400).send({ message: "Room not found" });
   }

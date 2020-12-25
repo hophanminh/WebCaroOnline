@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        maxHeight: '413px',
+        maxHeight: '500px',
         minWidth: '100px',
     },
     cardHeader: {

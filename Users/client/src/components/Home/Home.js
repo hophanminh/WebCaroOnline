@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+const Home = () => {
   const classes = useStyles();
 
   const [onlineUsers, setOnlineUsers] = useState();  
@@ -62,3 +62,5 @@ export default function Home() {
     </main>
   );
 }
+
+export default Home;
