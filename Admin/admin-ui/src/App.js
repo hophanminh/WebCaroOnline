@@ -16,9 +16,10 @@ import NotFound from "./components/NotFound";
 import PrivateRoute from "./privateRoute.js";
 import ChangePass from "./components/admin/updatePassword";
 import Users from "./components/home/managementUsers";
+import Match from "./components/User/Match";
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
-import UserProfile from "./components/home/UserProfile";
+import UserProfile from "./components/User/UserProfile";
 import socket from "./utils/socket.service";
 
 const routes = [
@@ -53,6 +54,10 @@ const routes = [
   {
     path: `/users/:id`,
     main: (props) => <UserProfile />
+  },
+  {
+    path: `/match/:id`,
+    main: (props) => <Match />
   }
 ];
 const useStyles = makeStyles((theme) => ({

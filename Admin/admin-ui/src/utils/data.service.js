@@ -31,6 +31,14 @@ const getUserByUserId = (ID) => {
     return axios.get(API_URL + `admin/users/${ID}`);
 }
 
+const getMatchesByUserID = (ID) => {
+    return axios.get(API_URL + `admin/users/${ID}/matches`);
+}
+
+const banAccount = (ID) => {
+    return axios.post(API_URL + `admin/users/${ID}/ban`);
+}
+
 
 // detail board
 const DataService = {
@@ -40,6 +48,8 @@ const DataService = {
     getUsers,
     getSpecificUserBySearch,
     getUserByUserId,
+    getMatchesByUserID,
+    banAccount,
 }
 
 export default DataService;

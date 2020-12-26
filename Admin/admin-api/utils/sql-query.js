@@ -60,5 +60,9 @@ module.exports = {
     },
     getMatch(UUIDMatch) {
         return db.loadSafe(`SELECT * FROM room WHERE ID = ${UUIDMatch}`)
+    },
+    getMatchesByUserId(userID) {
+        const sql = `SELECT * from room WHERE idUser1 = ${userID} OR idUser2 = ${userID}`;
+        return db.loadSafe(sql);
     }
 };

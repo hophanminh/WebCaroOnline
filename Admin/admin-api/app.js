@@ -51,8 +51,8 @@ const authRouter = require('./routes/authentication');
 const userRouter = require('./routes/admin');
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
-app.use('/admin', passport.authenticate('jwt', { session: false }), userRouter);
-// app.use('/admin', userRouter);
+// app.use('/admin', passport.authenticate('jwt', { session: false }), userRouter);
+app.use('/admin', userRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

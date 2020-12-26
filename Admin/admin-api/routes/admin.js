@@ -107,4 +107,14 @@ router.get("/matches/:uuidMatch", async (req,res ) => {
   res.send(match);
 })
 
+router.get("/users/:userID/matches", async (req, res)=>{
+  console.log("Come to here to get matches");
+  const userID = req.params.userID;
+  console.log(userID);
+  const matches = await model.getMatchesByUserId(userID);
+  console.log(matches);
+  res.send(matches);
+})
+
+
 module.exports = router;
