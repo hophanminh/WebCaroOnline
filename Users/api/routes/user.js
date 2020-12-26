@@ -64,10 +64,12 @@ router.post('/changepass/', async (req, res) => {
 router.post("/room/create/", async (req, res) => {
   const user = req.user.user[0];
   const roomID = uuidv4();
-  await model.createRoom([roomID, user.ID]);
-  res.status(200).send({
-    ID: roomID,
-  });
+  await model.createRoom([roomID, user.ID, null])
+    .then(() => {
+      res.status(200).send({
+        ID: roomID,
+      });
+    });
 });
 
 router.post("/room/joinRequest/player", async (req, res) => {

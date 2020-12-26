@@ -15,7 +15,7 @@ export default function SideBarList(props) {
   const [currentUser, setCurrentUser] = useState();
 
   store.subscribe(() => {
-    setCurrentUser(store.getState());
+    setCurrentUser(store.getState().user);
   });
 
   return (

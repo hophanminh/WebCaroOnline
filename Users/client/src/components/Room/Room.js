@@ -60,10 +60,10 @@ export default function Room(props) {
   const [room, setRoom] = useState();                   // room's data
   const [gameData, setGameData] = useState();           //game's data
   const [onlineUsers, setOnlineUsers] = useState();     // list of online user
-  const [user, setUser] = useState(store.getState());
+  const [user, setUser] = useState(store.getState().user);
   const [open, setOpen] = useState(false);             // snackbar's status
   store.subscribe(() => {
-    setUser(store.getState());
+    setUser(store.getState().user);
   });
 
   // join room
@@ -114,6 +114,7 @@ export default function Room(props) {
     // show alert
     setOpen(true);
   }
+
   const handleCloseSnackbar = () => {
     setOpen(false);
   };

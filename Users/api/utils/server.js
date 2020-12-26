@@ -1,6 +1,7 @@
 const model = require('../utils/sql_command');
 const { addUserToRoom, removeUserFromRoom, getUser, getUsersInRoom, getRoomInfo, checkValidMove, checkWinCondition, transformGameData } = require('../utils/chatroom.query');
 require('express-async-errors');
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (io) {
   let listOnlineUser = {};
@@ -101,11 +102,57 @@ module.exports = function (io) {
       callback();
     })
 
+    socket.on("invite", ({ ID1, name1, ID2 }) => {
+      socket.join('invite_' + ID1 + '_' + ID2);
+      console.log(io.sockets.adapter.rooms)
+      io.sockets.emit('waiting_for_invite_' + ID2, {
+        ID: ID1,
+        name: name1,
+        dateCreate: Date.now(),
+      });
+    })
+
+    socket.on("answer_invite", async ({ ID1, ID2, answer }) => {
+      const name = 'invite_' + ID1 + '_' + ID2;
+      socket.join(name);
+      console.log(io.sockets.adapter.rooms.get(name))
+      const listUser = io.sockets.adapter.rooms.get(name);
+
+      // check if user is still in room
+      if (answer) {                                               // accept
+        if (listUser && listUser.size > 1) {                       // accept's a success
+          // create new room
+          const roomID = uuidv4();
+          await model.createRoom([roomID, ID1, ID2])
+            .then(() => {
+              io.to(name).emit('waitng_accept', { status: true, ID: roomID });
+            });
+        }
+        else {
+          socket.emit('waitng_accept', { status: false });       // timeout
+        }
+      }
+      else {                                                    // refuse
+        if (listUser && listUser.size > 1) {
+          io.to(name).emit('waitng_accept', { status: false });
+        }
+      }
+      socket.leave(name)
+    })
+
+    socket.on("stop_invite", ({ ID1, ID2 }) => {
+      const name = 'invite_' + ID1 + '_' + ID2;
+      socket.leave(name);
+    })
+
+    // get Room data from server
     socket.on('get_room_data', async (ID) => {
       const { data, gameData } = await getRoomInfo(ID);
       socket.emit('roomData', { data, gameData });
     });
 
+
+    // chat
     socket.on('sendMessage', (message, callback) => {
       const user = getUser(socket.id);
 
@@ -114,6 +161,8 @@ module.exports = function (io) {
       callback();
     });
 
+
+    // play caro
     socket.on('play', async ({ move, userID, boardID, turn }) => {
       const data = await model.getRoomByID(boardID);
       const moves = await model.getMoveByRoomID(boardID);

@@ -36,7 +36,7 @@ function Game(props) {
 
 
     const handleClick = (move) => {
-        const user = store.getState();
+        const user = store.getState().user;
         socket.emit("play", { move: move, userID: user.ID, boardID: props.roomID, turn: stepNumber + 1 });
     }
     /*

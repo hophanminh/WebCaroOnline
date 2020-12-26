@@ -70,7 +70,7 @@ function Login(props) {
         await AuthService.login(username, password)
         props.dispatch({ type: 'user/updateUser' })
 
-        const user = store.getState();
+        const user = store.getState().user;
         socket.emit("online", {ID: user.ID, name: user.name});
                 
         history.replace(from);

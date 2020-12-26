@@ -66,12 +66,13 @@ module.exports = {
                         FROM move as m
                         WHERE m.boardID = ? AND m.winningLine = 1`, [ID]),
 
-    createRoom: ([roomID, ID]) => {
+    createRoom: ([roomID, ID1, ID2]) => {
         const dateCreate = new Date();
         const newRoom = {
             ID: roomID,
             dateCreate: dateCreate,
-            idUser1: ID,
+            idUser1: ID1,
+            idUser2: ID2,
             winner: -1,
         }
         return db.add(`room`, newRoom)

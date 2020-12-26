@@ -61,16 +61,17 @@ export default function App(props) {
   const classes = useStyles();
   const [currentUser, setCurrentUser] = useState(AuthService.getCurrentUser);
   store.subscribe(() => {
-    setCurrentUser(store.getState());
+    setCurrentUser(store.getState().user);
   });
-  console.log(store.getState());
-
   useEffect(() => {
     // check if user is already logged in
     store.dispatch({ type: 'user/updateUser' });
-    const user = store.getState();
+    const user = store.getState().user;
     if (user) {
-      socket.emit("online", { ID: user.ID, name: user.name });
+      socket.emit("online", { ID: user.ID, name: user.name });                // announce that you are online
+      socket.on("waiting_for_invite_" + user.ID, (invitation) => {                       // announce that you are waiting for invitec
+        store.dispatch({ type: 'invitation/add', invitation: invitation });
+      });
     }
 
     // auto sign-out all tabs 
@@ -86,6 +87,7 @@ export default function App(props) {
       window.removeEventListener('storage', handleInvalidToken)
     }
   }, []);
+
 
   return (
     <Router>

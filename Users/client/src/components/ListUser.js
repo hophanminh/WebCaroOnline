@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import {
+    useHistory,
+} from "react-router-dom";
 import {
     Box,
     Button,
@@ -11,10 +14,19 @@ import {
     ListItemText,
     makeStyles,
     Menu,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    CircularProgress,
     MenuItem,
+    Typography
 } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+
+import socket from '../utils/socket.service';
+import store from '../utils/store.service';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -43,21 +55,60 @@ const useStyles = makeStyles((theme) => ({
     expandOpen: {
         transform: 'rotate(180deg)',
     },
-
+    inviteButton: {
+        height: '15px'
+    },
+    dialogContent: {
+        height: '130px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    }
 }));
 
 const ListUser = (props) => {
     const classes = useStyles();
+    const history = useHistory();
+    const currentUser = store.getState().user;
     const userList = props.onlineUsers;
 
     // menu action of one user
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const handleClickMenu = (event) => {
-        setAnchorEl(event.currentTarget);
+    const [message, setMessage] = useState('');
+    const [selected, setSelected] = useState(0);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const handleClickMenu = (e) => {
+        setSelected(e.currentTarget.id);
+        setAnchorEl(e.currentTarget);
     };
-    const handleCloseMenu = () => {
+    const handleCloseMenu = (e) => {
         setAnchorEl(null);
     };
+
+    const handleInvite = (e) => {
+        socket.emit("invite", { ID1: currentUser.ID, name1: currentUser.name, ID2: selected });
+        socket.on("waitng_accept", ({ status, ID }) => {
+            if (status && ID) {
+                history.push("/Room/" + ID);
+            }
+            else {
+                setMessage("User has refused your invitation. Please try again");
+            }
+            socket.off("waitng_accept");
+        });
+        setOpenWaiting(true);
+    }
+    // dialog for when waiting for invitation
+    const [openWaiting, setOpenWaiting] = useState(false);
+    const handleCloseWaiting = (e) => {
+        socket.emit("stop_invite", { ID1: currentUser.ID, ID2: selected });
+        socket.off("waitng_accept");
+        setSelected(null);
+        setOpenWaiting(false);
+        setAnchorEl(null);
+        setMessage('');
+    };
+
 
     return (
         <Card className={classes.root}>
@@ -72,22 +123,36 @@ const ListUser = (props) => {
                     userList.map((user, i) => (
                         <ListItem divider={i < userList.length - 1} key={user.ID} >
                             <ListItemText className={classes.nameCard} primary={user.name} />
-                            {true ? <></> :
-                                <>
-                                    <IconButton edge="end" size="small" onClick={handleClickMenu}>
-                                        <MoreVertIcon />
-                                    </IconButton>
-                                    <Menu
-                                        id="simple-menu"
-                                        anchorEl={anchorEl}
-                                        keepMounted
-                                        open={Boolean(anchorEl)}
-                                        onClose={handleCloseMenu}
+                            <IconButton id={user.ID} edge="end" size="small" onClick={(e) => handleClickMenu(e)}>
+                                <MoreVertIcon />
+                            </IconButton>
+                            <Menu
+                                id="simple-menu"
+                                anchorEl={anchorEl}
+                                keepMounted
+                                open={Boolean(anchorEl)}
+                                onClose={(e) => handleCloseMenu(e)}
+                            >
+                                <MenuItem className={classes.inviteButton} >
+                                    <Button size='small' onClick={(e) => handleInvite(e)}>Invite</Button>
+                                    <Dialog
+                                        open={openWaiting}
+                                        onClose={(e) => handleCloseWaiting(e)}
+                                        aria-labelledby="alert-dialog-title"
+                                        aria-describedby="alert-dialog-description"
                                     >
-                                        <MenuItem>Invite</MenuItem>
-                                    </Menu>
-                                </>
-                            }
+                                        <DialogTitle id="alert-dialog-title">{"Waiting..."}</DialogTitle>
+                                        <DialogContent className={classes.dialogContent}>
+                                            {message === ''
+                                                ? <CircularProgress />
+                                                : <Typography>{message}</Typography>}
+                                            <DialogContentText id="alert-dialog-description">
+                                                Closing this dialog will cancel the invitation.
+                                            </DialogContentText>
+                                        </DialogContent>
+                                    </Dialog>
+                                </MenuItem>
+                            </Menu>
 
                         </ListItem>
                     )) : ""

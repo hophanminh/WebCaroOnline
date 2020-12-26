@@ -98,7 +98,7 @@ function SignUp(props) {
         await AuthService.register(username, fullname, email, password)
         props.dispatch({ type: 'user/updateUser' })
 
-        const user = store.getState();
+        const user = store.getState().user;
         socket.emit("online", {ID: user.ID, name: user.name});
 
         history.push("/");
