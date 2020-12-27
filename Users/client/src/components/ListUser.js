@@ -98,6 +98,7 @@ const ListUser = (props) => {
         });
         setOpenWaiting(true);
     }
+    
     // dialog for when waiting for invitation
     const [openWaiting, setOpenWaiting] = useState(false);
     const handleCloseWaiting = (e) => {

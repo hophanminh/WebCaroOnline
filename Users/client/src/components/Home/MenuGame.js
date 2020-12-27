@@ -8,26 +8,28 @@ import {
   Card,
   Button,
   IconButton,
+  Typography,
   Divider,
-  makeStyles,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  CircularProgress,
+  makeStyles
 } from '@material-ui/core';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
 import DataService from "../../utils/data.service";
 import OnlineRoom from './OnlineRoom';
+import socket from '../../utils/socket.service';
+import store from '../../utils/store.service';
 
 const useStyles = makeStyles(() => ({
   root: {
     height: '100%',
     minHeight: '440px',
     maxHeight: '440px',
-    minWidth: '300px',
+    width: '100%',
   },
   menu: {
     display: 'flex',
@@ -40,17 +42,23 @@ const useStyles = makeStyles(() => ({
   },
   button: {
     margin: '5px 10px 5px 10px',
+  },
+  dialogContent: {
+    height: '130px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   }
 }));
 
 const MenuGame = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const [openPlayer, setOpenPlayer] = useState(false);
-  const [openViewer, setOpenViewer] = useState(false);
-  const [roomId, setRoomId] = useState("");
+  const currentUser = store.getState().user;
   const [data, setData] = useState();
 
+  // get initial data
   useEffect(() => {
     async function fetchData() {
       try {
@@ -68,22 +76,7 @@ const MenuGame = (props) => {
     fetchData();
   }, [])
 
-  const handleClickOpenPlayer = () => {
-    setOpenPlayer(true);
-  };
-
-  const handleClosePlayer = () => {
-    setOpenPlayer(false);
-  };
-
-  const handleClickOpenViewer = () => {
-    setOpenViewer(true);
-  };
-
-  const handleCloseViewer = () => {
-    setOpenViewer(false);
-  };
-
+  // new room button
   const createRoom = async () => {
     try {
       const res = await DataService.createRoom();
@@ -99,34 +92,7 @@ const MenuGame = (props) => {
     }
   }
 
-  const joinRoomAsPlayer = async () => {
-    try {
-      const result = await DataService.joinRoomAsPlayer(roomId);
-      history.push("/Room/" + result.data.ID);
-    } catch (error) {
-      const resMessage =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString();
-
-      alert(resMessage)
-    }
-  }
-
-  const joinRoomAsViewer = async () => {
-    try {
-      const result = await DataService.joinRoomAsViewer(roomId);
-      history.push("/Room/" + result.data.ID);
-    } catch (error) {
-      const resMessage =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString();
-
-      alert(resMessage)
-    }
-  }
-
+  // refesh button
   const handleRefesh = async () => {
     try {
       const res = await DataService.getOnlineRoom();
@@ -142,6 +108,31 @@ const MenuGame = (props) => {
     }
   }
 
+  // dialog for when waiting for quick play
+  const [openWaiting, setOpenWaiting] = useState(false);
+  const [message, setMessage] = useState('');
+  const delay = ms => new Promise(res => setTimeout(res, ms));
+
+  const handleQuickPlay = (e) => {
+    socket.emit("quick_play", { ID: currentUser.ID, point: 1000 });
+    socket.on("waiting_room_" + currentUser.ID, async ({ status, ID }) => {
+      if (status && ID) {
+        setMessage("Found an opponent. Joining new room...");
+        await delay(3000);
+        history.push("/Room/" + ID);
+      }
+      socket.off("waitng_room_" + currentUser.ID);
+    });
+    setOpenWaiting(true);
+  }
+
+  const handleCloseWaiting = (e) => {
+    socket.emit("stop_quick_play", { ID: currentUser.ID });
+    socket.off("waiting_room_" + currentUser.ID);
+    setOpenWaiting(false);
+    setMessage('');
+  };
+
   return (
     <Card className={classes.root}>
       <Box className={classes.menu}>
@@ -149,72 +140,32 @@ const MenuGame = (props) => {
           <RefreshIcon />
         </IconButton>
 
-        <Button className={classes.button} variant="contained" color="primary" onClick={handleClickOpenPlayer}>
-          Join
-        </Button>
-        <Button className={classes.button} variant="contained" color="primary" onClick={handleClickOpenViewer}>
-          View
-        </Button>
         <Button className={classes.button} variant="contained" color="primary" onClick={createRoom}>
           New room
         </Button>
-        <Dialog open={openPlayer} onClose={handleClosePlayer} aria-labelledby="form-dialog-title">
-          <DialogTitle id="form-dialog-title">Join</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Enter the room's ID
-              </DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="roomID"
-              label="RoomID"
-              type="roomID"
-              value={roomId}
-              fullWidth
-              onChange={e => setRoomId(e.target.value)}
-            />
+        <Button className={classes.button} variant="contained" color="primary" onClick={handleQuickPlay}>
+          Quick play
+        </Button>
+        <Dialog
+          open={openWaiting}
+          onClose={(e) => handleCloseWaiting(e)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Finding opponent...</DialogTitle>
+          <DialogContent className={classes.dialogContent}>
+            {message === ''
+              ? <CircularProgress />
+              : <Typography>{message}</Typography>}
+            <DialogContentText id="alert-dialog-description">
+              Click outside to close this dialog and stop queueing.
+            </DialogContentText>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClosePlayer} color="primary">
-              Cancel
-              </Button>
-            <Button onClick={joinRoomAsPlayer} color="primary">
-              Join as player
-              </Button>
-          </DialogActions>
-        </Dialog>
-
-        <Dialog open={openViewer} onClose={handleCloseViewer} aria-labelledby="form-dialog-title">
-          <DialogTitle id="form-dialog-title">View</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Enter the room's ID or select from table
-              </DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="roomID"
-              label="RoomID"
-              type="roomID"
-              value={roomId}
-              fullWidth
-              onChange={e => setRoomId(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseViewer} color="primary">
-              Cancel
-              </Button>
-            <Button onClick={joinRoomAsViewer} color="primary">
-              Join as viewer
-              </Button>
-          </DialogActions>
         </Dialog>
       </Box>
       <Divider />
       {data
-        ? <OnlineRoom data={data} setRoomId={(id) => setRoomId(id)} />
+        ? <OnlineRoom data={data} />
         : <></>
       }
 

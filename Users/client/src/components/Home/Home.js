@@ -48,7 +48,7 @@ const Home = () => {
       <div className={classes.appBarSpacer} />
       <Container maxWidth="lg" className={classes.container}>
         <Typography variant="h3" component="h2" gutterBottom align="center">
-          Play Caro with your friends
+          Caro Online
           </Typography>
         <Grid container spacing={3} >
           <Grid item sm={8} xs={12} >

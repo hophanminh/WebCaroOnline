@@ -101,28 +101,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const data = [{
-  ID: 1,
-  name: 'admin',
-  dateCreate: Date.now(),
-},
-{
-  ID: 2,
-  name: 'admin1',
-  dateCreate: Date.now(),
-},
-{
-  ID: 3,
-  name: 'admin2',
-  dateCreate: Date.now(),
-},
-{
-  ID: 4,
-  name: 'admin2',
-  dateCreate: Date.now(),
-},
-]
-
 function Topbar(props) {
   const classes = useStyles();
   const history = useHistory();

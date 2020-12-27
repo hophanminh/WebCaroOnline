@@ -5,9 +5,11 @@ const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (io) {
   let listOnlineUser = {};
+  const quickPlayQueue = [];
 
   io.on("connection", (socket) => {
 
+    // online user
     socket.on("online", (user) => {
       socket.user = user;
 
@@ -102,6 +104,7 @@ module.exports = function (io) {
       callback();
     })
 
+    // invite another user
     socket.on("invite", ({ ID1, name1, ID2 }) => {
       socket.join('invite_' + ID1 + '_' + ID2);
       console.log(io.sockets.adapter.rooms)
@@ -112,10 +115,10 @@ module.exports = function (io) {
       });
     })
 
+    // answer invitation
     socket.on("answer_invite", async ({ ID1, ID2, answer }) => {
       const name = 'invite_' + ID1 + '_' + ID2;
       socket.join(name);
-      console.log(io.sockets.adapter.rooms.get(name))
       const listUser = io.sockets.adapter.rooms.get(name);
 
       // check if user is still in room
@@ -140,10 +143,60 @@ module.exports = function (io) {
       socket.leave(name)
     })
 
+    // stop waitng for invitation's answer
     socket.on("stop_invite", ({ ID1, ID2 }) => {
       const name = 'invite_' + ID1 + '_' + ID2;
       socket.leave(name);
     })
+
+    // Quick play
+    socket.on("quick_play", ({ ID, point }) => {
+      const index = quickPlayQueue.findIndex((user) => user.ID === ID);
+      if (index === -1) {
+        quickPlayQueue.push({ ID: ID, point: point });
+      };
+      socket.join("waiting_room")
+      findPlayer();
+    })
+
+    const findPlayer = async () => {
+      if (quickPlayQueue.length >= 2) {
+        const user1 = quickPlayQueue[0];               // take the oldest user
+        let user2;
+        let diff = 50;
+        do {                                                                          // find user2 with point that is +-50 to user1's point
+          for (let i = 1; i < quickPlayQueue.length; i++) {                           // diff +50 for each loop and stop when at 500
+            if (Math.abs(quickPlayQueue[i].point - user1.point) <= diff) {    
+              user2 = quickPlayQueue[i];
+              break;
+            }
+          }
+          diff += 50;
+        } while (diff <= 500);
+
+        quickPlayQueue.splice(0, 1);
+        quickPlayQueue.splice(0, 1);
+
+        console.log("here", user1, user2);
+        const roomID = uuidv4();
+        await model.createRoom([roomID, user1.ID, user2.ID])
+          .then(() => {
+            console.log(user1.ID, user2.ID)
+            io.to("waiting_room").emit('waiting_room_' + user1.ID, { status: true, ID: roomID });
+            io.to("waiting_room").emit('waiting_room_' + user2.ID, { status: true, ID: roomID });
+          });
+      }
+    }
+
+    // stop quick play
+    socket.on("stop_quick_play", ({ ID }) => {
+      const index = quickPlayQueue.findIndex((user) => user.ID === ID);
+      if (index !== -1) {
+        quickPlayQueue.splice(index, 1);
+      };
+    })
+
+
 
     // get Room data from server
     socket.on('get_room_data', async (ID) => {
