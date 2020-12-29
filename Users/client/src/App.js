@@ -16,7 +16,7 @@ import SignUp from "./components/Authenticate/SignUp";
 import NotFound from "./components/NotFound";
 import ChangePass from "./components/User/ChangePass";
 import Room from "./components/Room/Room"
-
+import ActiveAccount from "./components/User/ActiveAccount";
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
 
@@ -49,6 +49,10 @@ const routes = [
   {
     path: "/Room/:id",
     main: (props) => <Room />
+  },
+  {
+    path: "/activeAccount/:uuid",
+    main: (props) => <ActiveAccount />
   },
 ];
 const useStyles = makeStyles((theme) => ({

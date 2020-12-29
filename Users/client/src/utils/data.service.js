@@ -36,6 +36,14 @@ const joinRoomAsViewer = (roomId) => {
   return axios.post(API_URL + "user/room/joinRequest/viewer", {roomId});
 }
 
+const activeAccount = (hashLink) => {
+  return axios.post(API_URL + `activeAccount/${hashLink}`);
+}
+
+const forgotPass = (newPass) => {
+  return axios.post(API_URL + `forgotPass/`, {newPass});
+}
+
 const DataService = {
   getUserInfo,
   changeUserInfo,
@@ -44,6 +52,8 @@ const DataService = {
   createRoom,
   joinRoomAsPlayer,
   joinRoomAsViewer,
+  activeAccount,
+  forgotPass,
 }
 
 export default DataService;
