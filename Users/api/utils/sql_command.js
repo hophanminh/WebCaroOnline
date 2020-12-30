@@ -25,7 +25,7 @@ module.exports = {
     login: ({ username, password }) =>
         db.loadSafe(`SELECT *
                 FROM user
-                WHERE username = ? AND password = ? AND status = ${config.status.ACTIVE}`, [username, password]),
+                WHERE username = ? AND password = ?`, [username, password]),
 
     updateUser: (entity) => {
         const condition = { ID: entity.ID };
