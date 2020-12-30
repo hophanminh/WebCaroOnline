@@ -114,12 +114,21 @@ module.exports = {
         return db.load(sql);
     },
 
-    saveHashLinkToActiveUser: (userId, hashLink) => {
+    saveHashLinkToPageVerrify: (userId, hashLink) => {
         const verrifyAccount = {
             userId: userId,
             hashLink: hashLink,
             createdDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
         }
         return db.add("pageverrify", verrifyAccount);
+    },
+    getUserIdByUUID: (uuid) => {
+        return db.load(`SELECT userId
+                        FROM pageverrify
+                        WHERE hashLink = '${uuid}'`)
+    },
+    resetPassword: (userId, hash) => {
+        const sql = `UPDATE user SET password = '${hash}' WHERE id = ${userId}`
+        return db.load(sql);
     }
 };

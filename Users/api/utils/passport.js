@@ -4,7 +4,6 @@ const ExtractJWT = passportJWT.ExtractJwt;
 require('express-async-errors');
 const bcrypt = require('bcrypt');
 const cryptoRandomString = require('crypto-random-string');
-const nodemailer = require("nodemailer");
 const MailTemplate = require("../utils/mailTemplate");
 
 const JWTStrategy = passportJWT.Strategy;
@@ -47,7 +46,7 @@ passport.use('local-signup', new LocalStrategy({
         const newU = await model.register([username, hash, email, fullname]);
 
         const hashLink = cryptoRandomString({ length: 40, type: 'base64' });
-        await model.saveHashLinkToActiveUser(newU.insertId, hashLink);
+        await model.saveHashLinkToPageVerrify(newU.insertId, hashLink);
         MailTemplate.activeAccountMail(hashLink, email);
 
         const newUser = await model.getUserByEmail(email);

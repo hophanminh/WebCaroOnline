@@ -17,6 +17,9 @@ import NotFound from "./components/NotFound";
 import ChangePass from "./components/User/ChangePass";
 import Room from "./components/Room/Room"
 import ActiveAccount from "./components/User/ActiveAccount";
+import ForgotPassword from "./components/User/ForgotPassword";
+import ResetPassword from "./components/User/ResetPassword";
+
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
 
@@ -53,6 +56,14 @@ const routes = [
   {
     path: "/activeAccount/:uuid",
     main: (props) => <ActiveAccount />
+  },
+  {
+    path: "/forgotPassword",
+    main: (props) => <ForgotPassword />
+  },
+  {
+    path: "/resetPassword/:uuid",
+    main: (props) => <ResetPassword />
   },
 ];
 const useStyles = makeStyles((theme) => ({

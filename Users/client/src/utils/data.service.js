@@ -40,8 +40,12 @@ const activeAccount = (hashLink) => {
   return axios.post(API_URL + `activeAccount/${hashLink}`);
 }
 
-const forgotPass = (newPass) => {
-  return axios.post(API_URL + `forgotPass/`, {newPass});
+const forgotPass = (email, username) => {
+  return axios.post(API_URL + `forgotPass/`, {email, username});
+}
+
+const resetPassword = (uuid, newPassword) => {
+  return axios.post(API_URL + `resetPassword/${uuid}`, {newPassword});
 }
 
 const DataService = {
@@ -54,6 +58,7 @@ const DataService = {
   joinRoomAsViewer,
   activeAccount,
   forgotPass,
+  resetPassword
 }
 
 export default DataService;

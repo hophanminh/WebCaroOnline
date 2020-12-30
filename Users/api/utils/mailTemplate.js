@@ -39,4 +39,29 @@ const activeAccountMail = (hashLink, email) => {
     });
 }
 
-module.exports = { activeAccountMail };
+const forgotPassword = (hashLink, email) => {
+    const content = `
+        <div style="padding: 10px; background-color: #003375">
+            <div style="padding: 10px; background-color: white;">
+                <h4 style="color: #0085ff">Change password</h4>
+                <span style="color: black">${config.HOST.LOCAL + '/resetPassword/' + hashLink} </span>
+            </div>
+        </div>
+    `;
+
+    const mainOptions = { // thiết lập đối tượng, nội dung gửi mail
+        from: 'Caro-online website',
+        to: email,
+        subject: 'Reset password',
+        html: content
+    }
+
+    transporter.sendMail(mainOptions, function(err, info){
+        if(err)
+            console.log(err);
+        else console.log('Email sent: ' +info.respone);
+    });
+}
+
+
+module.exports = { activeAccountMail, forgotPassword };

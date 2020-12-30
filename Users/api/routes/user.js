@@ -103,13 +103,4 @@ router.post("/room/joinRequest/viewer", async (req, res) => {
   }
 });
 
-router.post('/forgotPass/', async (req, res) => {
-  const user = req.user.user[0];
-  const input = req.user.input;
-  const hash = bcrypt.hashSync(input.newPass, 10);
-  user.password = hash;
-  await model.updateUser(user);
-  res.sendStatus(200);
-});
-
 module.exports = router;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {useParams, useHistory} from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -33,17 +34,18 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ChangePass() {
     const classes = useStyles();
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
+    const {uuid} = useParams();
+    const [newPass, setNewPass] = useState("");
+    const [newPass2, setNewPass2] = useState("");
     const [message, setMessage] = useState("");
     const [status, setStatus] = useState("error");
 
-    const onChangeUsername = (e) => {
-        setUsername(e.target.value);
+    const onChangeNewPass = (e) => {
+        setNewPass(e.target.value);
     };
 
-    const onChangeEmail = (e) => {
-        setEmail(e.target.value);
+    const onChangeNewPass2 = (e) => {
+        setNewPass2(e.target.value);
     };
 
     // auth
@@ -51,17 +53,21 @@ export default function ChangePass() {
         e.preventDefault();
         setMessage("");
 
-        if (username === "" || email === "") {
+        if (newPass === "" || newPass2 === "") {
             setMessage("All fields must not be empty");
             setStatus("error");
         }
-        else if (username.length > 50 || email.length > 50) {
+        else if (newPass.length > 50 || newPass2.length > 50) {
             setMessage("All fields must not exceed 50 character");
+            setStatus("error");
+        }
+        else if (newPass !== newPass2) {
+            setMessage("Passwords don't match");
             setStatus("error");
         }
         else {
             try {
-                await DataService.forgotPass(email, username)
+                await DataService.resetPassword(uuid, newPass)
                 setMessage("Đã gửi thư reset password");
                 setStatus("success");
             }
@@ -105,10 +111,11 @@ export default function ChangePass() {
                                 variant="outlined"
                                 required
                                 fullWidth
-                                id="username"
-                                label="username"
-                                name="username"
-                                onChange={(value) => onChangeUsername(value)}
+                                id="newPass"
+                                label="New password"
+                                name="newPass"
+                                type="password"
+                                onChange={(value) => onChangeNewPass(value)}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -116,11 +123,11 @@ export default function ChangePass() {
                                 variant="outlined"
                                 required
                                 fullWidth
-                                id="email"
-                                label="Email"
-                                name="email"
-                                type="text"
-                                onChange={(value) => onChangeEmail(value)}
+                                id="newPass2"
+                                label="Repeat new password"
+                                name="newPass2"
+                                type="password"
+                                onChange={(value) => onChangeNewPass2(value)}
                             />
                         </Grid>
                     </Grid>
@@ -132,7 +139,7 @@ export default function ChangePass() {
                         color="primary"
                         className={classes.submit}
                     >
-                        Send me email
+                        Change password
                     </Button>
                 </form>
             </div>
