@@ -14,11 +14,14 @@ import {
   Snackbar,
   Button
 } from '@material-ui/core';
+import { IconContext } from "react-icons";
+import { FaTrophy } from "react-icons/fa";
+
 import Game from './Game/game';
-import ListUser from '../ListUser';
-import { Chat } from '../ChatOnline/'
+import { Chat } from './ChatOnline'
 import socket from "../../utils/socket.service";
 import store from '../../utils/store.service';
+import DataService from "../../utils/data.service";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -29,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '20px',
   },
   container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
+    marginTop: '20px',
+    marginBottom: '80px',
   },
   paper: {
     padding: theme.spacing(2),
@@ -42,8 +45,9 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "100%",
     wordWrap: 'break-word',
   },
-  fixedHeight: {
-    height: 240,
+  gridHeight: {
+    minHeight: '440px',
+    maxHeight: "440px",
   },
   winColor: {
     color: "green",
@@ -51,53 +55,59 @@ const useStyles = makeStyles((theme) => ({
   shareButtonContainer: {
     display: "flex",
     flexDirection: "row-reverse",
+  },
+  nameContainerLeft: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: 'flex-start',
+  },
+  nameContainerRight: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: 'flex-end',
+  },
+  trophyIcon: {
+    margin: '0 5px'
+  },
+  trophyCount: {
+    fontSize: '14px',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: 'space-around',
+    alignItems: 'center'
   }
 }));
 
-export default function Room(props) {
+export default function RoomFinish(props) {
   const classes = useStyles();
   const ID = useParams().id;
   const [room, setRoom] = useState();                   // room's data
   const [gameData, setGameData] = useState();           //game's data
-  const [onlineUsers, setOnlineUsers] = useState();     // list of online user
   const [user, setUser] = useState(store.getState().user);
   const [open, setOpen] = useState(false);             // snackbar's status
   store.subscribe(() => {
     setUser(store.getState().user);
   });
 
-  // join room
-  useEffect(() => {
-    if (user) {
-      socket.emit('join', { name: user.name, room: ID }, (error) => {
-        if (error) {
-          alert(error);
-        }
-      });
-    }
-  }, [ID, user]);
-
   // get room data
   useEffect(() => {
-    socket.emit("get_room_data", ID);
-    socket.on('roomData', ({ data, gameData }) => {
-      setRoom(data[0]);
-      setGameData(gameData);
-    });
-    return () => {
-      socket.off("roomData");
+    async function fetchData() {
+      try {
+        const res = await DataService.getFinishRoom(ID);
+        setRoom(res.data.data[0]);
+        setGameData(res.data.gameData);
+      }
+      catch (error) {
+        const resMessage =
+          (error.response && error.response.data && error.response.data.message) ||
+          error.message ||
+          error.toString();
+        alert(resMessage);
+      }
     }
+    fetchData();
+
   }, [ID]);
-
-  // get online users
-  useEffect(() => {
-    socket.emit("alert_online_users");
-    socket.on("get_online_users", setOnlineUsers);
-
-    return () => {
-      socket.off("get_online_users");
-    }
-  }, [])
 
   // copy ID room to clipboard
   const copyLink = () => {
@@ -123,15 +133,15 @@ export default function Room(props) {
     <main className={classes.content}>
       <div className={classes.appBarSpacer} />
       <Container maxWidth="lg" className={classes.container}>
-        <Grid container spacing={3} >
-          <Grid item sm={8} xs={12} >
+        <Grid container spacing={3}>
+          <Grid item sm={8} xs={12} className={classes.gridHeight} >
             <Card>
               <Box className={classes.shareButtonContainer}>
                 <Button size="small" variant="contained" color="primary" onClick={() => copyLink()}>
                   Get room's ID
                 </Button>
                 <Snackbar
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right"}}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                   open={open}
                   onClose={handleCloseSnackbar}
                   message="ID copied to clipboard"
@@ -141,21 +151,30 @@ export default function Room(props) {
                 {room
                   ?
                   <Grid container spacing={3} >
-                    <Grid container item xs={4} zeroMinWidth>
-                      {room.winner === 1
-                        ? <Typography variant="h5" noWrap className={classes.winColor}>{room.name1 ? "(X) " + room.name1 : "(X) Waiting"}</Typography>
-                        : <Typography variant="h5" noWrap>{room.name1 ? "(X) " + room.name1 : "(X) Waiting"}</Typography>
-                      }
-
+                    <Grid container item xs={4} className={classes.nameContainerLeft} zeroMinWidth>
+                      <Typography variant="h5" noWrap className={room.winner === 1 ? classes.winColor : null}>{room.name1 ? "(X) " + room.name1 : "(X) Waiting"}</Typography>
+                      {room.name1
+                        ? <Box className={classes.trophyCount}>
+                          <IconContext.Provider value={{ color: '#e5c100' }}>
+                            <FaTrophy className={classes.trophyIcon} />
+                          </IconContext.Provider>
+                          <Typography noWrap className={null}> - {room.score1}</Typography>
+                        </Box>
+                        : <></>}
                     </Grid>
                     <Grid container item xs={4} justify="center">
                       <Typography variant="h5">VS</Typography>
                     </Grid>
-                    <Grid container item xs={4} justify="flex-end" zeroMinWidth>
-                      {room.winner === 2
-                        ? <Typography variant="h5" noWrap className={classes.winColor}>{room.name2 ? "(X) " + room.name2 : "(X) Waiting"}</Typography>
-                        : <Typography variant="h5" noWrap>{room.name2 ? "(O) " + room.name2 : "(O) Waiting"}</Typography>
-                      }
+                    <Grid container item xs={4} className={classes.nameContainerRight} zeroMinWidth>
+                      <Typography variant="h5" noWrap className={room.winner === 2 ? classes.winColor : null}>{room.name2 ? "(X) " + room.name2 : "(X) Waiting"}</Typography>
+                      {room.name2
+                        ? <Box className={classes.trophyCount}>
+                          <Typography noWrap className={null}>{room.score2} - </Typography>
+                          <IconContext.Provider value={{ color: '#FFD700' }}>
+                            <FaTrophy className={classes.trophyIcon} />
+                          </IconContext.Provider>
+                        </Box>
+                        : <></>}
                     </Grid>
 
                   </Grid>
@@ -166,12 +185,10 @@ export default function Room(props) {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item sm={4} xs={12}>
+          <Grid item sm={4} xs={12} className={classes.gridHeight} >
             {user
-              ? <Chat name={user.name} room={ID} />
-              : <Chat name={null} room={ID} />}
-            {true ? <></> :
-              <ListUser socket={socket} onlineUsers={onlineUsers} />}
+              ? <Chat userID={user.ID} name={user.name} room={ID} />
+              : <Chat userID={null} name={null} room={ID} />}
           </Grid>
         </Grid>
       </Container>

@@ -20,8 +20,16 @@ const changePassword = (oldPass, newPass) => {
   return axios.post(API_URL + "user/changepass/", { oldPass, newPass });
 }
 
-const getOnlineRoom = () => {
+const getOnlineRoomList = () => {
   return axios.get(API_URL + "room/online/");
+};
+
+const getFinishRoomList = (userID) => {
+  return axios.post(API_URL + "user/finish/list", {userID});
+};
+
+const getFinishRoom = (roomID) => {
+  return axios.post(API_URL + `user/finish/room`,  {roomID});
 };
 
 const createRoom = () => {
@@ -40,7 +48,9 @@ const DataService = {
   getUserInfo,
   changeUserInfo,
   changePassword,
-  getOnlineRoom,
+  getOnlineRoomList,
+  getFinishRoomList,
+  getFinishRoom,
   createRoom,
   joinRoomAsPlayer,
   joinRoomAsViewer,

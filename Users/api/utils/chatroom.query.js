@@ -17,12 +17,18 @@ const addUserToRoom = ({ id, name, room }) => {
     const user = { id, name, room };
 
     users.push(user);
-
     return { user };
 }
 
 const removeUserFromRoom = (id) => {
     const index = users.findIndex((user) => user.id === id);
+
+    if (index !== -1) return users.splice(index, 1)[0];
+}
+
+const removeUserFromRoomWithID = (id, roomID) => {
+    console.log("leaving")
+    const index = users.findIndex((user) => user.id === id && user.room === roomID);
 
     if (index !== -1) return users.splice(index, 1)[0];
 }
@@ -104,154 +110,5 @@ const checkValidMove = (move, userID, data, moves) => {
     }
     return true;
 }
-const checkWinCondition = (moves, stepNumber, move) => {
-    const row = config.row;
-    const column = config.column;
-    const win = config.win;
 
-    // moves => squares
-    const squares = Array(column * row).fill(null);
-    for (let i = 0; i < moves.length; i++) {
-        const pos = moves[i].position;
-        const turn = i + 1;
-        const current = (turn % 2) === 0 ? 'O' : 'X';
-        squares[pos] = current;
-    }
-
-    //  illegal move
-    if (move === -1) {
-        return ({
-            line: null,
-            status: 0,
-        })
-    }
-
-    // 1d array to 2d array
-    const x = Math.floor(move / column);
-    const y = move % column;
-
-    // check column
-    let line = [];
-    for (let i = 0 - win; i < win; i++) {
-        const tempX = x + i;
-        // skip line start from outside and line too short
-        if (tempX < 0 || tempX > row) {
-            continue;
-        }
-        // if line has at least 1 square, check next square
-        if (line.length !== 0 && squares[line[0]] !== squares[tempX * column + y]) {
-            line = [];
-        }
-        // ignore empty square
-        if (squares[tempX * column + y] !== null) {
-            line.push(tempX * column + y);
-        }
-        // check if line's length == win
-        if (line.length === win) {
-            return ({
-                line: line,
-                status: squares[x * column + y],
-            })
-
-        }
-    }
-
-    // check row
-    line = [];
-    for (let i = 0 - win; i < win; i++) {
-        const tempY = y + i;
-        // skip line start from outside and line too short
-        if (tempY < 0 || tempY > column) {
-            continue;
-        }
-        // if line has at least 1 square, check next square
-        if (line.length !== 0 && squares[line[0]] !== squares[x * column + tempY]) {
-            line = [];
-        }
-        // ignore empty square
-        if (squares[x * column + tempY] !== null) {
-            line.push(x * column + tempY);
-        }
-        // check if line's length == win
-        if (line.length === win) {
-            return ({
-                line: line,
-                status: squares[x * column + y],
-            })
-
-        }
-    }
-
-    // check diagonal
-    line = [];
-    for (let i = 0 - win; i < win; i++) {
-        const tempX = x + i;
-        const tempY = y + i;
-
-        // skip line start from outside and line too short
-        if (tempX < 0 || tempX > row || tempY < 0 || tempY > column) {
-            continue;
-        }
-        // if line has at least 1 square, check next square
-        if (line.length !== 0 && squares[line[0]] !== squares[tempX * column + tempY]) {
-            line = [];
-        }
-        // ignore empty square
-        if (squares[tempX * column + tempY] !== null) {
-            line.push(tempX * column + tempY);
-        }
-        // check if line's length == win
-        if (line.length === win) {
-            return ({
-                line: line,
-                status: squares[x * column + y],
-            })
-
-        }
-    }
-
-    // check anti-diagonal
-    line = [];
-    for (let i = 0 - win; i < win; i++) {
-        const tempX = x + i;
-        const tempY = y - i;
-
-        // skip line start from outside and line too short
-        if (tempX < 0 || tempX > row || tempY < 0 || tempY > column) {
-            continue;
-        }
-        // if line has at least 1 square, check next square
-        if (line.length !== 0 && squares[line[0]] !== squares[tempX * column + tempY]) {
-            line = [];
-        }
-        // ignore empty square
-        if (squares[tempX * column + tempY] !== null) {
-            line.push(tempX * column + tempY);
-        }
-        // check if line's length == win
-        if (line.length === win) {
-            return ({
-                line: line,
-                status: squares[x * column + y],
-            })
-
-        }
-    }
-
-    // check draw
-    if (stepNumber === column * row) {
-        return ({
-            line: null,
-            status: -1,
-        })
-    }
-
-    // game continues
-    return ({
-        line: null,
-        status: 0,
-    })
-
-}
-
-module.exports = { addUserToRoom, removeUserFromRoom, getUser, getUsersInRoom, getRoomInfo, checkValidMove, checkWinCondition, transformGameData };
+module.exports = {users, addUserToRoom, removeUserFromRoom, removeUserFromRoomWithID, getUser, getUsersInRoom, getRoomInfo, checkValidMove, transformGameData };

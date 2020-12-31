@@ -1,5 +1,5 @@
 const model = require('../utils/sql_command');
-const { addUserToRoom, removeUserFromRoom, getUser, getUsersInRoom, getRoomInfo, checkValidMove, checkWinCondition, transformGameData } = require('../utils/chatroom.query');
+const { users, addUserToRoom, removeUserFromRoom, getUser, getUsersInRoom, getRoomInfo, checkValidMove, checkWinCondition, transformGameData, removeUserFromRoomWithID } = require('../utils/chatroom.query');
 require('express-async-errors');
 const { v4: uuidv4 } = require('uuid');
 
@@ -85,6 +85,7 @@ module.exports = function (io) {
       /* Model User of chat room
        * User {socketId, username, roomId}
        */
+
       const { error, user } = addUserToRoom({ id: socket.id, name, room });
 
       if (error === 'Already joined.') return callback();    // skip joining 
@@ -92,22 +93,29 @@ module.exports = function (io) {
 
       // join and announce to everyone
       socket.join(user.room);
-      socket.emit('message', { user: 'admin', text: `${user.name}, welcome to room ${user.room}.` });
       socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
 
 
       // send data to every user in room
       const { data, gameData } = await getRoomInfo(user.room);
-      io.to(user.room).emit('roomData', { data, gameData });
+      io.to(user.room).emit('roomData', data);
       io.to(user.room).emit('usersInRoom', { room: user.room, users: getUsersInRoom(user.room) });
 
       callback();
     })
+    // invite another user
+    socket.on("leave_room", (roomID) => {
+      const user = removeUserFromRoomWithID(socket.id, roomID);
+      if (user) {
+        io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
+        io.to(user.room).emit('usersInRoom', { room: user.room, users: getUsersInRoom(user.room) });
+      }
+    })
 
+    removeUserFromRoomWithID
     // invite another user
     socket.on("invite", ({ ID1, name1, ID2 }) => {
       socket.join('invite_' + ID1 + '_' + ID2);
-      console.log(io.sockets.adapter.rooms)
       io.sockets.emit('waiting_for_invite_' + ID2, {
         ID: ID1,
         name: name1,
@@ -159,14 +167,14 @@ module.exports = function (io) {
       findPlayer();
     })
 
-    const findPlayer = async () => {
+    const findPlayer = async () => {                  // find another player to queue
       if (quickPlayQueue.length >= 2) {
         const user1 = quickPlayQueue[0];               // take the oldest user
         let user2;
         let diff = 50;
         do {                                                                          // find user2 with point that is +-50 to user1's point
           for (let i = 1; i < quickPlayQueue.length; i++) {                           // diff +50 for each loop and stop when at 500
-            if (Math.abs(quickPlayQueue[i].point - user1.point) <= diff) {    
+            if (Math.abs(quickPlayQueue[i].point - user1.point) <= diff) {
               user2 = quickPlayQueue[i];
               break;
             }
@@ -177,11 +185,9 @@ module.exports = function (io) {
         quickPlayQueue.splice(0, 1);
         quickPlayQueue.splice(0, 1);
 
-        console.log("here", user1, user2);
         const roomID = uuidv4();
         await model.createRoom([roomID, user1.ID, user2.ID])
           .then(() => {
-            console.log(user1.ID, user2.ID)
             io.to("waiting_room").emit('waiting_room_' + user1.ID, { status: true, ID: roomID });
             io.to("waiting_room").emit('waiting_room_' + user2.ID, { status: true, ID: roomID });
           });
@@ -199,65 +205,67 @@ module.exports = function (io) {
 
 
     // get Room data from server
-    socket.on('get_room_data', async (ID) => {
+    socket.on('get_room_data', async ({ID}, callback) => {
       const { data, gameData } = await getRoomInfo(ID);
-      socket.emit('roomData', { data, gameData });
+      callback({ data, gameData });
+    });
+
+    // get chat message from server
+    socket.on('get_chat_data', async ({roomID}, callback) => {
+      const chatData = await model.getMessageByRoomID(roomID);
+      callback(chatData);
+    });
+
+    socket.on('game_finish', async ({ roomID, status }) => {
+      const { data, gameData } = await getRoomInfo(roomID);
+
+      console.log(status);
+      if (status !== -1) {
+        // update room when someone win
+        if (status === 'X') {            // player 1 win
+          data[0].winner = 1;
+        }
+        else if (status === 'O') {       // player 2 win
+          data[0].winner = 2;
+        }
+        else if (status === '0') {      // draw
+          data[0].winner = 0;
+        }
+        model.updateRoomWinner(roomID, data[0].winner);
+      }
+
+      io.to(roomID).emit('roomData', data);
     });
 
 
     // chat
-    socket.on('sendMessage', (message, callback) => {
+    socket.on('sendMessage', ({ message, userID, roomID }, callback) => {
       const user = getUser(socket.id);
 
-      io.to(user.room).emit('message', { user: user.name, text: message });
+      // save to database
+      model.createMessage(message, userID, roomID);
 
+      // annouce to other players
+      io.to(roomID).emit('message', { user: user.name, text: message });
       callback();
     });
 
 
     // play caro
-    socket.on('play', async ({ move, userID, boardID, turn }) => {
-      const data = await model.getRoomByID(boardID);
-      const moves = await model.getMoveByRoomID(boardID);
+    socket.on('play', async ({ move, userID, roomID, turn }, callback) => {
+      const data = await model.getRoomByID(roomID);
+      const moves = await model.getMoveByRoomID(roomID);
 
       // check if move's valid
       if (checkValidMove(move, userID, data, moves)) {
+        callback(true);
         // add new move to database
-        await model.createMove(move, userID, boardID, turn);
-
-        // check win condition
-        const newMoves = moves.concat({
-          position: move,
-        });
-        const result = checkWinCondition(newMoves, turn, move);
-        // update room when someone win
-        if (result.status === 'X') {            // player 1 win
-          model.updateRoomWinner(boardID, 1);
-          data[0].winner = 1;
-        }
-        else if (result.status === 'O') {       // player 2 win
-          model.updateRoomWinner(boardID, 2);
-          data[0].winner = 2;
-        }
-        else if (result.status === '-1') {      // draw
-          model.updateRoomWinner(boardID, 0);
-          data[0].winner = 0;
-        }
-        let winningLine = [];
-        if (result.line) {
-          for (let i = 0; i < result.line.length; i++) {
-            model.updateMoveLine(result.line[i]);
-            winningLine.push(result.line[i])
-          }
-        }
-
-        // get game data
-        const gameData = transformGameData(newMoves);
-        gameData["winningLine"] = winningLine;
-        // send data to every user in room
-        io.to(boardID).emit('roomData', { data, gameData });
+        await model.createMove(move, userID, roomID, turn)
+        socket.broadcast.to(roomID).emit('wait_new_move', move);
       }
-
+      else {
+        callback(false);
+      }
     });
 
   });

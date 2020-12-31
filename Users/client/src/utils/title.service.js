@@ -1,21 +1,22 @@
 
 import {
     useLocation
-  } from "react-router-dom";
-  
+} from "react-router-dom";
+
 export default function useTitle() {
     const path = useLocation().pathname;
-    switch(path){
+    switch (path) {
+        /*
         case "/":
             return "Home";
-        case "/Account":
+        case "/Info":
            return "Account's info";
         case "/Login":
             return "Login";
         case "/Signup":
             return "Sign up";
-      
+      */
         default:
-            return "Welcome"
+            return "Caro Online"
     }
 }

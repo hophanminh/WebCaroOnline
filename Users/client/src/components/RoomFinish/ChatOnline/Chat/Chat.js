@@ -8,7 +8,7 @@ import { InfoBar } from '../InforBar/InforBar';
 import { Input } from '../Input/Input';
 import { Messages } from '../Messages/Messages';
 import { TextContainer } from '../TextContainter/TextContainer'
-import socket from "../../../utils/socket.service";
+import socket from "../../../../utils/socket.service";
 import './Chat.css';
 
 export const Chat = (props) => {
@@ -17,29 +17,12 @@ export const Chat = (props) => {
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
-        socket.on('message', message => {
-            setMessages(msgs => [...msgs, message]);
+        socket.emit("get_chat_data", {roomID: props.room}, (chatData) => {
+            console.log(chatData);
+            setMessages(chatData);
         });
-
-        socket.on("usersInRoom", ({ users }) => {
-            setUsers(users);
-        });
-
-        return () => {
-            socket.off("message");
-            socket.off("usersInRoom");
-
-        }
 
     }, []);
-
-    const sendMessage = (event) => {
-        event.preventDefault();
-
-        if (message) {
-            socket.emit('sendMessage', message, () => setMessage(''));
-        }
-    }
 
     return (
         <Card className="outerContainer">
@@ -50,7 +33,7 @@ export const Chat = (props) => {
                 {props.name
                     ? <>
                         <Messages messages={messages} name={props.name} />
-                        <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
+                        <Input message={message} />
                     </>
                     : <CardContent className="notLogin">Login to see chat</CardContent>
                 }

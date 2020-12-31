@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const OnlineRoom = (props) => {
+const OnlineRoomList = (props) => {
   const classes = useStyles();
   const history = useHistory();
 
@@ -268,4 +268,4 @@ const OnlineRoom = (props) => {
   );
 }
 
-export default OnlineRoom;
+export default OnlineRoomList;
