@@ -8,7 +8,8 @@ import { InfoBar } from '../InforBar/InforBar';
 import { Input } from '../Input/Input';
 import { Messages } from '../Messages/Messages';
 import { TextContainer } from '../TextContainter/TextContainer'
-import socket from "../../../utils/socket.service";
+import socket from "../../../../utils/socket.service";
+import DataService from "../../../../utils/data.service";
 import './Chat.css';
 
 export const Chat = (props) => {
@@ -17,29 +18,22 @@ export const Chat = (props) => {
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
-        socket.on('message', message => {
-            setMessages(msgs => [...msgs, message]);
-        });
-
-        socket.on("usersInRoom", ({ users }) => {
-            setUsers(users);
-        });
-
-        return () => {
-            socket.off("message");
-            socket.off("usersInRoom");
-
+        async function fetchData() {
+            try {
+                const res = await DataService.getMessage(props.room);
+                setMessages(res.data);
+            }
+            catch (error) {
+                const resMessage =
+                    (error.response && error.response.data && error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                alert(resMessage);
+            }
         }
+        fetchData();
 
     }, []);
-
-    const sendMessage = (event) => {
-        event.preventDefault();
-
-        if (message) {
-            socket.emit('sendMessage', message, () => setMessage(''));
-        }
-    }
 
     return (
         <Card className="outerContainer">
@@ -50,7 +44,7 @@ export const Chat = (props) => {
                 {props.name
                     ? <>
                         <Messages messages={messages} name={props.name} />
-                        <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
+                        <Input message={message} />
                     </>
                     : <CardContent className="notLogin">Login to see chat</CardContent>
                 }

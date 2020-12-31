@@ -1,26 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Alert from '@material-ui/lab/Alert';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import PeopleIcon from '@material-ui/icons/People';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import DataService from "../../utils/data.service";
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
+  appBarSpacer: theme.mixins.toolbar,
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+  },
+  content: {
+    flexGrow: 1,
+    overflow: 'auto',
+    marginTop: '20px',
+  },
+  card: {
     marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    padding: theme.spacing(4),
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.main,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
@@ -108,11 +120,11 @@ export default function Account() {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth='xs' className={classes.container}>
       <CssBaseline />
-      <div className={classes.paper}>
+      <Card className={classes.card}>
         <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
+          <PeopleIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
           Account's info
@@ -178,7 +190,7 @@ export default function Account() {
             Change account's info
           </Button>
         </form>
-      </div>
+      </Card>
     </Container>
   );
 }

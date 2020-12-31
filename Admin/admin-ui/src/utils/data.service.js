@@ -19,12 +19,26 @@ const changePassword = (oldPass, newPass) => {
     return axios.post(API_URL + "admin/updatePassword/", { oldPass, newPass });
 }
 
+const getFinishRoomList = (userID) => {
+    return axios.post(API_URL + "admin/finish/list", { userID });
+};
+
+const getFinishRoom = (roomID) => {
+    return axios.post(API_URL + `admin/finish/room`, { roomID });
+};
+
+const getMessage = (roomID) => {
+    return axios.post(API_URL + `admin/finish/message`, { roomID });
+};
 
 // detail board
 const DataService = {
     getUserInfo,
     changeUserInfo,
     changePassword,
+    getFinishRoomList,
+    getFinishRoom,
+    getMessage,
 }
 
 export default DataService;

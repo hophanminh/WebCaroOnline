@@ -15,10 +15,16 @@ import Login from "./components/Authenticate/Login";
 import SignUp from "./components/Authenticate/SignUp";
 import NotFound from "./components/NotFound";
 import ChangePass from "./components/User/ChangePass";
+
 import Room from "./components/Room/Room"
 import ActiveAccount from "./components/User/ActiveAccount";
 import ForgotPassword from "./components/User/ForgotPassword";
 import ResetPassword from "./components/User/ResetPassword";
+
+import Room from "./components/RoomCurrent/Room"
+import RoomFinish from "./components/RoomFinish/RoomFinish"
+import FinishRoomList from "./components/User/FinishRoomList.js";
+
 
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
@@ -54,6 +60,7 @@ const routes = [
     main: (props) => <Room />
   },
   {
+
     path: "/activeAccount/:uuid",
     main: (props) => <ActiveAccount />
   },
@@ -64,6 +71,16 @@ const routes = [
   {
     path: "/resetPassword/:uuid",
     main: (props) => <ResetPassword />
+
+    path: "/History",
+    private: true,
+    exact: true,
+    main: () => <FinishRoomList />
+  },
+  {
+    path: "/History/Room/:id",
+    main: (props) => <RoomFinish />
+
   },
 ];
 const useStyles = makeStyles((theme) => ({

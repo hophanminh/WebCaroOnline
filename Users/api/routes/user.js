@@ -5,6 +5,7 @@ const router = express.Router();
 const model = require('../utils/sql_command');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
+const { getRoomInfo } = require('../utils/chatroom.query');
 
 
 /* GET users listing. */
@@ -101,6 +102,24 @@ router.post("/room/joinRequest/viewer", async (req, res) => {
   else {
     res.status(200).send({ ID: roomID });
   }
+});
+
+router.post('/finish/list', async (req, res) => {
+  const userID = req.user.input.userID;
+  const data = await model.getFinishRoomListByUserID(userID);
+  res.send(data);
+});
+
+router.post('/finish/message', async (req, res) => {
+  const roomID = req.user.input.roomID;
+  const data = await model.getMessageByRoomID(roomID);
+  res.send(data);
+});
+
+router.post('/finish/room', async (req, res) => {
+  const roomID = req.user.input.roomID;
+  const { data, gameData } = await getRoomInfo(roomID);
+  res.send({ data, gameData });
 });
 
 module.exports = router;

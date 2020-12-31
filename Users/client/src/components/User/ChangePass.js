@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
+import Divider from '@material-ui/core/Grid';
 import Alert from '@material-ui/lab/Alert';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
@@ -12,19 +14,25 @@ import Container from '@material-ui/core/Container';
 import DataService from "../../utils/data.service";
 
 const useStyles = makeStyles((theme) => ({
-    paper: {
+    appBarSpacer: theme.mixins.toolbar,
+    container: {
+        paddingTop: theme.spacing(4),
+        paddingBottom: theme.spacing(4),
+    },
+    card: {
         marginTop: theme.spacing(8),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        padding: theme.spacing(4),
     },
     avatar: {
         margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
+        backgroundColor: theme.palette.primary.main,
     },
     form: {
         width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing(3),
+        marginTop: theme.spacing(4),
     },
     submit: {
         margin: theme.spacing(3, 0, 2),
@@ -91,15 +99,15 @@ export default function ChangePass() {
     };
 
     return (
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxWidth='xs' className={classes.container}>
             <CssBaseline />
-            <div className={classes.paper}>
+            <Card className={classes.card}>
                 <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Change password
-        </Typography>
+                </Typography>
                 <form className={classes.form} noValidate>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
@@ -159,7 +167,7 @@ export default function ChangePass() {
                         Change password
           </Button>
                 </form>
-            </div>
+            </Card>
         </Container>
     );
 }

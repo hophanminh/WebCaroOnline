@@ -20,8 +20,16 @@ const changePassword = (oldPass, newPass) => {
   return axios.post(API_URL + "user/changepass/", { oldPass, newPass });
 }
 
-const getOnlineRoom = () => {
+const getOnlineRoomList = () => {
   return axios.get(API_URL + "room/online/");
+};
+
+const getFinishRoomList = (userID) => {
+  return axios.post(API_URL + "user/finish/list", { userID });
+};
+
+const getFinishRoom = (roomID) => {
+  return axios.post(API_URL + `user/finish/room`, { roomID });
 };
 
 const createRoom = () => {
@@ -29,11 +37,11 @@ const createRoom = () => {
 };
 
 const joinRoomAsPlayer = (roomId) => {
-  return axios.post(API_URL + "user/room/joinRequest/player", {roomId});
+  return axios.post(API_URL + "user/room/joinRequest/player", { roomId });
 }
 
 const joinRoomAsViewer = (roomId) => {
-  return axios.post(API_URL + "user/room/joinRequest/viewer", {roomId});
+  return axios.post(API_URL + "user/room/joinRequest/viewer", { roomId });
 }
 
 const activeAccount = (hashLink) => {
@@ -48,17 +56,24 @@ const resetPassword = (uuid, newPassword) => {
   return axios.post(API_URL + `resetPassword/${uuid}`, {newPassword});
 }
 
+const getMessage = (roomID) => {
+  return axios.post(API_URL + `user/finish/message`, { roomID });
+};
+
 const DataService = {
   getUserInfo,
   changeUserInfo,
   changePassword,
-  getOnlineRoom,
+  getOnlineRoomList,
+  getFinishRoomList,
+  getFinishRoom,
   createRoom,
   joinRoomAsPlayer,
   joinRoomAsViewer,
   activeAccount,
   forgotPass,
   resetPassword
+  getMessage,
 }
 
 export default DataService;

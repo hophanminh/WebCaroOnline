@@ -20,7 +20,7 @@ import {
 import RefreshIcon from '@material-ui/icons/Refresh';
 
 import DataService from "../../utils/data.service";
-import OnlineRoom from './OnlineRoom';
+import OnlineRoomList from './OnlineRoomList';
 import socket from '../../utils/socket.service';
 import store from '../../utils/store.service';
 
@@ -52,7 +52,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const MenuGame = (props) => {
+const ListContainer = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const currentUser = store.getState().user;
@@ -62,7 +62,7 @@ const MenuGame = (props) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await DataService.getOnlineRoom();
+        const res = await DataService.getOnlineRoomList();
         setData(res.data);
       }
       catch (error) {
@@ -95,7 +95,7 @@ const MenuGame = (props) => {
   // refesh button
   const handleRefesh = async () => {
     try {
-      const res = await DataService.getOnlineRoom();
+      const res = await DataService.getOnlineRoomList();
       setData(res.data);
     }
     catch (error) {
@@ -165,7 +165,7 @@ const MenuGame = (props) => {
       </Box>
       <Divider />
       {data
-        ? <OnlineRoom data={data} />
+        ? <OnlineRoomList data={data} />
         : <></>
       }
 
@@ -173,4 +173,4 @@ const MenuGame = (props) => {
   );
 };
 
-export default MenuGame;
+export default ListContainer;
