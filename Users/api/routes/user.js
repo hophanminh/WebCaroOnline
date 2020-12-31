@@ -110,10 +110,16 @@ router.post('/finish/list', async (req, res) => {
   res.send(data);
 });
 
+router.post('/finish/message', async (req, res) => {
+  const roomID = req.user.input.roomID;
+  const data = await model.getMessageByRoomID(roomID);
+  res.send(data);
+});
+
 router.post('/finish/room', async (req, res) => {
   const roomID = req.user.input.roomID;
   const { data, gameData } = await getRoomInfo(roomID);
-  res.send({data, gameData});
+  res.send({ data, gameData });
 });
 
 module.exports = router;

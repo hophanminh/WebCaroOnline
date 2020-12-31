@@ -17,6 +17,8 @@ import PrivateRoute from "./privateRoute.js";
 import ChangePass from "./components/admin/updatePassword";
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
+import RoomFinish from "./components/RoomFinish/RoomFinish"
+import FinishRoomList from "./components/admin/FinishRoomList";
 
 import socket from "./utils/socket.service";
 
@@ -43,6 +45,16 @@ const routes = [
   {
     path: "/Signup",
     main: (props) => <SignUp />
+  },
+  {
+    path: "/History",
+    private: true,
+    exact: true,
+    main: () => <FinishRoomList />
+  },
+  {
+    path: "/History/Room/:id",
+    main: (props) => <RoomFinish />
   },
 ];
 const useStyles = makeStyles((theme) => ({
@@ -83,34 +95,34 @@ export default function App(props) {
   }, []);
 
   return (
-      <Router>
-        <div className={classes.root}>
-          <CssBaseline />
-          <Menu />
-          <Switch>
-            {routes.map((route, index) => {
-              return (route.private ?
-                      <PrivateRoute
-                          isAuthenticated={currentUser}
-                          key={index}
-                          path={route.path}
-                          exact={route.exact}
-                          children={<route.main />}
-                      />
-                      :
-                      <Route
-                          key={index}
-                          path={route.path}
-                          exact={route.exact}
-                          children={<route.main />}
-                      />
-              )
-            })}
-            <Route path="*">
-              <NotFound />
-            </Route>
-          </Switch>
-        </div>
-      </Router>
+    <Router>
+      <div className={classes.root}>
+        <CssBaseline />
+        <Menu />
+        <Switch>
+          {routes.map((route, index) => {
+            return (route.private ?
+              <PrivateRoute
+                isAuthenticated={currentUser}
+                key={index}
+                path={route.path}
+                exact={route.exact}
+                children={<route.main />}
+              />
+              :
+              <Route
+                key={index}
+                path={route.path}
+                exact={route.exact}
+                children={<route.main />}
+              />
+            )
+          })}
+          <Route path="*">
+            <NotFound />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }

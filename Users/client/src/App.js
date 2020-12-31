@@ -41,12 +41,6 @@ const routes = [
     main: () => <ChangePass />
   },
   {
-    path: "/History",
-    private: true,
-    exact: true,
-    main: () => <FinishRoomList />
-  },
-  {
     path: "/Login",
     main: (props) => <Login />
   },
@@ -57,6 +51,12 @@ const routes = [
   {
     path: "/Room/:id",
     main: (props) => <Room />
+  },
+  {
+    path: "/History",
+    private: true,
+    exact: true,
+    main: () => <FinishRoomList />
   },
   {
     path: "/History/Room/:id",

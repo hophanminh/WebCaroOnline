@@ -42,10 +42,6 @@ const getRoomInfo = async (id) => {
         const data = await model.getRoomByID(id);
         const moves = await model.getMoveByRoomID(id);
         const gameData = transformGameData(moves);
-
-        const result = await model.getWinningLine(id);
-        const winningLine = result.map((i) => i.position);
-        gameData["winningLine"] = winningLine;
         return { data, gameData };
     }
 }

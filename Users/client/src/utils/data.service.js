@@ -25,11 +25,11 @@ const getOnlineRoomList = () => {
 };
 
 const getFinishRoomList = (userID) => {
-  return axios.post(API_URL + "user/finish/list", {userID});
+  return axios.post(API_URL + "user/finish/list", { userID });
 };
 
 const getFinishRoom = (roomID) => {
-  return axios.post(API_URL + `user/finish/room`,  {roomID});
+  return axios.post(API_URL + `user/finish/room`, { roomID });
 };
 
 const createRoom = () => {
@@ -37,12 +37,16 @@ const createRoom = () => {
 };
 
 const joinRoomAsPlayer = (roomId) => {
-  return axios.post(API_URL + "user/room/joinRequest/player", {roomId});
+  return axios.post(API_URL + "user/room/joinRequest/player", { roomId });
 }
 
 const joinRoomAsViewer = (roomId) => {
-  return axios.post(API_URL + "user/room/joinRequest/viewer", {roomId});
+  return axios.post(API_URL + "user/room/joinRequest/viewer", { roomId });
 }
+
+const getMessage = (roomID) => {
+  return axios.post(API_URL + `user/finish/message`, { roomID });
+};
 
 const DataService = {
   getUserInfo,
@@ -54,6 +58,7 @@ const DataService = {
   createRoom,
   joinRoomAsPlayer,
   joinRoomAsViewer,
+  getMessage,
 }
 
 export default DataService;
