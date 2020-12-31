@@ -44,6 +44,18 @@ const joinRoomAsViewer = (roomId) => {
   return axios.post(API_URL + "user/room/joinRequest/viewer", { roomId });
 }
 
+const activeAccount = (hashLink) => {
+  return axios.post(API_URL + `activeAccount/${hashLink}`);
+}
+
+const forgotPass = (email) => {
+  return axios.post(API_URL + `forgotPass/`, {email});
+}
+
+const resetPassword = (uuid, newPassword) => {
+  return axios.post(API_URL + `resetPassword/${uuid}`, {newPassword});
+}
+
 const getMessage = (roomID) => {
   return axios.post(API_URL + `user/finish/message`, { roomID });
 };
@@ -58,6 +70,9 @@ const DataService = {
   createRoom,
   joinRoomAsPlayer,
   joinRoomAsViewer,
+  activeAccount,
+  forgotPass,
+  resetPassword
   getMessage,
 }
 

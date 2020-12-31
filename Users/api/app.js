@@ -8,10 +8,11 @@ const cors = require('cors');
 const passport = require('passport');
 const http = require("http");
 const socketIO = require('socket.io');
+const config = require("./config/default.json");
 require('express-async-errors');
 require('./utils/passport');
 
-const URL =  "http://localhost:3000";
+const URL =  config.HOST.LOCAL;
 //const URL = /caroonline-user.herokuapp\.com$/;
 
 const corsOptions = {
@@ -30,6 +31,7 @@ const io = socketIO(server, {
 });
 
 const ioConfig = require('./utils/server')(io);
+app.use(cors())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

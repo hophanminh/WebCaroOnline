@@ -1,4 +1,5 @@
 const db = require("./database");
+const config = require("../config/default.json");
 
 module.exports = {
     getUserByID: (ID) =>
@@ -24,7 +25,7 @@ module.exports = {
     login: ({ username, password }) =>
         db.loadSafe(`SELECT *
                 FROM user
-                WHERE username = ? AND password = ? `, [username, password]),
+                WHERE username = ? AND password = ?`, [username, password]),
 
     updateUser: (entity) => {
         const condition = { ID: entity.ID };
@@ -38,7 +39,7 @@ module.exports = {
             password: password,
             email: email,
             fullname: fullname,
-            status: 1,
+            status: config.status.INACTIVE,
         }
         return db.add(`user`, newUser)
     },
@@ -115,6 +116,35 @@ module.exports = {
                     SET winningLine = 1
                     WHERE position = ?`, [pos]),
 
+
+    activeUser: (hashLink) => {
+        const sql = `UPDATE user SET status = ${config.status.ACTIVE} WHERE id = (SELECT userId from pageverrify WHERE hashLink = '${hashLink}')`
+        return db.load(sql);
+    },
+
+    updateVerrifyPage: (hashLink) => {
+        const sql = `UPDATE pageverrify SET status = 1 WHERE hashLink = '${hashLink}'`
+        return db.load(sql);
+    },
+
+    saveHashLinkToPageVerrify: (userId, hashLink) => {
+        const verrifyAccount = {
+            userId: userId,
+            hashLink: hashLink,
+            createdDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        }
+        return db.add("pageverrify", verrifyAccount);
+    },
+    getUserIdByUUID: (uuid) => {
+        return db.load(`SELECT userId
+                        FROM pageverrify
+                        WHERE hashLink = '${uuid}'`)
+    },
+    resetPassword: (userId, hash) => {
+        const sql = `UPDATE user SET password = '${hash}' WHERE id = ${userId}`
+        return db.load(sql);
+    }
+
     createMessage: (message, userID, roomID) => {
         const newMessage = {
             roomID: roomID,
@@ -124,6 +154,7 @@ module.exports = {
         }
         return db.add(`message`, newMessage)
     },
+
 
 
 };

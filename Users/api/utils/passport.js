@@ -3,10 +3,13 @@ const passportJWT = require("passport-jwt");
 const ExtractJWT = passportJWT.ExtractJwt;
 require('express-async-errors');
 const bcrypt = require('bcrypt');
+const cryptoRandomString = require('crypto-random-string');
+const MailTemplate = require("../utils/mailTemplate");
 
 const JWTStrategy = passportJWT.Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const model = require('./sql_command');
+const config = require("../config/default.json");
 
 passport.use(new LocalStrategy(
     async (username, password, done) => {
@@ -14,7 +17,12 @@ passport.use(new LocalStrategy(
         if (user && user !== undefined && user.length != 0) {
             const res = bcrypt.compareSync(password, user[0].password);
             if (res) {
-                return done(null, user, { message: 'Logged In Successfully' });
+                if (res.status === config.status.INACTIVE) {
+                    return done(null, false, { message: 'Account is inactive. Please verify it in your email.'});
+                }
+                else {
+                    return done(null, user, { message: 'Logged In Successfully' });
+                }
             }
         }
         return done(null, false, { message: 'Incorrect username or password.' });
@@ -35,7 +43,12 @@ passport.use('local-signup', new LocalStrategy({
             return done(null, false, { message: 'That email or username is already taken.' });
         }
         const hash = bcrypt.hashSync(password, 10);
-        await model.register([username, hash, email, fullname]);
+        const newU = await model.register([username, hash, email, fullname]);
+
+        const hashLink = cryptoRandomString({ length: 40, type: 'base64' });
+        await model.saveHashLinkToPageVerrify(newU.insertId, hashLink);
+        MailTemplate.activeAccountMail(hashLink, email);
+
         const newUser = await model.getUserByEmail(email);
         return done(null, newUser);
     }
