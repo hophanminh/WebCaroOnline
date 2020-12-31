@@ -37,6 +37,8 @@ export default function ChangePass() {
     const [message, setMessage] = useState("");
     const [status, setStatus] = useState("error");
 
+    const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+
 
     const onChangeEmail = (e) => {
         setEmail(e.target.value);
@@ -54,6 +56,9 @@ export default function ChangePass() {
         else if (email.length > 50) {
             setMessage("All fields must not exceed 50 character");
             setStatus("error");
+        }
+        else if (!regex.test(email)) {
+            setMessage("Email is invalid");
         }
         else {
             try {
