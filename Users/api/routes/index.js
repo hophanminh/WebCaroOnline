@@ -28,7 +28,7 @@ router.post("/forgotPass/", async (req, res) => {
     MailTemplate.forgotPassword(hashLink, email);
     res.status(200).send("Sent mail successfully");
   }
-  else res.status(404).send("Mail not found");
+  else res.status(404).send(({message: "Email is not found."}));
 })
 
 router.post("/resetPassword/:uuid", async (req, res) => {
