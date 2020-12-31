@@ -33,14 +33,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ChangePass() {
     const classes = useStyles();
-    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [status, setStatus] = useState("error");
 
-    const onChangeUsername = (e) => {
-        setUsername(e.target.value);
-    };
 
     const onChangeEmail = (e) => {
         setEmail(e.target.value);
@@ -51,17 +47,17 @@ export default function ChangePass() {
         e.preventDefault();
         setMessage("");
 
-        if (username === "" || email === "") {
+        if (email === "") {
             setMessage("All fields must not be empty");
             setStatus("error");
         }
-        else if (username.length > 50 || email.length > 50) {
+        else if (email.length > 50) {
             setMessage("All fields must not exceed 50 character");
             setStatus("error");
         }
         else {
             try {
-                await DataService.forgotPass(email, username)
+                await DataService.forgotPass(email);
                 setMessage("Đã gửi thư reset password");
                 setStatus("success");
             }
@@ -99,17 +95,6 @@ export default function ChangePass() {
                                     </Alert>
                                 </div>
                             )}
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                variant="outlined"
-                                required
-                                fullWidth
-                                id="username"
-                                label="username"
-                                name="username"
-                                onChange={(value) => onChangeUsername(value)}
-                            />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField

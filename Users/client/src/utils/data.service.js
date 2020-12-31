@@ -40,8 +40,8 @@ const activeAccount = (hashLink) => {
   return axios.post(API_URL + `activeAccount/${hashLink}`);
 }
 
-const forgotPass = (email, username) => {
-  return axios.post(API_URL + `forgotPass/`, {email, username});
+const forgotPass = (email) => {
+  return axios.post(API_URL + `forgotPass/`, {email});
 }
 
 const resetPassword = (uuid, newPassword) => {

@@ -4,6 +4,7 @@ var express = require('express');
 const router = express.Router();
 const model = require("../utils/sql_command");
 const MailTemplate = require("../utils/mailTemplate");
+const bcrypt = require('bcrypt');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -18,29 +19,24 @@ router.post("/activeAccount/:uuid", async (req, res) => {
 })
 
 router.post("/forgotPass/", async (req, res) => {
-  console.log("Email: "+ req.body.email);
-  console.log("Username: "+ req.body.username);
-  const username = req.body.username;
   const email = req.body.email;
-  const A = await model.getUserByEmail(email);
-  console.log(user);
-  console.log(user.ID);
-  console.log(user.email)
-  if(user.ID.length !== 0 && user.email.length !== 0){
-    console.log("Before crypt")
+  const user = await model.getUserByEmail(email);
+  console.log(user[0]);
+  if(user[0] !== undefined &&user[0].ID.length !== 0 && user[0].email.length !== 0){
     const hashLink = cryptoRandomString({ length: 40, type: 'base64' });
-    await model.saveHashLinkToPageVerrify(user.ID, hashLink);
-    MailTemplate.forgotPassword(hashLink, user.email);
+    await model.saveHashLinkToPageVerrify(user[0].ID, hashLink);
+    MailTemplate.forgotPassword(hashLink, email);
+    res.status(200).send("Sent mail successfully");
   }
-  res.send("Sent");
+  else res.status(404).send("Mail not found");
 })
 
 router.post("/resetPassword/:uuid", async (req, res) => {
   const newPassword = req.body.newPassword;
   const hash = bcrypt.hashSync(newPassword, 10);
   const userId = await model.getUserIdByUUID(req.params.uuid);
-  console.log(userId);
-  await model.resetPassword(userId, hash);
+  await model.resetPassword(userId[0].userId, hash);
+  await model.updateVerrifyPage(req.params.uuid);
   res.sendStatus(200);
 })
 
