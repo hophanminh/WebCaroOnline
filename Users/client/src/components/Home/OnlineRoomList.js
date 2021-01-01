@@ -25,9 +25,6 @@ import {
 import DataService from "../../utils/data.service";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  },
   bold: {
     fontWeight: 'bold'
   },
@@ -145,7 +142,7 @@ const OnlineRoomList = (props) => {
   }
 
   return (
-    <Box className={classes.root}>
+    <React.Fragment>
       <TableContainer>
         <Table className={classes.table}>
           <TableHead>
@@ -264,7 +261,7 @@ const OnlineRoomList = (props) => {
           </Box>
         </TableRow>
       </TableFooter>
-    </Box>
+    </React.Fragment>
   );
 }
 

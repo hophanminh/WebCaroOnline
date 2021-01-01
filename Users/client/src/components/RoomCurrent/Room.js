@@ -12,12 +12,13 @@ import {
   CardContent,
   Box,
   Snackbar,
-  Button
+  Button, CircularProgress
 } from '@material-ui/core';
 import { IconContext } from "react-icons";
 import { FaTrophy } from "react-icons/fa";
 
 import Game from './Game/game';
+import Countdown from '../Countdown/Countdown'
 import { Chat } from './ChatOnline/'
 import socket from "../../utils/socket.service";
 import store from '../../utils/store.service';
@@ -44,26 +45,37 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "100%",
     wordWrap: 'break-word',
   },
-  gridHeight: {
+  leftGrid: {
+    minWidth: '434px',
     minHeight: '440px',
-    maxHeight: "440px",
+  },
+  rightGrid: {
+    minHeight: '440px',
   },
   winColor: {
     color: "green",
   },
   shareButtonContainer: {
     display: "flex",
-    flexDirection: "row-reverse",
+    justifyContent: 'flex-start'
   },
   nameContainerLeft: {
     display: "flex",
     flexDirection: "column",
+    justifyContent: 'center',
     alignItems: 'flex-start',
   },
   nameContainerRight: {
     display: "flex",
     flexDirection: "column",
+    justifyContent: 'center',
     alignItems: 'flex-end',
+  },
+  countdown: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   trophyIcon: {
     margin: '0 5px'
@@ -83,7 +95,6 @@ export default function Room(props) {
   const [room, setRoom] = useState();                   // room's data
   const [gameData, setGameData] = useState();           //game's data
   const [user, setUser] = useState(store.getState().user);
-  const [open, setOpen] = useState(false);             // snackbar's status
   store.subscribe(() => {
     setUser(store.getState().user);
   });
@@ -91,7 +102,7 @@ export default function Room(props) {
   // join room
   useEffect(() => {
     if (user) {
-      socket.emit('join', { name: user.name, room: ID }, (error) => {
+      socket.emit('join', { userID: user.ID, name: user.name, room: ID }, (error) => {
         if (error) {
           alert(error);
         }
@@ -101,24 +112,29 @@ export default function Room(props) {
 
   // get room data
   useEffect(() => {
-    socket.emit("get_room_data", {ID}, ({ data, gameData }) => {
+    socket.emit("get_room_data", { ID }, ({ data, gameData }) => {
+      setCounter(data[0].remain);
       setRoom(data[0]);
       setGameData(gameData);
     });
 
     socket.on('roomData', (data) => {
+      setCounter(data[0].remain);
       setRoom(data[0]);
     });
 
     return () => {
-      socket.emit("leave_room", ID)
+      console.log(user)
+      if (user) {
+        socket.emit("leave_room", { userID: user.ID, roomID: ID })
+      }
       socket.off("roomData");
     }
   }, [ID]);
 
   // copy ID room to clipboard
+  const [open, setOpen] = useState(false);      // show snackbar of copy link
   const copyLink = () => {
-
     const link = ID;
     // create temporary DOM to hold link, copy to clipboard then remove it
     const dummy = document.createElement('input');
@@ -128,76 +144,84 @@ export default function Room(props) {
     document.execCommand('copy');
     document.body.removeChild(dummy);
 
-    // show alert
     setOpen(true);
+    socket.emit("timeout", { userID1: room.idUser1, userID2: null, roomID: ID });
   }
 
   const handleCloseSnackbar = () => {
     setOpen(false);
   };
 
+  // countdown
+  const [resetCountdown, setResetCountdown] = useState(false);                   // room's data
+  const [counter, setCounter] = useState(null);
+
   return (
     <main className={classes.content}>
       <div className={classes.appBarSpacer} />
       <Container maxWidth="lg" className={classes.container}>
-        <Grid container spacing={3}>
-          <Grid item sm={8} xs={12} className={classes.gridHeight} >
-            <Card>
-              <Box className={classes.shareButtonContainer}>
-                <Button size="small" variant="contained" color="primary" onClick={() => copyLink()}>
-                  Get room's ID
+        {user
+          ?
+          <Grid container spacing={3}>
+            <Grid item sm={8} xs={12} className={classes.leftGrid} >
+              <Card>
+                <Box className={classes.shareButtonContainer}>
+                  <Button size="small" variant="contained" color="primary" onClick={() => copyLink()}>
+                    Get room's ID
                 </Button>
-                <Snackbar
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  open={open}
-                  onClose={handleCloseSnackbar}
-                  message="ID copied to clipboard"
-                />
-              </Box>
-              <CardContent>
-                {room
-                  ?
-                  <Grid container spacing={3} >
-                    <Grid container item xs={4} className={classes.nameContainerLeft} zeroMinWidth>
-                      <Typography variant="h5" noWrap className={room.winner === 1 ? classes.winColor : null}>{room.name1 ? "(X) " + room.name1 : "(X) Waiting"}</Typography>
-                      {room.name1
-                        ? <Box className={classes.trophyCount}>
+                  <Snackbar
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                    open={open}
+                    onClose={handleCloseSnackbar}
+                    message="ID copied to clipboard"
+                  />
+                </Box>
+                <CardContent>
+                  {room
+                    ?
+                    <Grid container spacing={3} >
+                      <Grid container item xs={4} className={classes.nameContainerLeft} zeroMinWidth>
+                        <Typography variant="h5" noWrap className={room.winner === 1 ? classes.winColor : null}>{room.name1 ? "(X) " + room.name1 : "(X) Waiting"}</Typography>
+                        <Box className={classes.trophyCount}>
                           <IconContext.Provider value={{ color: '#e5c100' }}>
-                            <FaTrophy className={classes.trophyIcon}/>
+                            <FaTrophy className={classes.trophyIcon} />
                           </IconContext.Provider>
-                          <Typography noWrap className={null}> - {room.score1}</Typography>
+                          <Typography noWrap> - {room.name1 ? room.score1 : 0}</Typography>
                         </Box>
-                        : <></>}
-                    </Grid>
-                    <Grid container item xs={4} justify="center">
-                      <Typography variant="h5">VS</Typography>
-                    </Grid>
-                    <Grid container item xs={4} className={classes.nameContainerRight} zeroMinWidth>
-                      <Typography variant="h5" noWrap className={room.winner === 2 ? classes.winColor : null}>{room.name2 ? "(X) " + room.name2 : "(X) Waiting"}</Typography>
-                      {room.name2
-                        ? <Box className={classes.trophyCount}>
-                          <Typography noWrap className={null}>{room.score2} - </Typography>
+                      </Grid>
+                      <Grid container item xs={4} className={classes.countdown}>
+                        {room.winner === -1
+                          ? <Countdown counter={counter} setCounter={setCounter} reset={resetCountdown} setReset={setResetCountdown} />
+                          : <Typography variant="h5">VS</Typography>
+                        }
+                      </Grid>
+                      <Grid container item xs={4} className={classes.nameContainerRight} zeroMinWidth>
+                        <Typography variant="h5" noWrap className={room.winner === 2 ? classes.winColor : null}>{room.name2 ? "(O) " + room.name2 : "(O) Waiting"}</Typography>
+                        <Box className={classes.trophyCount}>
+                          <Typography noWrap>{room.name2 ? room.score2 : 0} - </Typography>
                           <IconContext.Provider value={{ color: '#FFD700' }}>
-                            <FaTrophy className={classes.trophyIcon}/>
+                            <FaTrophy className={classes.trophyIcon} />
                           </IconContext.Provider>
                         </Box>
-                        : <></>}
-                    </Grid>
+                      </Grid>
 
-                  </Grid>
-                  : <></>
-                }
-                <Divider />
-                <Game roomID={ID} roomData={room} gameData={gameData} />
-              </CardContent>
-            </Card>
+                    </Grid>
+                    : <></>
+                  }
+                  <Divider />
+                  <Game roomID={ID} roomData={room} gameData={gameData} reset={resetCountdown} setReset={setResetCountdown} />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item sm={4} xs={12} className={classes.rightGrid} >
+              {user
+                ? <Chat userID={user.ID} name={user.name} room={ID} status={room ? room.winner : null} />
+                : <Chat name={null} room={ID} />}
+            </Grid>
           </Grid>
-          <Grid item sm={4} xs={12} className={classes.gridHeight} >
-            {user
-              ? <Chat userID={user.ID} name={user.name} room={ID} status={room ? room.winner : null} />
-              : <Chat name={null} room={ID} />}
-          </Grid>
-        </Grid>
+          :
+          <CircularProgress />
+        }
       </Container>
     </main>
   );

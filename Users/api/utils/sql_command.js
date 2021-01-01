@@ -95,10 +95,15 @@ module.exports = {
                     SET winner = ?
                     WHERE ID = ?`, [winner, roomID]),
 
-    joinRoomAsPlayer: (roomID, user) =>
+    joinRoomAsPlayer1: (roomID, userID) =>
+        db.loadSafe(`UPDATE room
+                    SET idUser1 = ?
+                    WHERE ID = ?`, [userID, roomID]),
+
+    joinRoomAsPlayer2: (roomID, userID) =>
         db.loadSafe(`UPDATE room
                     SET idUser2 = ?
-                    WHERE ID = ?`, [user.ID, roomID]),
+                    WHERE ID = ?`, [userID, roomID]),
 
     createMove: (move, userID, roomID, turn) => {
         const newMove = {

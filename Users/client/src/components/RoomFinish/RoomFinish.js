@@ -166,7 +166,7 @@ export default function RoomFinish(props) {
                       <Typography variant="h5">VS</Typography>
                     </Grid>
                     <Grid container item xs={4} className={classes.nameContainerRight} zeroMinWidth>
-                      <Typography variant="h5" noWrap className={room.winner === 2 ? classes.winColor : null}>{room.name2 ? "(X) " + room.name2 : "(X) Waiting"}</Typography>
+                      <Typography variant="h5" noWrap className={room.winner === 2 ? classes.winColor : null}>{room.name2 ? "(O) " + room.name2 : "(O) Waiting"}</Typography>
                       {room.name2
                         ? <Box className={classes.trophyCount}>
                           <Typography noWrap className={null}>{room.score2} - </Typography>

@@ -4,7 +4,7 @@ import Board from './board.js';
 import {
     Box,
     Grid,
-    CircularProgress
+    CircularProgress,
 } from '@material-ui/core';
 import socket from "../../../utils/socket.service";
 import store from "../../../utils/store.service";
