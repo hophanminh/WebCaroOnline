@@ -55,7 +55,10 @@ const useStyles = makeStyles(() => ({
 const ListContainer = (props) => {
   const classes = useStyles();
   const history = useHistory();
-  const currentUser = store.getState().user;
+  const [currentUser, setCurrentUser] = useState(store.getState().user);
+  store.subscribe(() => {
+    setCurrentUser(store.getState().user);
+  });
   const [data, setData] = useState();
 
   // get initial data

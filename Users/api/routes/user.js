@@ -5,7 +5,7 @@ const router = express.Router();
 const model = require('../utils/sql_command');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-const { getRoomInfo } = require('../utils/chatroom.query');
+const { getRoomInfo } = require('../utils/server-support/chatroom.query');
 
 
 /* GET users listing. */
@@ -77,18 +77,22 @@ router.post("/room/joinRequest/player", async (req, res) => {
   const user = req.user.user[0];
   const roomID = req.user.input.roomId;
   const room = await model.getRoomByID(roomID);
-  console.log(roomID)
+
   if (room && room.length === 0) {                                // wrong id room
     res.status(400).send({ message: "Room not found" });
   }
-  else if (room[0].idUser1 === user.ID) {                              // player 1 rejoin
+  else if (room[0].idUser1 === user.ID || room[0].idUser2 === user.ID) {    //  rejoin
     res.status(200).send({ ID: roomID });
   }
-  else if (!room[0].idUser2) {                                    // update db when no player 2
-    await model.joinRoomAsPlayer(roomID, user);
+  else if (!room[0].idUser1) {                                            // update db when no player 2
+    await model.joinRoomAsPlayer1(roomID, user.ID);
     res.status(200).send({ ID: roomID });
   }
-  else if (room[0].idUser2 && room[0].idUser2 != user.ID) {       /// player 2 rejoin
+  else if (!room[0].idUser2) {                                            // update db when no player 2
+    await model.joinRoomAsPlayer2(roomID, user.ID);
+    res.status(200).send({ ID: roomID });
+  }
+  else if (room[0].idUser1 && room[0].idUser2) {
     res.status(400).send({ message: "Room already had enough player" });
   }
 });

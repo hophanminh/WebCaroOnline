@@ -70,7 +70,11 @@ const useStyles = makeStyles((theme) => ({
 const ListUser = (props) => {
     const classes = useStyles();
     const history = useHistory();
-    const currentUser = store.getState().user;
+    const [currentUser, setCurrentUser] = useState(store.getState().user);
+    store.subscribe(() => {
+        setCurrentUser(store.getState().user);
+    });
+
     const userList = props.onlineUsers;
 
     // menu action of one user
@@ -98,7 +102,7 @@ const ListUser = (props) => {
         });
         setOpenWaiting(true);
     }
-    
+
     // dialog for when waiting for invitation
     const [openWaiting, setOpenWaiting] = useState(false);
     const handleCloseWaiting = (e) => {
