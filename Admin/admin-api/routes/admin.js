@@ -120,7 +120,8 @@ router.get("/users/:userID/matches", async (req, res)=>{
 
 
 router.post('/finish/list', async (req, res) => {
-  const userID = req.body.ID;
+  const user = req.user.user[0];
+  const userID = user.ID
   console.log("ID on api: " + userID);
   const data = await model.getFinishRoomListByUserID(userID);
   res.send(data);

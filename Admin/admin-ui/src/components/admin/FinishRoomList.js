@@ -96,17 +96,15 @@ const FinishRoomList = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const [data, setData] = useState();
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState(props.userProp);
 
 
   // get initial data
   useEffect(() => {
     async function fetchData() {
       try {
-        if (props.userProp.length !== 0) {
-          setUser(props.userProp)
+        if (user) {
           const res = await DataService.getFinishRoomList(user.ID);
-          console.log("Set data")
           setData(res.data);
         }
       }
