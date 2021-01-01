@@ -28,7 +28,6 @@ const useStyles = makeStyles(() => ({
   root: {
     height: '100%',
     minHeight: '440px',
-    maxHeight: '440px',
     width: '100%',
   },
   menu: {

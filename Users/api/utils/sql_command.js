@@ -148,7 +148,7 @@ module.exports = {
     resetPassword: (userId, hash) => {
         const sql = `UPDATE user SET password = '${hash}' WHERE id = ${userId}`
         return db.load(sql);
-    }
+    },
 
     createMessage: (message, userID, roomID) => {
         const newMessage = {

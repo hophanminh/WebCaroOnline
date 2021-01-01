@@ -285,6 +285,7 @@ module.exports = function (io) {
       data[0]["remain"] = -1;
       data[0]['ready'] = getReady(roomID);
       io.to(roomID).emit('roomData', data);
+      deleteRoom(roomID); 
     });
 
 

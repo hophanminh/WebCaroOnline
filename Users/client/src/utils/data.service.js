@@ -72,7 +72,7 @@ const DataService = {
   joinRoomAsViewer,
   activeAccount,
   forgotPass,
-  resetPassword
+  resetPassword,
   getMessage,
 }
 

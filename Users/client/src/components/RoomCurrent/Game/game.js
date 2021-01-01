@@ -55,7 +55,6 @@ function Game(props) {
     const row = config.row;
     const gameData = props.gameData;
     const roomData = props.roomData;
-
     const [history, setHistory] = useState();
     const [stepNumber, setStepNumber] = useState();
     const [xIsNext, setXIsNext] = useState();
@@ -371,11 +370,14 @@ function Game(props) {
                                         <Typography>Player 2: {roomData.ready.isReady2 ? "Ready" : "Not Ready"}</Typography>
                                     </div>
                                 </Box>
-                                <Box className={classes.buttonContainer}>
-                                    <Button fullWidth className={classes.button} variant="contained" color="primary" onClick={() => handleReady()} >
-                                        Ready
-                                </Button>
-                                </Box>
+                                {(roomData.idUser1 === store.getState().user.ID || roomData.idUser2 === store.getState().user.ID)
+                                    &&
+                                    (<Box className={classes.buttonContainer}>
+                                        <Button fullWidth className={classes.button} variant="contained" color="primary" onClick={() => handleReady()} >
+                                            Ready
+                                        </Button>
+                                    </Box>)
+                                }
                             </Box>)
                         }
                     </Grid>
