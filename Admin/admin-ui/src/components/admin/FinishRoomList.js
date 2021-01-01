@@ -104,13 +104,10 @@ const FinishRoomList = (props) => {
     async function fetchData() {
       try {
         if (props.userProp.length !== 0) {
-          console.log("User in finish room: ");
-          console.log(props.userProp);
           setUser(props.userProp)
-          console.log("usser: " + user.ID);
           const res = await DataService.getFinishRoomList(user.ID);
+          console.log("Set data")
           setData(res.data);
-          console.log(data);
         }
       }
       catch (error) {

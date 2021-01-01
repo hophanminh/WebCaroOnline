@@ -42,7 +42,7 @@ const banAccount = (ID) => {
 
 const getFinishRoomList = (ID) => {
     console.log("ID user: " + ID);
-    return axios.post(API_URL + "admin/finish/list", { ID });
+    return axios.post(API_URL + "admin/finish/list", { ID: ID });
 };
 
 const getFinishRoom = (roomID) => {
