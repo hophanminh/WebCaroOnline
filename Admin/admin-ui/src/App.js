@@ -15,8 +15,11 @@ import SignUp from "./components/authenticate/register";
 import NotFound from "./components/NotFound";
 import PrivateRoute from "./privateRoute.js";
 import ChangePass from "./components/admin/updatePassword";
+import Users from "./components/home/managementUsers";
+import Match from "./components/User/Match";
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
+import UserProfile from "./components/User/UserProfile";
 import RoomFinish from "./components/RoomFinish/RoomFinish"
 import FinishRoomList from "./components/admin/FinishRoomList";
 
@@ -47,6 +50,18 @@ const routes = [
     main: (props) => <SignUp />
   },
   {
+    path: "/users",
+    exact: true,
+    main: (props) => <Users />
+  },
+  {
+    path: `/users/:id`,
+    main: (props) => <UserProfile />
+  },
+  {
+    path: `/match/:id`,
+    main: (props) => <Match />
+  }
     path: "/History",
     private: true,
     exact: true,

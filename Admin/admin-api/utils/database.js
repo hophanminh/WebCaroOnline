@@ -3,8 +3,7 @@ const util = require("util");
 const config = require("../config/default-config.json");
 
 const pool = mysql.createPool(config["mysql-local"]);
-//const pool = mysql.createPool(config["mysql_cloud"]);
-
+// const pool = mysql.createPool(config["mysql_cloud"]);
 const query = util.promisify(pool.query).bind(pool);
 
 module.exports = {

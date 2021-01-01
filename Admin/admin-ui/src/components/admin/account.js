@@ -42,7 +42,8 @@ export default function Account() {
     useEffect(() => {
         async function fetchData() {
             try {
-                const res = await DataService.getUserInfo()
+                const res = await DataService.getUserInfo();
+                console.log(res);
                 setUsername(res.data[0].username);
                 setEmail(res.data[0].email);
                 setFullname(res.data[0].fullname);

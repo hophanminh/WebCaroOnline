@@ -19,6 +19,27 @@ const changePassword = (oldPass, newPass) => {
     return axios.post(API_URL + "admin/updatePassword/", { oldPass, newPass });
 }
 
+const getUsers = () => {
+    return axios.get(API_URL + "admin/users");
+}
+
+const getSpecificUserBySearch = (search) => {
+    return axios.post(API_URL + "admin/search", {search})
+}
+
+const getUserByUserId = (ID) => {
+    return axios.get(API_URL + `admin/users/${ID}`);
+}
+
+const getMatchesByUserID = (ID) => {
+    return axios.get(API_URL + `admin/users/${ID}/matches`);
+}
+
+const banAccount = (ID) => {
+    return axios.post(API_URL + `admin/users/${ID}/ban`);
+}
+
+
 const getFinishRoomList = (userID) => {
     return axios.post(API_URL + "admin/finish/list", { userID });
 };
@@ -36,6 +57,11 @@ const DataService = {
     getUserInfo,
     changeUserInfo,
     changePassword,
+    getUsers,
+    getSpecificUserBySearch,
+    getUserByUserId,
+    getMatchesByUserID,
+    banAccount,
     getFinishRoomList,
     getFinishRoom,
     getMessage,

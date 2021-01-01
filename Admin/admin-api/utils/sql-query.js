@@ -2,10 +2,15 @@ const db = require("./database");
 const config = require("../config/default-config.json");
 
 module.exports = {
+    getUsers: () => {
+        const sql = `SELECT * FROM user`
+        return db.loadSafe(sql);
+    },
+
     getUserByID: (ID) =>
         db.loadSafe(`SELECT *
                 FROM user
-                WHERE ID = ? AND permission = ${config["ADMIN_PERMISSION"]}`, [ID]),
+                WHERE ID = ?`, [ID]),
 
     getUserByUsername: (username) =>
         db.loadSafe(`SELECT *
@@ -25,7 +30,7 @@ module.exports = {
     login: ({ username, password }) =>
         db.loadSafe(`SELECT *
                 FROM user
-                WHERE username = ? AND password = ? AND permission = ${config["ADMIN_PERMISSION"]}`, [username, password]),
+                WHERE username = ? AND password = ? AND permission = ${config.PERMISSION.ADMIN}`, [username, password]),
 
     updateUser: (entity) => {
         const condition = { ID: entity.ID };
@@ -39,11 +44,27 @@ module.exports = {
             password: password,
             email: email,
             fullname: fullname,
-            status: config.ACTIVE,
-            permission: config.ADMIN_PERMISSION
+            status: config.STATUS.ACTIVE,
+            permission: config.PERMISSION.ADMIN
         }
         return db.add(`user`, newUser)
     },
+    banUser(ID) {
+        return db.loadSafe(`UPDATE user set status = ${config.STATUS.INACTIVE} where id = ${ID}`);
+    },
+    unbanUser(ID) {
+        return db.loadSafe(`UPDATE user u set u.status = ${config.STATUS.ACTIVE} where id = ${ID}`)
+    },
+    getMatches() {
+        return db.loadSafe(`SELECT * FROM room`);
+    },
+    getMatch(UUIDMatch) {
+        return db.loadSafe(`SELECT * FROM room WHERE ID = ${UUIDMatch}`)
+    },
+    getMatchesByUserId(userID) {
+        const sql = `SELECT * from room WHERE idUser1 = ${userID} OR idUser2 = ${userID}`;
+        return db.loadSafe(sql);
+    }
 
 
     getFinishRoomListByUserID: (userID) =>
