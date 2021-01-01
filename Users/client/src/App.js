@@ -15,7 +15,16 @@ import Login from "./components/Authenticate/Login";
 import SignUp from "./components/Authenticate/SignUp";
 import NotFound from "./components/NotFound";
 import ChangePass from "./components/User/ChangePass";
+
 import Room from "./components/Room/Room"
+import ActiveAccount from "./components/User/ActiveAccount";
+import ForgotPassword from "./components/User/ForgotPassword";
+import ResetPassword from "./components/User/ResetPassword";
+
+import Room from "./components/RoomCurrent/Room"
+import RoomFinish from "./components/RoomFinish/RoomFinish"
+import FinishRoomList from "./components/User/FinishRoomList.js";
+
 
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
@@ -50,6 +59,29 @@ const routes = [
     path: "/Room/:id",
     main: (props) => <Room />
   },
+  {
+
+    path: "/activeAccount/:uuid",
+    main: (props) => <ActiveAccount />
+  },
+  {
+    path: "/forgotPassword",
+    main: (props) => <ForgotPassword />
+  },
+  {
+    path: "/resetPassword/:uuid",
+    main: (props) => <ResetPassword />
+
+    path: "/History",
+    private: true,
+    exact: true,
+    main: () => <FinishRoomList />
+  },
+  {
+    path: "/History/Room/:id",
+    main: (props) => <RoomFinish />
+
+  },
 ];
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,16 +93,17 @@ export default function App(props) {
   const classes = useStyles();
   const [currentUser, setCurrentUser] = useState(AuthService.getCurrentUser);
   store.subscribe(() => {
-    setCurrentUser(store.getState());
+    setCurrentUser(store.getState().user);
   });
-  console.log(store.getState());
-
   useEffect(() => {
     // check if user is already logged in
     store.dispatch({ type: 'user/updateUser' });
-    const user = store.getState();
+    const user = store.getState().user;
     if (user) {
-      socket.emit("online", { ID: user.ID, name: user.name });
+      socket.emit("online", { ID: user.ID, name: user.name });                // announce that you are online
+      socket.on("waiting_for_invite_" + user.ID, (invitation) => {                       // announce that you are waiting for invitec
+        store.dispatch({ type: 'invitation/add', invitation: invitation });
+      });
     }
 
     // auto sign-out all tabs 
@@ -86,6 +119,7 @@ export default function App(props) {
       window.removeEventListener('storage', handleInvalidToken)
     }
   }, []);
+
 
   return (
     <Router>

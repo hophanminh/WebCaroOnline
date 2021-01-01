@@ -4,10 +4,9 @@ const config = require('../config/default.json');
 
 // test
 // CHANGE DATABASE HERE
-// const pool = mysql.createPool(config.mysql);
-// const pool = mysql.createPool(config.mysql_cloud);      // hosted database
-const pool = mysql.createPool(config.mysqlPM);
 
+const pool = mysql.createPool(config.mysqlPM);
+//const pool = mysql.createPool(config.mysql_cloud);      // hosted database
 
 ////////////////////////////////////////////////////
 

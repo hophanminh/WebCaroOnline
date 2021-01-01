@@ -8,11 +8,12 @@ const cors = require('cors');
 const passport = require('passport');
 const http = require("http");
 const socketIO = require('socket.io');
+const config = require("./config/default.json");
 require('express-async-errors');
 require('./utils/passport');
 
-const URL =  "http://localhost:3000";
-// const URL = /caroonline-user.herokuapp\.com$/;
+const URL =  config.HOST.LOCAL;
+//const URL = /caroonline-user.herokuapp\.com$/;
 
 const corsOptions = {
   // test
@@ -30,6 +31,7 @@ const io = socketIO(server, {
 });
 
 const ioConfig = require('./utils/server')(io);
+app.use(cors())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -49,9 +51,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
+const roomRouter = require('./routes/room');
 
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
+app.use('/room', roomRouter);
 app.use('/user', passport.authenticate('jwt', { session: false }), userRouter);
 
 

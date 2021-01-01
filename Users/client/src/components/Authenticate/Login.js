@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
   useHistory,
-  useLocation
+  useLocation,
+  Link
 } from "react-router-dom";
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -70,7 +71,7 @@ function Login(props) {
         await AuthService.login(username, password)
         props.dispatch({ type: 'user/updateUser' })
 
-        const user = store.getState();
+        const user = store.getState().user;
         socket.emit("online", {ID: user.ID, name: user.name});
                 
         history.replace(from);
@@ -112,7 +113,6 @@ function Login(props) {
               </Alert>
             </div>
           )}
-
           <TextField
             variant="outlined"
             margin="normal"
@@ -137,6 +137,9 @@ function Login(props) {
             autoComplete="new-password"
             onChange={(value) => onChangePassword(value)}
           />
+          <Link to={'/forgotPassword'}>
+            Forgot password???
+          </Link>
           <Button
             onClick={(e) => login(e)}
             type="submit"

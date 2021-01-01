@@ -5,6 +5,7 @@ const router = express.Router();
 const model = require('../utils/sql_command');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
+const { getRoomInfo } = require('../utils/chatroom.query');
 
 
 /* GET users listing. */
@@ -64,17 +65,19 @@ router.post('/changepass/', async (req, res) => {
 router.post("/room/create/", async (req, res) => {
   const user = req.user.user[0];
   const roomID = uuidv4();
-  await model.createRoom([roomID, user.ID]);
-  res.status(200).send({
-    ID: roomID,
-  });
+  await model.createRoom([roomID, user.ID, null])
+    .then(() => {
+      res.status(200).send({
+        ID: roomID,
+      });
+    });
 });
 
 router.post("/room/joinRequest/player", async (req, res) => {
   const user = req.user.user[0];
   const roomID = req.user.input.roomId;
   const room = await model.getRoomByID(roomID);
-
+  console.log(roomID)
   if (room && room.length === 0) {                                // wrong id room
     res.status(400).send({ message: "Room not found" });
   }
@@ -99,6 +102,24 @@ router.post("/room/joinRequest/viewer", async (req, res) => {
   else {
     res.status(200).send({ ID: roomID });
   }
+});
+
+router.post('/finish/list', async (req, res) => {
+  const userID = req.user.input.userID;
+  const data = await model.getFinishRoomListByUserID(userID);
+  res.send(data);
+});
+
+router.post('/finish/message', async (req, res) => {
+  const roomID = req.user.input.roomID;
+  const data = await model.getMessageByRoomID(roomID);
+  res.send(data);
+});
+
+router.post('/finish/room', async (req, res) => {
+  const roomID = req.user.input.roomID;
+  const { data, gameData } = await getRoomInfo(roomID);
+  res.send({ data, gameData });
 });
 
 module.exports = router;

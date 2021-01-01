@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import ListUser from '../ListUser';
-import MenuGame from './MenuGame';
+import ListContainer from './ListContainer';
 
 import socket from "../../utils/socket.service";
 
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+const Home = () => {
   const classes = useStyles();
 
   const [onlineUsers, setOnlineUsers] = useState();  
@@ -48,11 +48,11 @@ export default function Home() {
       <div className={classes.appBarSpacer} />
       <Container maxWidth="lg" className={classes.container}>
         <Typography variant="h3" component="h2" gutterBottom align="center">
-          Play Caro with your friends
+          Caro Online
           </Typography>
         <Grid container spacing={3} >
           <Grid item sm={8} xs={12} >
-            <MenuGame />
+            <ListContainer />
           </Grid>
           <Grid item sm={4} xs={12}>
             <ListUser socket={socket} onlineUsers={onlineUsers}/>
@@ -62,3 +62,5 @@ export default function Home() {
     </main>
   );
 }
+
+export default Home;
