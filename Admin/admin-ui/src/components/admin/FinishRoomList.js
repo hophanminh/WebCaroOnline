@@ -96,18 +96,21 @@ const FinishRoomList = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const [data, setData] = useState();
-  const [user, setUser] = useState(store.getState());
-  store.subscribe(() => {
-    setUser(store.getState());
-  });
+  const [user, setUser] = useState([]);
+
 
   // get initial data
   useEffect(() => {
     async function fetchData() {
       try {
-        if (user) {
+        if (props.userProp.length !== 0) {
+          console.log("User in finish room: ");
+          console.log(props.userProp);
+          setUser(props.userProp)
+          console.log("usser: " + user.ID);
           const res = await DataService.getFinishRoomList(user.ID);
           setData(res.data);
+          console.log(data);
         }
       }
       catch (error) {
@@ -119,7 +122,7 @@ const FinishRoomList = (props) => {
       }
     }
     fetchData();
-  }, [user])
+  }, []);
 
   // table
   const [selected, setSelected] = useState();

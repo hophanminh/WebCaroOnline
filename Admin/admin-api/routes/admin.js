@@ -61,9 +61,10 @@ router.post("/updatePassword", async (req, res) => {
 router.get("/users",async (req, res) => {
   const users = await model.getUsers();
   console.log(users);
-  if(users.length === 0)
+  if (users.length === 0)
     res.send("No users to display");
   res.send(users);
+})
 
 
 router.post("/users/search", async (req, res) => {
@@ -77,9 +78,10 @@ router.post("/users/search", async (req, res) => {
 router.get("/users/:userId", async (req,res) => {
   const ID = req.params.userId;
   const user = await model.getUserByID(ID);
-  if(user.length === 0)
+  if (user.length === 0)
     return res.status(400).send("User is not found");
   return res.send(user);
+})
 
 
 router.post("/users/:id/ban", async (req, res) => {
@@ -118,7 +120,7 @@ router.get("/users/:userID/matches", async (req, res)=>{
 
 
 router.post('/finish/list', async (req, res) => {
-  const userID = req.user.input.userID;
+  const userID = req.body.ID;
   const data = await model.getFinishRoomListByUserID(userID);
   res.send(data);
 });

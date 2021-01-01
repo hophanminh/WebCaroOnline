@@ -13,7 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import DataService from "../../utils/data.service";
-import Matches from "./matches";
+import FinishRoomList from "../admin/FinishRoomList";
+import isPlainObject from "react-redux/lib/utils/isPlainObject";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -55,6 +56,8 @@ export default function Account() {
     const [fullname, setFullname] = useState("");
     const [message, setMessage] = useState("");
     const [status, setStatus] = useState("error");
+    const [user, setUser] = useState([])
+
     const ID = useParams().id;
     const history = useHistory();
 
@@ -63,7 +66,7 @@ export default function Account() {
             try {
                 console.log(ID);
                 const res = await DataService.getUserByUserId(ID);
-                console.log(res);
+                setUser(res.data[0]);
                 setUsername(res.data[0].username);
                 setEmail(res.data[0].email);
                 setFullname(res.data[0].fullname);
@@ -220,7 +223,7 @@ export default function Account() {
                     </Grid>
                     <Grid item sm={8} xs={12} >
                         Matches History
-                        <Matches userId={ID}/>
+                        <FinishRoomList userProp={user}/>
                     </Grid>
                 </Grid>
             </Container>

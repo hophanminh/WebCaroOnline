@@ -40,8 +40,9 @@ const banAccount = (ID) => {
 }
 
 
-const getFinishRoomList = (userID) => {
-    return axios.post(API_URL + "admin/finish/list", { userID });
+const getFinishRoomList = (ID) => {
+    console.log("ID user: " + ID);
+    return axios.post(API_URL + "admin/finish/list", { ID });
 };
 
 const getFinishRoom = (roomID) => {

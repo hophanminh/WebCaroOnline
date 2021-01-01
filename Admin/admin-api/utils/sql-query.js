@@ -64,8 +64,7 @@ module.exports = {
     getMatchesByUserId(userID) {
         const sql = `SELECT * from room WHERE idUser1 = ${userID} OR idUser2 = ${userID}`;
         return db.loadSafe(sql);
-    }
-
+    },
 
     getFinishRoomListByUserID: (userID) =>
         db.loadSafe(`SELECT r.* , u1.username as name1, u2.username as name2, u1.score as score1, u2.score as score2, r.winner as winner
