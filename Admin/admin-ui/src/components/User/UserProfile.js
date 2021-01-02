@@ -56,7 +56,6 @@ export default function Account() {
     const [fullname, setFullname] = useState("");
     const [message, setMessage] = useState("");
     const [status, setStatus] = useState("error");
-    const [user, setUser] = useState([])
 
     const ID = useParams().id;
     const history = useHistory();
@@ -64,9 +63,7 @@ export default function Account() {
     useEffect(() => {
         async function fetchData() {
             try {
-                console.log(ID);
                 const res = await DataService.getUserByUserId(ID);
-                setUser(res.data[0]);
                 setUsername(res.data[0].username);
                 setEmail(res.data[0].email);
                 setFullname(res.data[0].fullname);
@@ -223,7 +220,7 @@ export default function Account() {
                     </Grid>
                     <Grid item sm={8} xs={12} >
                         Matches History
-                        <FinishRoomList userProp={user}/>
+                        <FinishRoomList />
                     </Grid>
                 </Grid>
             </Container>
