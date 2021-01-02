@@ -96,10 +96,15 @@ module.exports = {
                     SET winner = ?
                     WHERE ID = ?`, [winner, roomID]),
 
-    joinRoomAsPlayer: (roomID, user) =>
+    joinRoomAsPlayer1: (roomID, userID) =>
+        db.loadSafe(`UPDATE room
+                    SET idUser1 = ?
+                    WHERE ID = ?`, [userID, roomID]),
+
+    joinRoomAsPlayer2: (roomID, userID) =>
         db.loadSafe(`UPDATE room
                     SET idUser2 = ?
-                    WHERE ID = ?`, [user.ID, roomID]),
+                    WHERE ID = ?`, [userID, roomID]),
 
     createMove: (move, userID, roomID, turn) => {
         const newMove = {
@@ -143,7 +148,7 @@ module.exports = {
     resetPassword: (userId, hash) => {
         const sql = `UPDATE user SET password = '${hash}' WHERE id = ${userId}`
         return db.load(sql);
-    }
+    },
 
     createMessage: (message, userID, roomID) => {
         const newMessage = {

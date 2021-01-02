@@ -4,21 +4,57 @@ import Board from './board.js';
 import {
     Box,
     Grid,
-    CircularProgress
+    Button,
+    CircularProgress,
+    makeStyles,
+    Typography
 } from '@material-ui/core';
 import socket from "../../../utils/socket.service";
 import store from "../../../utils/store.service";
 import config from "../../../utils/config.json";
 
+const useStyles = makeStyles((theme) => ({
+    rightContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    infoContainer: {
+        width: '100%',
+    },
+    turnContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        overflowY: 'auto',
+        marginBottom: '10px',
+        borderBottom: '1px solid #999'
+    },
+
+    readyContainer: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+
+    buttonContainer: {
+        minHeight: '36px',
+        maxHeight: '36px',
+        width: '100%',
+    }
+}));
 
 function Game(props) {
+    const classes = useStyles();
+
     // change these to change the size of the board
     const squareSize = config["square-size"];
     const column = config.column;
     const row = config.row;
     const gameData = props.gameData;
     const roomData = props.roomData;
-
     const [history, setHistory] = useState();
     const [stepNumber, setStepNumber] = useState();
     const [xIsNext, setXIsNext] = useState();
@@ -38,12 +74,13 @@ function Game(props) {
         return () => {
             socket.off("wait_new_move");
         }
-
     }, [gameData]);
 
     useEffect(() => {
-        console.log(newMove);
-        receiveMove(newMove);
+        if (newMove !== -1) {
+            receiveMove(newMove);
+            props.setReset(true);
+        }
     }, [newMove]);
 
     const receiveMove = (newMove) => {
@@ -235,8 +272,12 @@ function Game(props) {
 
                     // check win
                     const checkFinish = calculateWinner(squares, stepNumber, i);
-                    if (checkFinish) {
+                    if (checkFinish.status !== -1) {
                         socket.emit("game_finish", { roomID: props.roomID, status: checkFinish.status });
+                    }
+                    else {
+                        console.log('here');
+                        props.setReset(true);           // reset timer if game continues
                     }
                 }
             }
@@ -244,14 +285,11 @@ function Game(props) {
 
     }
 
-
-    /*     
-    //undo
-    const jumpTo = (step) => {
-        setStepNumber(step);
-        setXIsNext((step % 2) === 0);
+    const handleReady = (i) => {
+        const user = store.getState().user;
+        socket.emit("ready", { userID: user.ID, roomID: props.roomID })
     }
-    */
+
 
     if (!history || !roomData) {
         return (<CircularProgress />)
@@ -269,16 +307,7 @@ function Game(props) {
             const desc = i ?
                 'Turn ' + i + ': (' + x + ',' + y + ') - ' + player :
                 'Game start';
-            /*
-            // undo
-            return (
-                <li key={move}>
-                    <button onClick={() => jumpTo(move)}>
-                        {current === turn ? <b>{desc}</b> : <>{desc}</>}
-                    </button>
-                </li>
-            );
-            */
+
             return (
                 <li key={i}>
                     {current === turn ? <b>{desc}</b> : <>{desc}</>}
@@ -315,21 +344,42 @@ function Game(props) {
                         </Box>
                     </Grid>
                     <Grid item xs={4}>
-                        <Box width="95%" height={290} overflow="auto">
-                            {(roomData.idUser1 && roomData.idUser2)
-                                ? <div>
+                        {roomData.ready && roomData.ready.hasStart &&
+                            (<Box className={classes.rightContainer} width="95%" height={290} overflow="auto">
+                                <Box className={classes.infoContainer}>
                                     <div>
                                         {winner.line
-                                            ? <b>{statusDes}</b>
-                                            : <>{statusDes}</>
+                                            ? <Typography>{statusDes}</Typography>
+                                            : <Typography>{statusDes}</Typography>
                                         }
+                                        <Typography>History: </Typography>
                                     </div>
-                                    <div>History: </div>
-                                    <ol>{finalMoves}</ol>
-                                </div>
-                                : <div>Waiting for both players</div>
-                            }
-                        </Box>
+                                </Box>
+                                <Box className={classes.turnContainer}>
+                                    <div>
+                                        <ol>{finalMoves}</ol>
+                                    </div>
+                                </Box>
+                            </Box>)
+                        }
+                        {roomData.ready && !roomData.ready.hasStart &&
+                            (<Box className={classes.rightContainer} width="95%" height={290} overflow="auto">
+                                <Box className={classes.readyContainer}>
+                                    <div>
+                                        <Typography>Player 1: {roomData.ready.isReady1 ? "Ready" : "Not Ready"}</Typography>
+                                        <Typography>Player 2: {roomData.ready.isReady2 ? "Ready" : "Not Ready"}</Typography>
+                                    </div>
+                                </Box>
+                                {(roomData.idUser1 === store.getState().user.ID || roomData.idUser2 === store.getState().user.ID)
+                                    &&
+                                    (<Box className={classes.buttonContainer}>
+                                        <Button fullWidth className={classes.button} variant="contained" color="primary" onClick={() => handleReady()} >
+                                            Ready
+                                        </Button>
+                                    </Box>)
+                                }
+                            </Box>)
+                        }
                     </Grid>
                 </Grid>
             </Box>

@@ -30,6 +30,7 @@
   "column": 50,
   "row": 50,
   "win": 5,
+  "timeout": 60,
   "status": {
     "ACTIVE": 1,
     "INACTIVE": 0

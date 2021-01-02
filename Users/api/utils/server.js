@@ -1,5 +1,7 @@
 const model = require('../utils/sql_command');
-const { users, addUserToRoom, removeUserFromRoom, getUser, getUsersInRoom, getRoomInfo, checkValidMove, checkWinCondition, transformGameData, removeUserFromRoomWithID } = require('../utils/chatroom.query');
+const { addUserToRoom, removeUserFromRoom, removeUserFromRoomWithID, getUser, getUsersInRoom } = require('./server-support/chatroom.query');
+const { getRoomInfo, checkValidMove, transformGameData } = require('./server-support/game-logic');
+const { getRoom, createRoom, joinRoom, leaveRoom, deleteRoom, resetTimer, startTimer, getRemain, getReady, ready } = require('./server-support/game-room');
 require('express-async-errors');
 const { v4: uuidv4 } = require('uuid');
 
@@ -22,16 +24,14 @@ module.exports = function (io) {
       const newList = Object.keys(listOnlineUser).map((key) => ({ ID: Number(key), name: listOnlineUser[key].name }));
       io.sockets.emit("get_online_users", newList);
     });
-
     // get online users
     socket.on("alert_online_users", () => {
 
       const newList = Object.keys(listOnlineUser).map((key) => ({ ID: Number(key), name: listOnlineUser[key].name }));
       io.sockets.emit("get_online_users", newList);
     });
-
     // sign out
-    socket.on("manually_disconnect", () => {
+    socket.on("manually_disconnect", async () => {
       if (!socket.user) {
         return;
       }
@@ -42,6 +42,12 @@ module.exports = function (io) {
       if (user) {
         io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
         io.to(user.room).emit('usersInRoom', { room: user.room, users: getUsersInRoom(user.room) });
+        if (await leaveRoom(user.userID, user.room)) {
+          const { data, gameData } = await getRoomInfo(user.room);
+          data[0]['remain'] = getRemain(user.room);
+          data[0]['ready'] = getReady(user.room);
+          io.to(user.room).emit('roomData', data);
+        }
       }
 
       // decrease i of disconnected user. if i == 0 remove user from online list
@@ -52,9 +58,8 @@ module.exports = function (io) {
       const newList = Object.keys(listOnlineUser).map((key) => ({ ID: Number(key), name: listOnlineUser[key].name }));
       io.sockets.emit("get_online_users", newList);
     });
-
-    // disconnect is fired when a client leaves the server (leave page)
-    socket.on("disconnect", () => {
+    // disconnect by leaving page
+    socket.on("disconnect", async () => {
       if (!socket.user) {
         return;
       }
@@ -65,6 +70,13 @@ module.exports = function (io) {
       if (user) {
         io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
         io.to(user.room).emit('usersInRoom', { room: user.room, users: getUsersInRoom(user.room) });
+
+        if ( await leaveRoom(user.userID, user.room)) {
+          const { data, gameData } = await getRoomInfo(user.room);
+          data[0]['remain'] = getRemain(user.room);
+          data[0]['ready'] = getReady(user.room);
+          io.to(user.room).emit('roomData', data);
+        }
       }
 
       // decrease i when user disconnected. if i == 0 remove user from online list
@@ -81,38 +93,76 @@ module.exports = function (io) {
 
 
     // join new room
-    socket.on("join", async ({ name, room }, callback) => {
-      /* Model User of chat room
-       * User {socketId, username, roomId}
-       */
+    socket.on("join", async ({ userID, name, room }, callback) => {
+      const { data, gameData } = await getRoomInfo(room);
 
-      const { error, user } = addUserToRoom({ id: socket.id, name, room });
+      // General room: Manager every users in room
+      const { error, user } = addUserToRoom({ id: socket.id, name, room, userID });
+      if (error) {
+        callback();
+      }
+      else {
+        // join and announce to everyone's chatroom
+        socket.join(user.room);
+        socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
 
-      if (error === 'Already joined.') return callback();    // skip joining 
-      if (error) return callback(error);
+        // update client of everyone in room
+        data[0]['remain'] = getRemain(user.room);
+        data[0]['ready'] = getReady(user.room);
+        io.to(user.room).emit('roomData', data);
+        io.to(user.room).emit('usersInRoom', { room: user.room, users: getUsersInRoom(user.room) });
+        callback();
+      }
 
-      // join and announce to everyone
-      socket.join(user.room);
-      socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
 
+      // Detail room: Manage room data (ready, player, timer)
+      createRoom(room, callTimeoutSocket)     // if there is no room yet => create room
+      if (data[0].idUser1 === userID) {
+        joinRoom(userID, null, room);
+      }
+      else if (data[0].idUser2 === userID) {
+        joinRoom(null, userID, room);
+      }
 
-      // send data to every user in room
-      const { data, gameData } = await getRoomInfo(user.room);
-      io.to(user.room).emit('roomData', data);
-      io.to(user.room).emit('usersInRoom', { room: user.room, users: getUsersInRoom(user.room) });
-
-      callback();
     })
-    // invite another user
-    socket.on("leave_room", (roomID) => {
+    const callTimeoutSocket = async (userID, roomID) => {       // call when someone's timeout
+      const { data, gameData } = await getRoomInfo(roomID);
+      if (userID === data[0].idUser1) {            // player 1 timeout
+        data[0].winner = 2;
+      }
+      else if (userID === data[0].idUser2) {       // player 2 timeout
+        data[0].winner = 1;
+      }
+      else {                                       // something's wrong
+        data[0].winner = 0;
+      }
+      model.updateRoomWinner(roomID, data[0].winner);
+      data[0]["remain"] = -1;
+      data[0]['ready'] = getReady(roomID);
+      io.to(roomID).emit('roomData', data);       // announce that the game ended
+
+      deleteRoom(roomID);                        // remove timer
+    }
+
+    // leave room 
+    socket.on("leave_room", async ({ userID, roomID }) => {
+      // Leave General room
       const user = removeUserFromRoomWithID(socket.id, roomID);
       if (user) {
         io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
         io.to(user.room).emit('usersInRoom', { room: user.room, users: getUsersInRoom(user.room) });
       }
+
+      // Leave Detail room
+      if (await leaveRoom(userID, roomID)) {                  // if leaving user is one of 2 players => update client
+        const { data, gameData } = await getRoomInfo(roomID);
+        data[0]['remain'] = getRemain(roomID);
+        data[0]['ready'] = getReady(roomID);
+        io.to(roomID).emit('roomData', data);
+      }
     })
 
-    removeUserFromRoomWithID
+
     // invite another user
     socket.on("invite", ({ ID1, name1, ID2 }) => {
       socket.join('invite_' + ID1 + '_' + ID2);
@@ -122,7 +172,6 @@ module.exports = function (io) {
         dateCreate: Date.now(),
       });
     })
-
     // answer invitation
     socket.on("answer_invite", async ({ ID1, ID2, answer }) => {
       const name = 'invite_' + ID1 + '_' + ID2;
@@ -150,12 +199,12 @@ module.exports = function (io) {
       }
       socket.leave(name)
     })
-
     // stop waitng for invitation's answer
     socket.on("stop_invite", ({ ID1, ID2 }) => {
       const name = 'invite_' + ID1 + '_' + ID2;
       socket.leave(name);
     })
+
 
     // Quick play
     socket.on("quick_play", ({ ID, point }) => {
@@ -166,7 +215,6 @@ module.exports = function (io) {
       socket.join("waiting_room")
       findPlayer();
     })
-
     const findPlayer = async () => {                  // find another player to queue
       if (quickPlayQueue.length >= 2) {
         const user1 = quickPlayQueue[0];               // take the oldest user
@@ -193,7 +241,6 @@ module.exports = function (io) {
           });
       }
     }
-
     // stop quick play
     socket.on("stop_quick_play", ({ ID }) => {
       const index = quickPlayQueue.findIndex((user) => user.ID === ID);
@@ -203,23 +250,24 @@ module.exports = function (io) {
     })
 
 
-
     // get Room data from server
-    socket.on('get_room_data', async ({ID}, callback) => {
+    socket.on('get_room_data', async ({ ID }, callback) => {
       const { data, gameData } = await getRoomInfo(ID);
+      data[0]['remain'] = getRemain(ID);
+      data[0]['ready'] = getReady(ID);
       callback({ data, gameData });
     });
-
     // get chat message from server
-    socket.on('get_chat_data', async ({roomID}, callback) => {
+    socket.on('get_chat_data', async ({ roomID }, callback) => {
       const chatData = await model.getMessageByRoomID(roomID);
       callback(chatData);
     });
 
+
+    // announce that game has ended
     socket.on('game_finish', async ({ roomID, status }) => {
       const { data, gameData } = await getRoomInfo(roomID);
 
-      console.log(status);
       if (status !== -1) {
         // update room when someone win
         if (status === 'X') {            // player 1 win
@@ -234,7 +282,10 @@ module.exports = function (io) {
         model.updateRoomWinner(roomID, data[0].winner);
       }
 
+      data[0]["remain"] = -1;
+      data[0]['ready'] = getReady(roomID);
       io.to(roomID).emit('roomData', data);
+      deleteRoom(roomID); 
     });
 
 
@@ -258,14 +309,35 @@ module.exports = function (io) {
 
       // check if move's valid
       if (checkValidMove(move, userID, data, moves)) {
-        callback(true);
+        resetTimer(userID, roomID)                              // reset timer
+        callback(true);                                         // update client
         // add new move to database
-        await model.createMove(move, userID, roomID, turn)
+        model.createMove(move, userID, roomID, turn)
         socket.broadcast.to(roomID).emit('wait_new_move', move);
       }
       else {
         callback(false);
       }
+    });
+
+
+    // create timer when both players are ready
+    socket.on('ready', async ({ userID, roomID }) => {
+      if (ready(userID, roomID)) {
+        const ready = getReady(roomID);
+        if (ready.isReady1 && ready.isReady2) {
+          startTimer(roomID);
+        }
+        const { data, gameData } = await getRoomInfo(roomID);
+        data[0]['remain'] = getRemain(roomID);
+        data[0]['ready'] = getReady(roomID);
+        io.to(roomID).emit('roomData', data);
+      }
+    });
+
+    // reset timer when someone plays
+    socket.on('reset', async ({ userID, roomID }) => {
+      resetTimer(userID, roomID)
     });
 
   });
