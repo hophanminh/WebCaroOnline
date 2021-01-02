@@ -25,7 +25,9 @@ import {
 
 import DataService from '../../utils/data.service';
 import TableChartIcon from "@material-ui/icons/TableChart";
-import Moment from "react-moment";
+import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -96,25 +98,27 @@ const useStyles = makeStyles((theme) => ({
 const Users = () => {
     const classes = useStyles();
     const [users, setUsers] = useState([]);
+
     useEffect(() => {
         async function fetchData() {
             try {
                 const res = await DataService.getUsers();
                 console.log(res.data);
                 setUsers(res.data);
+                setRows(res.data);
             }
             catch (error) {
             }
         }
         fetchData();
-        console.log(users.data);
     }, []);
 
     // table
     const [selected, setSelected] = useState();
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const rows = users;
+    const [rowsPerPage, setRowsPerPage] = useState(5)
+    const [rows, setRows] = useState([]);
+    // const rows = users;
 
     const [id, setId] = useState(-1);
     const handleClick = (event, id) => {
@@ -152,16 +156,56 @@ const Users = () => {
 
     }
 
+    const [target, setTarget] = useState("");
+    const searchUsernameOrEmail= (e) => {
+        const targetField = e.target.value;
+        setTarget(targetField);
+        console.log(target);
+    }
+
+    const searchTarget = async (e) => {
+        if(target.length === 0){
+            const res = await DataService.getUsers();
+            setUsers(res.data);
+            setRows(res.data);
+        } else {
+            const user = await DataService.getUserByUsernameOrEmail(target);
+            console.log("User when search: "+user.data[0].ID);
+            setRows(user.data);
+        }
+    }
+
     return (
         <Container component="main" maxWidth={false} className={classes.container}>
             <CssBaseline />
             <Card className={classes.card}>
-                <Avatar className={classes.avatar}>
-                    <TableChartIcon />
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                    List of user
-                </Typography>
+                <div display="flex">
+                <Grid container >
+                    <Grid item justifyContent="flex-start">
+                        <Avatar className={classes.avatar}>
+                            <TableChartIcon />
+                        </Avatar>
+                        <Typography component="h1" variant="h5">
+                            List of user
+                        </Typography>
+                    </Grid>
+                    <Grid item justifyContent="flex-end" alignItems={"center"}>
+                        <Grid container spacing={1} alignItems="flex-end">
+                            <Grid item>
+                                <AccountCircle />
+                            </Grid>
+                            <Grid item>
+                                <TextField id="input-with-icon-grid" label="Username or Email" onChange={(e) => searchUsernameOrEmail(e)}/>
+                            </Grid>
+                            <Grid item>
+                                <Button variant="outlined" color="primary" onClick={(e) => searchTarget(e)}>
+                                    Search
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                </div>
                 <Divider />
                 <TableContainer className={classes.form}>
                     <Table className={classes.table}>

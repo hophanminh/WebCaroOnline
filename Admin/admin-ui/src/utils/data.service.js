@@ -53,6 +53,10 @@ const getMessage = (roomID) => {
     return axios.post(API_URL + `admin/finish/message`, { roomID });
 };
 
+const getUserByUsernameOrEmail = (target) => {
+    return axios.post(API_URL + `admin/users/search`, { target })
+}
+
 // detail board
 const DataService = {
     getUserInfo,
@@ -66,6 +70,7 @@ const DataService = {
     getFinishRoomList,
     getFinishRoom,
     getMessage,
+    getUserByUsernameOrEmail,
 }
 
 export default DataService;

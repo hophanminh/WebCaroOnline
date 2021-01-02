@@ -22,7 +22,7 @@ module.exports = {
                 FROM user
                 WHERE email = ?`, [email]),
 
-    getUserByNameOrEmail: ({ username, email }) =>
+    getUserByNameOrEmail: (username, email ) =>
         db.loadSafe(`SELECT *
             FROM user
             WHERE username = ? OR email = ?`, [username, email]),

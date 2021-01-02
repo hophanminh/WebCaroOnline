@@ -68,8 +68,9 @@ router.get("/users",async (req, res) => {
 
 
 router.post("/users/search", async (req, res) => {
-  const search = req.user.input.search;
-  const user = await model.getUserByNameOrEmail({search, search});
+  const search = req.body.target;
+  const user = await model.getUserByNameOrEmail(search, search);
+  console.log(user);
   if(user.length === 0)
     res.send("User is not found.")
   res.send(user);
