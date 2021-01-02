@@ -16,7 +16,6 @@ import NotFound from "./components/NotFound";
 import PrivateRoute from "./privateRoute.js";
 import ChangePass from "./components/admin/updatePassword";
 import Users from "./components/home/managementUsers";
-import Match from "./components/User/Match";
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
 import UserProfile from "./components/User/UserProfile";
@@ -59,9 +58,6 @@ const routes = [
     main: (props) => <UserProfile />
   },
   {
-    path: `/match/:id`,
-    main: (props) => <Match />
-  }
     path: "/History",
     private: true,
     exact: true,

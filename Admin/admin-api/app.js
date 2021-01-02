@@ -37,7 +37,7 @@ app.set('view engine', 'jade');
 
 // dependency
 app.use(cors(corsOptions));
-
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(bodyParser.json());
@@ -51,8 +51,7 @@ const authRouter = require('./routes/authentication');
 const userRouter = require('./routes/admin');
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
-// app.use('/admin', passport.authenticate('jwt', { session: false }), userRouter);
-app.use('/admin', userRouter);
+app.use('/admin', passport.authenticate('jwt', { session: false }), userRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

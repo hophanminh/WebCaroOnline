@@ -61,14 +61,16 @@ router.post("/updatePassword", async (req, res) => {
 router.get("/users",async (req, res) => {
   const users = await model.getUsers();
   console.log(users);
-  if(users.length === 0)
+  if (users.length === 0)
     res.send("No users to display");
   res.send(users);
+})
 
 
 router.post("/users/search", async (req, res) => {
-  const search = req.user.input.search;
-  const user = await model.getUserByNameOrEmail({search, search});
+  const search = req.body.target;
+  const user = await model.getUserByNameOrEmail(search, search);
+  console.log(user);
   if(user.length === 0)
     res.send("User is not found.")
   res.send(user);
@@ -77,9 +79,10 @@ router.post("/users/search", async (req, res) => {
 router.get("/users/:userId", async (req,res) => {
   const ID = req.params.userId;
   const user = await model.getUserByID(ID);
-  if(user.length === 0)
+  if (user.length === 0)
     return res.status(400).send("User is not found");
   return res.send(user);
+})
 
 
 router.post("/users/:id/ban", async (req, res) => {
@@ -118,19 +121,20 @@ router.get("/users/:userID/matches", async (req, res)=>{
 
 
 router.post('/finish/list', async (req, res) => {
-  const userID = req.user.input.userID;
-  const data = await model.getFinishRoomListByUserID(userID);
+  const user = req.body.ID;
+  console.log("ID on api: " + user);
+  const data = await model.getFinishRoomListByUserID(user);
   res.send(data);
 });
 
 router.post('/finish/message', async (req, res) => {
-  const roomID = req.user.input.roomID;
+  const roomID = req.body.roomID;
   const data = await model.getMessageByRoomID(roomID);
   res.send(data);
 });
 
 router.post('/finish/room', async (req, res) => {
-  const roomID = req.user.input.roomID;
+  const roomID = req.body.roomID;
   const { data, gameData } = await getRoomInfo(roomID);
   res.send({ data, gameData });
 });

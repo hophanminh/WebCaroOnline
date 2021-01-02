@@ -12,7 +12,6 @@ function Board(props) {
         key={i}
         style={style}
         value={props.squares[i]}
-        onClick={() => props.onClick(i)}
       />
     );
   }

@@ -40,8 +40,9 @@ const banAccount = (ID) => {
 }
 
 
-const getFinishRoomList = (userID) => {
-    return axios.post(API_URL + "admin/finish/list", { userID });
+const getFinishRoomList = (ID) => {
+    console.log("ID user: " + ID);
+    return axios.post(API_URL + "admin/finish/list", { ID: ID });
 };
 
 const getFinishRoom = (roomID) => {
@@ -51,6 +52,10 @@ const getFinishRoom = (roomID) => {
 const getMessage = (roomID) => {
     return axios.post(API_URL + `admin/finish/message`, { roomID });
 };
+
+const getUserByUsernameOrEmail = (target) => {
+    return axios.post(API_URL + `admin/users/search`, { target })
+}
 
 // detail board
 const DataService = {
@@ -65,6 +70,7 @@ const DataService = {
     getFinishRoomList,
     getFinishRoom,
     getMessage,
+    getUserByUsernameOrEmail,
 }
 
 export default DataService;
