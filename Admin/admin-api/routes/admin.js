@@ -127,13 +127,13 @@ router.post('/finish/list', async (req, res) => {
 });
 
 router.post('/finish/message', async (req, res) => {
-  const roomID = req.user.input.roomID;
+  const roomID = req.body.roomID;
   const data = await model.getMessageByRoomID(roomID);
   res.send(data);
 });
 
 router.post('/finish/room', async (req, res) => {
-  const roomID = req.user.input.roomID;
+  const roomID = req.body.roomID;
   const { data, gameData } = await getRoomInfo(roomID);
   res.send({ data, gameData });
 });

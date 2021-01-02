@@ -3,50 +3,98 @@ import {
     useHistory,
     useLocation
 } from "react-router-dom";
-import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentCreate from 'material-ui/svg-icons/content/create';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import {pink500, grey200, grey500} from 'material-ui/styles/colors';
+import {
+    Container,
+    CssBaseline,
+    Box,
+    Button,
+    Table,
+    TableBody,
+    TableCell,
+    TableRow,
+    TableFooter,
+    TableContainer,
+    TableHead,
+    TablePagination,
+    Card,
+    Divider,
+    Typography,
+    Avatar,
+    makeStyles,
+} from '@material-ui/core';
+
 import DataService from '../../utils/data.service';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import {Button} from "@material-ui/core";
+import TableChartIcon from "@material-ui/icons/TableChart";
+import Moment from "react-moment";
+
+const useStyles = makeStyles((theme) => ({
+    card: {
+        marginTop: theme.spacing(8),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: theme.spacing(4),
+    },
+    container: {
+        paddingTop: theme.spacing(4),
+        paddingBottom: theme.spacing(4),
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.primary.main,
+    },
+    form: {
+        width: '100%', // Fix IE 11 issue.
+        marginTop: theme.spacing(3),
+    },
+    table: {
+        borderTop: '1px solid #999'
+    },
+    bold: {
+        fontWeight: 'bold'
+    },
+    italic: {
+        fontStyle: 'italic'
+    },
+
+    timeCell: {
+        minWidth: '150px',
+        maxWidth: '150px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+    nameCell: {
+        minWidth: '100px',
+        maxWidth: '100px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+    footer: {
+        width: '100%',
+        display: 'flex',
+    },
+    footerRow: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'flex-end',
+        alignItems: 'flex-start'
+    },
+    buttonBox: {
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center'
+    },
+    button: {
+        margin: '0px 5px 0px 5px',
+    },
+
+
+}));
 
 const Users = () => {
-    const styles = {
-        marginTable: {
-            margin: 50
-        },
-        floatingActionButton: {
-            margin: 0,
-            top: 'auto',
-            right: 20,
-            bottom: 20,
-            left: 'auto',
-            position: 'fixed',
-        },
-        editButton: {
-            fill: grey500
-        },
-        columns: {
-            id: {
-                width: '10%'
-            },
-            name: {
-                width: '40%'
-            },
-            price: {
-                width: '20%'
-            },
-            category: {
-                width: '20%'
-            },
-            edit: {
-                width: '10%'
-            }
-        }
-    };
-
+    const classes = useStyles();
     const [users, setUsers] = useState([]);
     useEffect(() => {
         async function fetchData() {
@@ -60,7 +108,30 @@ const Users = () => {
         }
         fetchData();
         console.log(users.data);
-    }, [])
+    }, []);
+
+    // table
+    const [selected, setSelected] = useState();
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const rows = users;
+
+    const [id, setId] = useState(-1);
+    const handleClick = (event, id) => {
+        if (selected === id) {
+            setSelected(null);
+            setId(null);
+        }
+        else {
+            setSelected(id);
+            setId(id);
+        }
+    };
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const emptyRows = rows ? rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage) : 0;
+
 
     const typeAccount = (type) => {
         if(type === 1)
@@ -75,52 +146,86 @@ const Users = () => {
     }
 
     const history = useHistory();
-    const profileUser = (ID) => {
-        const path_url = `/users/${ID}`
+    const profileUser = () => {
+        const path_url = `/users/${id}`
         history.push(path_url);
 
     }
 
     return (
-            <div style = {styles.margin}>
-                <MuiThemeProvider >
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHeaderColumn style={styles.columns.ID}>ID</TableHeaderColumn>
-                            <TableHeaderColumn style={styles.columns.username}>Username</TableHeaderColumn>
-                            <TableHeaderColumn style={styles.columns.email}>Email</TableHeaderColumn>
-                            <TableHeaderColumn style={styles.columns.score}>Score</TableHeaderColumn>
-                            <TableHeaderColumn style={styles.columns.status}>Status</TableHeaderColumn>
-                            <TableHeaderColumn style={styles.columns.permission}>Permission</TableHeaderColumn>
-                            <TableHeaderColumn style={styles.columns.edit}>Edit</TableHeaderColumn>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {users.map(item =>
-                            <TableRow key={item.id}>
-                                <TableRowColumn style={styles.columns.ID}>{item.ID}</TableRowColumn>
-                                <TableRowColumn style={styles.columns.username}>{item.username}</TableRowColumn>
-                                <TableRowColumn style={styles.columns.email}>{item.email}</TableRowColumn>
-                                <TableRowColumn style={styles.columns.score}>{item.score}</TableRowColumn>
-                                <TableRowColumn style={styles.columns.status}>{convertStatus(item.status.data)}</TableRowColumn>
-                                <TableRowColumn style={styles.columns.permission}>{typeAccount(item.permission)}</TableRowColumn>
-                                <TableRowColumn style={styles.columns.edit}>
-                                    <Button onClick={() => profileUser(item.ID)}>
-                                        <FloatingActionButton zDepth={0}
-                                                              mini={true}
-                                                              backgroundColor={grey200}
-                                                              iconStyle={styles.editButton}>
-                                            <ContentCreate/>
-                                        </FloatingActionButton>
-                                    </Button>
-                                </TableRowColumn>
+        <Container component="main" maxWidth={false} className={classes.container}>
+            <CssBaseline />
+            <Card className={classes.card}>
+                <Avatar className={classes.avatar}>
+                    <TableChartIcon />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                    List of user
+                </Typography>
+                <Divider />
+                <TableContainer className={classes.form}>
+                    <Table className={classes.table}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell className={classes.bold} align="left">ID</TableCell>
+                                <TableCell className={classes.bold} align="left">Username</TableCell>
+                                <TableCell className={classes.bold} align="left">Email</TableCell>
+                                <TableCell className={classes.bold} align="left">Score</TableCell>
+                                <TableCell className={classes.bold} align="left">Status</TableCell>
+                                <TableCell className={classes.bold} align="left">Permission</TableCell>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-                </MuiThemeProvider>
-            </div>
+                        </TableHead>
+                        <TableBody>
+                            {rows
+                                ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                                    const isItemSelected = row.ID === selected;
+                                    return (
+                                        <TableRow
+                                            hover
+                                            onClick={(event) => handleClick(event, row.ID)}
+                                            aria-checked={isItemSelected}
+                                            tabIndex={-1}
+                                            key={row.ID}
+                                            selected={isItemSelected}>
+
+                                            <TableCell align="left" className={classes.nameCell}>{row.ID}</TableCell>
+                                            <TableCell align="left" className={classes.nameCell}>{row.username}</TableCell>
+                                            <TableCell align="left" className={classes.nameCell}>{row.email}</TableCell>
+                                            <TableCell align="left" className={classes.nameCell}>{row.score}</TableCell>
+                                            <TableCell align="left" className={classes.nameCell}>{convertStatus(row.status.data)}</TableCell>
+                                            <TableCell align="left" className={classes.nameCell}>{typeAccount(row.permission)}</TableCell>
+                                        </TableRow>
+                                )
+                                })
+                                : <></>
+                            }
+                            {emptyRows > 0 && (
+                                <TableRow style={{ height: 53 * emptyRows }}>
+                                    <TableCell colSpan={6} />
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <TableFooter className={classes.footer}>
+                    <TableRow className={classes.footerRow}>
+                        <TablePagination
+                            rowsPerPageOptions={[5]}
+                            count={rows ? rows.length : 0}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            component='div'
+                            onChangePage={handleChangePage}
+                        />
+                        <Box className={classes.buttonBox}>
+                            <Button size='small' className={classes.button} variant="contained" color="primary" onClick={profileUser}>
+                                View
+                            </Button>
+                        </Box>
+                    </TableRow>
+                </TableFooter>
+            </Card>
+        </Container>
     );
 };
 
