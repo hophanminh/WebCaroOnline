@@ -6,9 +6,9 @@ import {
     Grid,
     CircularProgress
 } from '@material-ui/core';
-import socket from "../../../utils/socket.service";
-import store from "../../../utils/store.service";
-import config from "../../../utils/config.json";
+import socket from "../../../../utils/socket.service";
+import store from "../../../../utils/store.service";
+import config from "../../../../utils/config.json";
 
 
 function Game(props) {

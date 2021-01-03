@@ -19,8 +19,8 @@ import Users from "./components/home/managementUsers";
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
 import UserProfile from "./components/User/UserProfile";
-import RoomFinish from "./components/RoomFinish/RoomFinish"
-import FinishRoomList from "./components/admin/FinishRoomList";
+import RoomFinish from "./components/Rooms/RoomFinish/RoomFinish"
+import AllRooms from "./components/Rooms/AllRooms";
 
 import socket from "./utils/socket.service";
 
@@ -61,12 +61,12 @@ const routes = [
     path: "/History",
     private: true,
     exact: true,
-    main: () => <FinishRoomList />
+    main: () => <AllRooms />
   },
   {
     path: "/History/Room/:id",
     main: (props) => <RoomFinish />
-  },
+  }
 ];
 const useStyles = makeStyles((theme) => ({
   root: {

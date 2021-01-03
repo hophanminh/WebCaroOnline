@@ -19,9 +19,9 @@ import { FaTrophy } from "react-icons/fa";
 
 import Game from './Game/game';
 import { Chat } from './ChatOnline'
-import socket from "../../utils/socket.service";
-import store from '../../utils/store.service';
-import DataService from "../../utils/data.service";
+import socket from "../../../utils/socket.service";
+import store from '../../../utils/store.service';
+import DataService from "../../../utils/data.service";
 
 
 const useStyles = makeStyles((theme) => ({

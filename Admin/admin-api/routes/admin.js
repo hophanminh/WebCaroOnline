@@ -127,6 +127,12 @@ router.post('/finish/list', async (req, res) => {
   res.send(data);
 });
 
+router.get('/finish/rooms', async (req, res) => {
+  const data = await model.getAllFinishRoom();
+  console.log(data);
+  res.send(data);
+});
+
 router.post('/finish/message', async (req, res) => {
   const roomID = req.body.roomID;
   const data = await model.getMessageByRoomID(roomID);

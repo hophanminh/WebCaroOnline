@@ -57,6 +57,10 @@ const getUserByUsernameOrEmail = (target) => {
     return axios.post(API_URL + `admin/users/search`, { target })
 }
 
+const getAllFinishRoom = () => {
+    return axios.get(API_URL + `admin/finish/rooms` )
+}
+
 // detail board
 const DataService = {
     getUserInfo,
@@ -71,6 +75,7 @@ const DataService = {
     getFinishRoom,
     getMessage,
     getUserByUsernameOrEmail,
+    getAllFinishRoom
 }
 
 export default DataService;

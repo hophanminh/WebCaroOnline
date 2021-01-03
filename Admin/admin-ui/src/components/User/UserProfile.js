@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import DataService from "../../utils/data.service";
-import FinishRoomList from "../admin/FinishRoomList";
+import FinishRoomList from "../Rooms/FinishRoomList";
 import isPlainObject from "react-redux/lib/utils/isPlainObject";
 
 const useStyles = makeStyles((theme) => ({

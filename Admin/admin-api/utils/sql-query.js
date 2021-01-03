@@ -91,4 +91,11 @@ module.exports = {
                         ORDER BY m.dateCreate ASC`, [ID]),
 
 
+    getAllFinishRoom: () => {
+        return db.loadSafe(`SELECT r.* , u1.username as name1, u2.username as name2, u1.score as score1, u2.score as score2, r.winner as winner
+                FROM room as r  LEFT JOIN user as u1 ON r.idUser1 = u1.ID
+                                LEFT JOIN user as u2 ON r.idUser2 = u2.ID
+                WHERE r.winner <> -1 
+                ORDER By r.dateCreate DESC`)
+    }
 };
