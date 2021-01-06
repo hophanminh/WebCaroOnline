@@ -96,6 +96,11 @@ module.exports = {
                     SET winner = ?
                     WHERE ID = ?`, [winner, roomID]),
 
+    updateScore: (userID, newScore) =>
+        db.loadSafe(`UPDATE user
+                    SET score = ?
+                    WHERE ID = ?`, [newScore, userID]),
+
     joinRoomAsPlayer1: (roomID, userID) =>
         db.loadSafe(`UPDATE room
                     SET idUser1 = ?

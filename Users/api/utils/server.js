@@ -1,6 +1,6 @@
 const model = require('../utils/sql_command');
 const { addUserToRoom, removeUserFromRoom, removeUserFromRoomWithID, getUser, getUsersInRoom } = require('./server-support/chatroom.query');
-const { getRoomInfo, checkValidMove, transformGameData } = require('./server-support/game-logic');
+const { getRoomInfo, getGameInfo, checkValidMove, transformGameData, calculatePoints } = require('./server-support/game-logic');
 const { getRoom, createRoom, joinRoom, leaveRoom, deleteRoom, resetTimer, startTimer, getRemain, getReady, ready } = require('./server-support/game-room');
 require('express-async-errors');
 const { v4: uuidv4 } = require('uuid');
@@ -43,7 +43,8 @@ module.exports = function (io) {
         io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
         io.to(user.room).emit('usersInRoom', { room: user.room, users: getUsersInRoom(user.room) });
         if (await leaveRoom(user.userID, user.room)) {
-          const { data, gameData } = await getRoomInfo(user.room);
+          const { data } = await getRoomInfo(user.room);
+
           data[0]['remain'] = getRemain(user.room);
           data[0]['ready'] = getReady(user.room);
           io.to(user.room).emit('roomData', data);
@@ -71,8 +72,8 @@ module.exports = function (io) {
         io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
         io.to(user.room).emit('usersInRoom', { room: user.room, users: getUsersInRoom(user.room) });
 
-        if ( await leaveRoom(user.userID, user.room)) {
-          const { data, gameData } = await getRoomInfo(user.room);
+        if (await leaveRoom(user.userID, user.room)) {
+          const { data } = await getRoomInfo(user.room);
           data[0]['remain'] = getRemain(user.room);
           data[0]['ready'] = getReady(user.room);
           io.to(user.room).emit('roomData', data);
@@ -94,7 +95,7 @@ module.exports = function (io) {
 
     // join new room
     socket.on("join", async ({ userID, name, room }, callback) => {
-      const { data, gameData } = await getRoomInfo(room);
+      const { data } = await getRoomInfo(room);
 
       // General room: Manager every users in room
       const { error, user } = addUserToRoom({ id: socket.id, name, room, userID });
@@ -116,17 +117,19 @@ module.exports = function (io) {
 
 
       // Detail room: Manage room data (ready, player, timer)
-      createRoom(room, callTimeoutSocket)     // if there is no room yet => create room
-      if (data[0].idUser1 === userID) {
-        joinRoom(userID, null, room);
-      }
-      else if (data[0].idUser2 === userID) {
-        joinRoom(null, userID, room);
-      }
+      if (data[0].winner === -1) {
+        createRoom(room, callTimeoutSocket)     // if there is no room yet => create room
+        if (data[0].idUser1 === userID) {
+          joinRoom(userID, null, room);
+        }
+        else if (data[0].idUser2 === userID) {
+          joinRoom(null, userID, room);
+        }
 
+      }
     })
     const callTimeoutSocket = async (userID, roomID) => {       // call when someone's timeout
-      const { data, gameData } = await getRoomInfo(roomID);
+      const { data } = await getRoomInfo(roomID);
       if (userID === data[0].idUser1) {            // player 1 timeout
         data[0].winner = 2;
       }
@@ -136,7 +139,14 @@ module.exports = function (io) {
       else {                                       // something's wrong
         data[0].winner = 0;
       }
+
+      const { newScore1, newScore2 } = calculatePoints(data[0].score1, data[0].score2, data[0].winner);
       model.updateRoomWinner(roomID, data[0].winner);
+      model.updateScore(data[0].idUser1, newScore1)
+      model.updateScore(data[0].idUser2, newScore2)
+
+      data[0].score1 = newScore1;
+      data[0].score2 = newScore2;
       data[0]["remain"] = -1;
       data[0]['ready'] = getReady(roomID);
       io.to(roomID).emit('roomData', data);       // announce that the game ended
@@ -155,7 +165,7 @@ module.exports = function (io) {
 
       // Leave Detail room
       if (await leaveRoom(userID, roomID)) {                  // if leaving user is one of 2 players => update client
-        const { data, gameData } = await getRoomInfo(roomID);
+        const { data } = await getRoomInfo(roomID);
         data[0]['remain'] = getRemain(roomID);
         data[0]['ready'] = getReady(roomID);
         io.to(roomID).emit('roomData', data);
@@ -252,7 +262,9 @@ module.exports = function (io) {
 
     // get Room data from server
     socket.on('get_room_data', async ({ ID }, callback) => {
-      const { data, gameData } = await getRoomInfo(ID);
+      const { data } = await getRoomInfo(ID);
+      const { gameData } = await getGameInfo(ID);
+
       data[0]['remain'] = getRemain(ID);
       data[0]['ready'] = getReady(ID);
       callback({ data, gameData });
@@ -266,7 +278,7 @@ module.exports = function (io) {
 
     // announce that game has ended
     socket.on('game_finish', async ({ roomID, status }) => {
-      const { data, gameData } = await getRoomInfo(roomID);
+      const { data } = await getRoomInfo(roomID);
 
       if (status !== -1) {
         // update room when someone win
@@ -279,13 +291,19 @@ module.exports = function (io) {
         else if (status === '0') {      // draw
           data[0].winner = 0;
         }
-        model.updateRoomWinner(roomID, data[0].winner);
-      }
 
-      data[0]["remain"] = -1;
-      data[0]['ready'] = getReady(roomID);
-      io.to(roomID).emit('roomData', data);
-      deleteRoom(roomID); 
+        const { newScore1, newScore2 } = calculatePoints(data[0].score1, data[0].score2, data[0].winner);
+        model.updateRoomWinner(roomID, data[0].winner);
+        model.updateScore(data[0].idUser1, newScore1)
+        model.updateScore(data[0].idUser2, newScore2)
+
+        data[0].score1 = newScore1;
+        data[0].score2 = newScore2;
+        data[0]["remain"] = -1;
+        data[0]['ready'] = getReady(roomID);
+        io.to(roomID).emit('roomData', data);
+        deleteRoom(roomID);
+      }
     });
 
 
@@ -306,9 +324,9 @@ module.exports = function (io) {
     socket.on('play', async ({ move, userID, roomID, turn }, callback) => {
       const data = await model.getRoomByID(roomID);
       const moves = await model.getMoveByRoomID(roomID);
-
+      const checkReady = getReady(roomID);
       // check if move's valid
-      if (checkValidMove(move, userID, data, moves)) {
+      if (checkReady.hasStart && checkValidMove(move, userID, data, moves)) {
         resetTimer(userID, roomID)                              // reset timer
         callback(true);                                         // update client
         // add new move to database
@@ -328,7 +346,7 @@ module.exports = function (io) {
         if (ready.isReady1 && ready.isReady2) {
           startTimer(roomID);
         }
-        const { data, gameData } = await getRoomInfo(roomID);
+        const { data } = await getRoomInfo(roomID);
         data[0]['remain'] = getRemain(roomID);
         data[0]['ready'] = getReady(roomID);
         io.to(roomID).emit('roomData', data);

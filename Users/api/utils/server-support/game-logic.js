@@ -3,10 +3,24 @@ const config = require('../../config/default.json');
 
 const getRoomInfo = async (id) => {
     if (id != null) {
-        const data = await model.getRoomByID(id);
-        const moves = await model.getMoveByRoomID(id);
-        const gameData = transformGameData(moves);
-        return { data, gameData };
+        try {
+            const data = await model.getRoomByID(id);
+            return { data };
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
+
+const getGameInfo = async (id) => {
+    if (id != null) {
+        try {
+            const moves = await model.getMoveByRoomID(id);
+            const gameData = transformGameData(moves);
+            return { gameData };
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 
@@ -71,4 +85,44 @@ const checkValidMove = (move, userID, data, moves) => {
     return true;
 }
 
-module.exports = { getRoomInfo, checkValidMove, transformGameData };
+const calculatePoints = (score1, score2, status) => {
+
+    if (status === 0) {
+        return { newScore1: score1, newScore2: score2 };
+    }
+
+    const defaultPoint = config["point_reward"];
+    const diff = Math.abs(score1 - score2);
+
+    let newScore1 = score1;
+    let newScore2 = score2;
+
+    if (status === 1) {
+        newScore1 += defaultPoint;
+        newScore2 -= defaultPoint;
+    }
+    else if (status === 2) {
+        newScore1 -= defaultPoint;
+        newScore2 += defaultPoint;
+    }
+
+    if (diff >= 200) {
+        const upsetPoint = diff * 10 / 100;
+        if (status === 1 && score1 < score2) {                           // if player 1 win and has lower score than player 2
+            newScore1 += upsetPoint;
+            newScore2 -= upsetPoint;
+        }
+        if (status === 2 && score1 > score2) {                           // if player 1 lose and has higher score than player 2
+            newScore1 -= upsetPoint;
+            newScore2 += upsetPoint;
+        }
+    }
+
+    // prevent negative score
+    newScore1 = newScore1 >= 0 ? newScore1 : 0;
+    newScore2 = newScore2 >= 0 ? newScore2 : 0;
+
+    return { newScore1: newScore1, newScore2: newScore2 }
+}
+
+module.exports = { getRoomInfo, getGameInfo, checkValidMove, transformGameData, calculatePoints };

@@ -31,6 +31,7 @@
   "row": 50,
   "win": 5,
   "timeout": 60,
+  "point_reward": 50,
   "status": {
     "ACTIVE": 1,
     "INACTIVE": 0
