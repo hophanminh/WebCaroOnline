@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   useHistory,
+  useParams,
 } from "react-router-dom";
 import Moment from 'react-moment';
 import {
@@ -95,16 +96,18 @@ const useStyles = makeStyles((theme) => ({
 const FinishRoomList = (props) => {
   const classes = useStyles();
   const history = useHistory();
+  const {id} = useParams();
   const [data, setData] = useState();
-  const [user, setUser] = useState(store.getState());
-  store.subscribe(() => {
-    setUser(store.getState());
-  });
+  const [user, setUser] = useState([]);
+
 
   // get initial data
   useEffect(() => {
     async function fetchData() {
       try {
+        const res = await DataService.getUserByUserId(id);
+        setUser(res.data[0]);
+        console.log("User name: " + user.username );
         if (user) {
           const res = await DataService.getFinishRoomList(user.ID);
           setData(res.data);
@@ -119,7 +122,7 @@ const FinishRoomList = (props) => {
       }
     }
     fetchData();
-  }, [user])
+  }, [user]);
 
   // table
   const [selected, setSelected] = useState();
@@ -164,7 +167,7 @@ const FinishRoomList = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell className={classes.bold}>Created</TableCell>
-                <TableCell className={classes.bold} align="right">Player 1</TableCell>
+                <TableCell className={classes.bold} align="right">Host match</TableCell>
                 <TableCell className={classes.bold} align="right">Player 2</TableCell>
                 <TableCell className={classes.bold} align="right">Status</TableCell>
               </TableRow>
@@ -174,7 +177,7 @@ const FinishRoomList = (props) => {
                 ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                   const isItemSelected = row.ID === selected;
 
-                  const isPlayer1 = row.name1 === user.name ? 1 : 2;
+                  const isPlayer1 = row.name1 === user.username ? 1 : 2;
                   let isWin = null;
                   if (row.winner === 0) {
                     isWin = "Draw"

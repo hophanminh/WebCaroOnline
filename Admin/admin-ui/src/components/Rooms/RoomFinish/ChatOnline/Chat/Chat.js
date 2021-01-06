@@ -8,8 +8,8 @@ import { InfoBar } from '../InforBar/InforBar';
 import { Input } from '../Input/Input';
 import { Messages } from '../Messages/Messages';
 import { TextContainer } from '../TextContainter/TextContainer'
-import socket from "../../../../utils/socket.service";
-import DataService from "../../../../utils/data.service";
+import socket from "../../../../../utils/socket.service";
+import DataService from "../../../../../utils/data.service";
 import './Chat.css';
 
 export const Chat = (props) => {

@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     useHistory,
-    useLocation
+    useParams,
 } from "react-router-dom";
+import Moment from 'react-moment';
 import {
     Container,
     CssBaseline,
@@ -22,12 +23,9 @@ import {
     Avatar,
     makeStyles,
 } from '@material-ui/core';
-
-import DataService from '../../utils/data.service';
-import TableChartIcon from "@material-ui/icons/TableChart";
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import TableChartIcon from '@material-ui/icons/TableChart';
+import DataService from "../../utils/data.service";
+import store from '../../utils/store.service';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -95,19 +93,25 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const Users = () => {
+const FinishRoomList = (props) => {
     const classes = useStyles();
-    const [users, setUsers] = useState([]);
+    const history = useHistory();
+    const [data, setData] = useState();
 
+
+    // get initial data
     useEffect(() => {
         async function fetchData() {
             try {
-                const res = await DataService.getUsers();
-                console.log(res.data);
-                setUsers(res.data);
-                setRows(res.data);
+                    const res = await DataService.getAllFinishRoom();
+                    setData(res.data);
             }
             catch (error) {
+                const resMessage =
+                    (error.response && error.response.data && error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                alert(resMessage);
             }
         }
         fetchData();
@@ -116,19 +120,17 @@ const Users = () => {
     // table
     const [selected, setSelected] = useState();
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5)
-    const [rows, setRows] = useState([]);
-    // const rows = users;
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const rows = data;
 
-    const [id, setId] = useState(-1);
-    const handleClick = (event, id) => {
-        if (selected === id) {
+    const handleClick = (event, name) => {
+        if (selected === name) {
             setSelected(null);
-            setId(null);
+            setRoomId(null);
         }
         else {
-            setSelected(id);
-            setId(id);
+            setSelected(name);
+            setRoomId(name);
         }
     };
     const handleChangePage = (event, newPage) => {
@@ -136,93 +138,40 @@ const Users = () => {
     };
     const emptyRows = rows ? rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage) : 0;
 
-
-    const typeAccount = (type) => {
-        if(type === 1)
-            return "ADMIN";
-        return "USER"
-    }
-
-    const convertStatus = (type) =>{
-        if(type == 1)
-            return "ACTIVE";
-        return "INACTIVE";
-    }
-
-    const history = useHistory();
-    const profileUser = () => {
-        const path_url = `/users/${id}`
-        history.push(path_url);
-
-    }
-
-    const [target, setTarget] = useState("");
-    const searchUsernameOrEmail= (e) => {
-        const targetField = e.target.value;
-        setTarget(targetField);
-        console.log(target);
-    }
-
-    const searchTarget = async (e) => {
-        if(target.length === 0){
-            const res = await DataService.getUsers();
-            setUsers(res.data);
-            setRows(res.data);
-        } else {
-            const user = await DataService.getUserByUsernameOrEmail(target);
-            console.log("User when search: "+user.data[0].ID);
-            setRows(user.data);
-        }
+    // button
+    const [roomId, setRoomId] = useState("");
+    const handleClickViewer = () => {
+        history.push("/History/Room/" + roomId);
     }
 
     return (
         <Container component="main" maxWidth={false} className={classes.container}>
             <CssBaseline />
             <Card className={classes.card}>
-                <div display="flex">
-                <Grid container >
-                    <Grid item justifyContent="flex-start">
-                        <Avatar className={classes.avatar}>
-                            <TableChartIcon />
-                        </Avatar>
-                        <Typography component="h1" variant="h5">
-                            List of user
-                        </Typography>
-                    </Grid>
-                    <Grid item justifyContent="flex-end" alignItems={"center"}>
-                        <Grid container spacing={1} alignItems="flex-end">
-                            <Grid item>
-                                <AccountCircle />
-                            </Grid>
-                            <Grid item>
-                                <TextField id="input-with-icon-grid" label="Username or Email" onChange={(e) => searchUsernameOrEmail(e)}/>
-                            </Grid>
-                            <Grid item>
-                                <Button variant="outlined" color="primary" onClick={(e) => searchTarget(e)}>
-                                    Search
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                </div>
+                <Avatar className={classes.avatar}>
+                    <TableChartIcon />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                    Game History
+                </Typography>
                 <Divider />
                 <TableContainer className={classes.form}>
                     <Table className={classes.table}>
                         <TableHead>
                             <TableRow>
-                                <TableCell className={classes.bold} align="left">ID</TableCell>
-                                <TableCell className={classes.bold} align="left">Username</TableCell>
-                                <TableCell className={classes.bold} align="left">Email</TableCell>
-                                <TableCell className={classes.bold} align="left">Score</TableCell>
-                                <TableCell className={classes.bold} align="left">Status</TableCell>
-                                <TableCell className={classes.bold} align="left">Permission</TableCell>
+                                <TableCell className={classes.bold}>Created</TableCell>
+                                <TableCell className={classes.bold} align="right">Host match</TableCell>
+                                <TableCell className={classes.bold} align="right">Player 2</TableCell>
+                                <TableCell className={classes.bold} align="right">Status</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {rows
                                 ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                                     const isItemSelected = row.ID === selected;
+
+                                    const isWin = row.winner === 1 ? row.name1 : row.name2;
+
                                     return (
                                         <TableRow
                                             hover
@@ -231,15 +180,14 @@ const Users = () => {
                                             tabIndex={-1}
                                             key={row.ID}
                                             selected={isItemSelected}>
-
-                                            <TableCell align="left" className={classes.nameCell}>{row.ID}</TableCell>
-                                            <TableCell align="left" className={classes.nameCell}>{row.username}</TableCell>
-                                            <TableCell align="left" className={classes.nameCell}>{row.email}</TableCell>
-                                            <TableCell align="left" className={classes.nameCell}>{row.score}</TableCell>
-                                            <TableCell align="left" className={classes.nameCell}>{convertStatus(row.status.data)}</TableCell>
-                                            <TableCell align="left" className={classes.nameCell}>{typeAccount(row.permission)}</TableCell>
+                                            <TableCell component="th" id={index} scope="row" className={classes.timeCell}>
+                                                <Moment fromNow>{row.dateCreate}</Moment>
+                                            </TableCell>
+                                            <TableCell align="right" className={classes.nameCell}>{row.name1}</TableCell>
+                                            <TableCell align="right" className={classes.nameCell}>{row.name2}</TableCell>
+                                            <TableCell align="right" className={classes.bold}>{isWin}</TableCell>
                                         </TableRow>
-                                )
+                                    )
                                 })
                                 : <></>
                             }
@@ -251,6 +199,7 @@ const Users = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+
                 <TableFooter className={classes.footer}>
                     <TableRow className={classes.footerRow}>
                         <TablePagination
@@ -262,7 +211,7 @@ const Users = () => {
                             onChangePage={handleChangePage}
                         />
                         <Box className={classes.buttonBox}>
-                            <Button size='small' className={classes.button} variant="contained" color="primary" onClick={profileUser}>
+                            <Button size='small' className={classes.button} variant="contained" color="primary" onClick={handleClickViewer}>
                                 View
                             </Button>
                         </Box>
@@ -271,6 +220,6 @@ const Users = () => {
             </Card>
         </Container>
     );
-};
+}
 
-export default Users;
+export default FinishRoomList;
