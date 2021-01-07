@@ -51,6 +51,14 @@ export default function SideBarList(props) {
                     <ListItemText primary="History" />
                 </ListItem>
             )}
+            {currentUser && (
+                <ListItem button component={NavLink} to="/users">
+                    <ListItemIcon>
+                        <TableChartIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Users" />
+                </ListItem>
+            )}
         </div>
     )
 };
