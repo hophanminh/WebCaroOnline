@@ -190,10 +190,9 @@ export default function Room(props) {
                         </Box>
                       </Grid>
                       <Grid container item xs={4} className={classes.countdown}>
-                        {room.winner === -1
-                          ? <Countdown counter={counter} setCounter={setCounter} reset={resetCountdown} setReset={setResetCountdown} />
-                          : <Typography variant="h5">VS</Typography>
-                        }
+                        {room.winner === -1 && <Countdown counter={counter} setCounter={setCounter} reset={resetCountdown} setReset={setResetCountdown}/>}
+                        {room.winner === 0 && <Typography variant="h5">Draw</Typography>}
+                        {(room.winner !== 0 ||  room.winner !== -1) && <Typography variant="h5">VS</Typography>}
                       </Grid>
                       <Grid container item xs={4} className={classes.nameContainerRight} zeroMinWidth>
                         <Typography variant="h5" noWrap className={room.winner === 2 ? classes.winColor : null}>{room.name2 ? "(O) " + room.name2 : "(O) Waiting"}</Typography>

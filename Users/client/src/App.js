@@ -33,6 +33,7 @@ import socket from "./utils/socket.service";
 const routes = [
   {
     path: "/",
+    private: true,
     exact: true,
     main: () => <Home />
   },
