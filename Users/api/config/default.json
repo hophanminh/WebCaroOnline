@@ -39,5 +39,9 @@
   "HOST": {
     "LOCAL": "http://localhost:3000",
     "ONLINE": ""
+  },
+  "API": {
+    "LOCAL": "http://localhost:9000",
+    "ONLINE": ""
   }
 }

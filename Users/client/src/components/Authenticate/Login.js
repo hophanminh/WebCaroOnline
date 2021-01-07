@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   useHistory,
   useLocation,
@@ -18,6 +18,7 @@ import Container from '@material-ui/core/Container';
 import AuthService from "../../utils/auth.service";
 import socket from "../../utils/socket.service";
 import store from '../../utils/store.service';
+const queryString = require('query-string');
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -41,9 +42,27 @@ const useStyles = makeStyles((theme) => ({
 
 function Login(props) {
   const classes = useStyles();
+  const location = useLocation();
+  const history = useHistory();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const parsed = queryString.parse(location.search);
+    if (parsed.id && parsed.name && parsed.token) {
+      AuthService.loginExternal(parsed.id, parsed.name, parsed.token)
+      store.dispatch({ type: 'user/updateUser' })
+      history.replace("/")
+
+      const user = store.getState().user;
+      socket.emit("online", { ID: user.ID, name: user.name });
+    }
+
+  }, [])
+
+
 
   const onChangeUsername = (e) => {
     const username = e.target.value;
@@ -56,8 +75,6 @@ function Login(props) {
   };
 
   // auth
-  const history = useHistory();
-  const location = useLocation();
   const { from } = location.state || { from: { pathname: "/" } };
   const login = async (e) => {
     e.preventDefault();
@@ -72,8 +89,8 @@ function Login(props) {
         props.dispatch({ type: 'user/updateUser' })
 
         const user = store.getState().user;
-        socket.emit("online", {ID: user.ID, name: user.name});
-                
+        socket.emit("online", { ID: user.ID, name: user.name });
+
         history.replace(from);
       }
       catch (error) {
@@ -150,9 +167,27 @@ function Login(props) {
           >
             Sign In
           </Button>
+          <Button
+            href="http://localhost:9000/auth/facebook"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Sign in with Facebook
+          </Button>
+          <Button
+            href="http://localhost:9000/auth/google"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Sign in with Google
+          </Button>
         </form>
       </div>
-    </Container>
+    </Container >
   );
 }
 

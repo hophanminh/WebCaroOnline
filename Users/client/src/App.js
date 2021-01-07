@@ -56,6 +56,7 @@ const routes = [
   },
   {
     path: "/Room/:id",
+    private: true,
     main: (props) => <Room />
   },
   {
@@ -79,6 +80,7 @@ const routes = [
   },
   {
     path: "/History/Room/:id",
+    private: true,
     main: (props) => <RoomFinish />
 
   },
@@ -98,13 +100,6 @@ export default function App(props) {
   useEffect(() => {
     // check if user is already logged in
     store.dispatch({ type: 'user/updateUser' });
-    const user = store.getState().user;
-    if (user) {
-      socket.emit("online", { ID: user.ID, name: user.name });                // announce that you are online
-      socket.on("waiting_for_invite_" + user.ID, (invitation) => {                       // announce that you are waiting for invitec
-        store.dispatch({ type: 'invitation/add', invitation: invitation });
-      });
-    }
 
     // auto sign-out all tabs 
     const handleInvalidToken = e => {
@@ -119,6 +114,17 @@ export default function App(props) {
       window.removeEventListener('storage', handleInvalidToken)
     }
   }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      socket.emit("online", { ID: currentUser.ID, name: currentUser.name });                // announce that you are online
+      socket.on("waiting_for_invite_" + currentUser.ID, (invitation) => {                       // announce that you are waiting for invitec
+        store.dispatch({ type: 'invitation/add', invitation: invitation });
+      });
+      return () => socket.off("waiting_for_invite_" + currentUser.ID);
+    }
+
+  }, [currentUser]);
 
 
   return (

@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import {
+  useLocation,
+  useHistory,
+} from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
@@ -7,6 +11,8 @@ import ListUser from '../ListUser';
 import ListContainer from './ListContainer';
 
 import socket from "../../utils/socket.service";
+import store from "../../utils/store.service";
+import AuthService from "../../utils/auth.service";
 
 const useStyles = makeStyles((theme) => ({
   appBarSpacer: theme.mixins.toolbar,
@@ -30,17 +36,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Home = () => {
+const Home = (props) => {
   const classes = useStyles();
+  const location = useLocation();
+  const history = useHistory();
 
-  const [onlineUsers, setOnlineUsers] = useState();  
+  const [onlineUsers, setOnlineUsers] = useState();
 
   useEffect(() => {
-      socket.emit("alert_online_users");
-      socket.on("get_online_users", setOnlineUsers);
-      return () => {
-          socket.off("get_online_users");
-      }
+    socket.emit("alert_online_users");
+    socket.on("get_online_users", setOnlineUsers);
+    return () => {
+      socket.off("get_online_users");
+    }
   }, [])
 
   return (
@@ -55,7 +63,7 @@ const Home = () => {
             <ListContainer />
           </Grid>
           <Grid item sm={4} xs={12}>
-            <ListUser socket={socket} onlineUsers={onlineUsers}/>
+            <ListUser socket={socket} onlineUsers={onlineUsers} />
           </Grid>
         </Grid>
       </Container>

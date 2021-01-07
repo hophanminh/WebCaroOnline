@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
-    makeStyles, ServerStyleSheets,
+    makeStyles,
 } from '@material-ui/core';
 import config from "../../utils/config.json";
-import socket from "../../utils/socket.service";
 
 const useStyles = makeStyles((theme) => ({
     countdown: {

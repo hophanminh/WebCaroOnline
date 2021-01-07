@@ -15,8 +15,6 @@ import { connect } from 'react-redux';
 
 import Container from '@material-ui/core/Container';
 import AuthService from "../../utils/auth.service";
-import socket from "../../utils/socket.service";
-import store from '../../utils/store.service';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -210,6 +208,25 @@ function SignUp(props) {
           >
             Sign Up
           </Button>
+          <Button
+            href="http://localhost:9000/auth/facebook"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Sign up with Facebook
+          </Button>
+          <Button
+            href="http://localhost:9000/auth/google"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Sign up with Google
+          </Button>
+
         </form>
       </div>
     </Container>

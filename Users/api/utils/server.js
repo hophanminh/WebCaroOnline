@@ -14,7 +14,6 @@ module.exports = function (io) {
     // online user
     socket.on("online", (user) => {
       socket.user = user;
-
       // add new user to online list
       if (!listOnlineUser[user.ID]) {
         listOnlineUser[user.ID] = { name: user.name, i: 0 };    // i is number of tab of one account
@@ -96,7 +95,6 @@ module.exports = function (io) {
     // join new room
     socket.on("join", async ({ userID, name, room }, callback) => {
       const { data } = await getRoomInfo(room);
-
       // General room: Manager every users in room
       const { error, user } = addUserToRoom({ id: socket.id, name, room, userID });
       if (error) {
@@ -115,11 +113,11 @@ module.exports = function (io) {
         callback();
       }
 
-
       // Detail room: Manage room data (ready, player, timer)
       if (data[0].winner === -1) {
         createRoom(room, callTimeoutSocket)     // if there is no room yet => create room
         if (data[0].idUser1 === userID) {
+          console.log("here");
           joinRoom(userID, null, room);
         }
         else if (data[0].idUser2 === userID) {
