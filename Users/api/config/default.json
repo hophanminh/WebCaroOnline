@@ -31,12 +31,17 @@
   "row": 50,
   "win": 5,
   "timeout": 60,
+  "point_reward": 50,
   "status": {
     "ACTIVE": 1,
     "INACTIVE": 0
   },
   "HOST": {
     "LOCAL": "http://localhost:3000",
+    "ONLINE": ""
+  },
+  "API": {
+    "LOCAL": "http://localhost:9000",
     "ONLINE": ""
   }
 }

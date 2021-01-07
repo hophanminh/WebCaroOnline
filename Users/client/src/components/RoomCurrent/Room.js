@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   useParams,
+  Prompt
 } from "react-router-dom";
 import {
   makeStyles,
@@ -64,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: 'center',
     alignItems: 'flex-start',
+    flexWrap: 'wrap',
   },
   nameContainerRight: {
     display: "flex",
@@ -156,73 +158,92 @@ export default function Room(props) {
   const [resetCountdown, setResetCountdown] = useState(false);                   // room's data
   const [counter, setCounter] = useState(null);
 
-  return (
-    <main className={classes.content}>
-      <div className={classes.appBarSpacer} />
-      <Container maxWidth="lg" className={classes.container}>
-        {user
-          ?
-          <Grid container spacing={3}>
-            <Grid item sm={8} xs={12} className={classes.leftGrid} >
-              <Card>
-                <Box className={classes.shareButtonContainer}>
-                  <Button size="small" variant="contained" color="primary" onClick={() => copyLink()}>
-                    Get room's ID
-                </Button>
-                  <Snackbar
-                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                    open={open}
-                    onClose={handleCloseSnackbar}
-                    message="ID copied to clipboard"
-                  />
-                </Box>
-                <CardContent>
-                  {room
-                    ?
-                    <Grid container spacing={3} >
-                      <Grid container item xs={4} className={classes.nameContainerLeft} zeroMinWidth>
-                        <Typography variant="h5" noWrap className={room.winner === 1 ? classes.winColor : null}>{room.name1 ? "(X) " + room.name1 : "(X) Waiting"}</Typography>
-                        <Box className={classes.trophyCount}>
-                          <IconContext.Provider value={{ color: '#e5c100' }}>
-                            <FaTrophy className={classes.trophyIcon} />
-                          </IconContext.Provider>
-                          <Typography noWrap> - {room.name1 ? room.score1 : 0}</Typography>
-                        </Box>
-                      </Grid>
-                      <Grid container item xs={4} className={classes.countdown}>
-                        {room.winner === -1
-                          ? <Countdown counter={counter} setCounter={setCounter} reset={resetCountdown} setReset={setResetCountdown} />
-                          : <Typography variant="h5">VS</Typography>
-                        }
-                      </Grid>
-                      <Grid container item xs={4} className={classes.nameContainerRight} zeroMinWidth>
-                        <Typography variant="h5" noWrap className={room.winner === 2 ? classes.winColor : null}>{room.name2 ? "(O) " + room.name2 : "(O) Waiting"}</Typography>
-                        <Box className={classes.trophyCount}>
-                          <Typography noWrap>{room.name2 ? room.score2 : 0} - </Typography>
-                          <IconContext.Provider value={{ color: '#FFD700' }}>
-                            <FaTrophy className={classes.trophyIcon} />
-                          </IconContext.Provider>
-                        </Box>
-                      </Grid>
 
-                    </Grid>
-                    : <></>
-                  }
-                  <Divider />
-                  <Game roomID={ID} roomData={room} gameData={gameData} reset={resetCountdown} setReset={setResetCountdown} />
-                </CardContent>
-              </Card>
+  // leave room
+  const [leave, setLeave] = useState(true);
+  useEffect(() => {
+    if (leave) {
+      window.onbeforeunload = () => "Don't leave"
+    }
+    else {
+      window.onbeforeunload = undefined
+    }
+  }, [leave]);
+
+
+
+  return (
+    <React.Fragment>
+      <Prompt
+        when={leave}
+        message='You are leaving current room. Are you sure ?'
+      />
+      <main className={classes.content}>
+        <div className={classes.appBarSpacer} />
+        <Container maxWidth="lg" className={classes.container}>
+          {user
+            ?
+            <Grid container spacing={3}>
+              <Grid item sm={8} xs={12} className={classes.leftGrid} >
+                <Card>
+                  <Box className={classes.shareButtonContainer}>
+                    <Button size="small" variant="contained" color="primary" onClick={() => copyLink()}>
+                      Get room's ID
+                </Button>
+                    <Snackbar
+                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                      open={open}
+                      onClose={handleCloseSnackbar}
+                      message="ID copied to clipboard"
+                    />
+                  </Box>
+                  <CardContent>
+                    {room
+                      ?
+                      <Grid container spacing={3} >
+                        <Grid container item xs={4} className={classes.nameContainerLeft} zeroMinWidth>
+                          <Typography variant="h5" noWrap className={room.winner === 1 ? classes.winColor : null}>{room.name1 ? "(X) " + room.name1 : "(X) Waiting"}</Typography>
+                          <Box className={classes.trophyCount}>
+                            <IconContext.Provider value={{ color: '#e5c100' }}>
+                              <FaTrophy className={classes.trophyIcon} />
+                            </IconContext.Provider>
+                            <Typography noWrap> - {room.name1 ? room.score1 : 0}</Typography>
+                          </Box>
+                        </Grid>
+                        <Grid container item xs={4} className={classes.countdown}>
+                          {room.winner === -1 && <Countdown counter={counter} setCounter={setCounter} reset={resetCountdown} setReset={setResetCountdown} />}
+                          {room.winner === 0 && <Typography variant="h5">Draw</Typography>}
+                          {(room.winner !== 0 || room.winner !== -1) && <Typography variant="h5">VS</Typography>}
+                        </Grid>
+                        <Grid container item xs={4} className={classes.nameContainerRight} zeroMinWidth>
+                          <Typography variant="h5" noWrap className={room.winner === 2 ? classes.winColor : null}>{room.name2 ? "(O) " + room.name2 : "(O) Waiting"}</Typography>
+                          <Box className={classes.trophyCount}>
+                            <Typography noWrap>{room.name2 ? room.score2 : 0} - </Typography>
+                            <IconContext.Provider value={{ color: '#FFD700' }}>
+                              <FaTrophy className={classes.trophyIcon} />
+                            </IconContext.Provider>
+                          </Box>
+                        </Grid>
+
+                      </Grid>
+                      : <></>
+                    }
+                    <Divider />
+                    <Game roomID={ID} roomData={room} gameData={gameData} reset={resetCountdown} setReset={setResetCountdown} />
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item sm={4} xs={12} className={classes.rightGrid} >
+                {user
+                  ? <Chat userID={user.ID} name={user.name} room={ID} status={room ? room.winner : null} />
+                  : <Chat name={null} room={ID} />}
+              </Grid>
             </Grid>
-            <Grid item sm={4} xs={12} className={classes.rightGrid} >
-              {user
-                ? <Chat userID={user.ID} name={user.name} room={ID} status={room ? room.winner : null} />
-                : <Chat name={null} room={ID} />}
-            </Grid>
-          </Grid>
-          :
-          <CircularProgress />
-        }
-      </Container>
-    </main>
+            :
+            <CircularProgress />
+          }
+        </Container>
+      </main>
+    </React.Fragment>
   );
 }

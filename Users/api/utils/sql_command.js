@@ -17,7 +17,7 @@ module.exports = {
                 FROM user
                 WHERE email = ? `, [email]),
 
-    getUserByNameOrEmail: ({ username, email }) =>
+    getUserByNameOrEmail: (username, email) =>
         db.loadSafe(`SELECT *
             FROM user
             WHERE username = ? OR email = ?`, [username, email]),
@@ -95,6 +95,11 @@ module.exports = {
         db.loadSafe(`UPDATE room
                     SET winner = ?
                     WHERE ID = ?`, [winner, roomID]),
+
+    updateScore: (userID, newScore) =>
+        db.loadSafe(`UPDATE user
+                    SET score = ?
+                    WHERE ID = ?`, [newScore, userID]),
 
     joinRoomAsPlayer1: (roomID, userID) =>
         db.loadSafe(`UPDATE room

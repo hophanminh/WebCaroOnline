@@ -128,37 +128,40 @@ const ListUser = (props) => {
                     userList.map((user, i) => (
                         <ListItem divider={i < userList.length - 1} key={user.ID} >
                             <ListItemText className={classes.nameCard} primary={user.name} />
-                            <IconButton id={user.ID} edge="end" size="small" onClick={(e) => handleClickMenu(e)}>
-                                <MoreVertIcon />
-                            </IconButton>
-                            <Menu
-                                id="simple-menu"
-                                anchorEl={anchorEl}
-                                keepMounted
-                                open={Boolean(anchorEl)}
-                                onClose={(e) => handleCloseMenu(e)}
-                            >
-                                <MenuItem className={classes.inviteButton} >
-                                    <Button size='small' onClick={(e) => handleInvite(e)}>Invite</Button>
-                                    <Dialog
-                                        open={openWaiting}
-                                        onClose={(e) => handleCloseWaiting(e)}
-                                        aria-labelledby="alert-dialog-title"
-                                        aria-describedby="alert-dialog-description"
+                            {(user.ID !== currentUser.ID) &&
+                                <>
+                                    <IconButton id={user.ID} edge="end" size="small" onClick={(e) => handleClickMenu(e)}>
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                    <Menu
+                                        id="simple-menu"
+                                        anchorEl={anchorEl}
+                                        keepMounted
+                                        open={Boolean(anchorEl)}
+                                        onClose={(e) => handleCloseMenu(e)}
                                     >
-                                        <DialogTitle id="alert-dialog-title">{"Waiting..."}</DialogTitle>
-                                        <DialogContent className={classes.dialogContent}>
-                                            {message === ''
-                                                ? <CircularProgress />
-                                                : <Typography>{message}</Typography>}
-                                            <DialogContentText id="alert-dialog-description">
-                                                Closing this dialog will cancel the invitation.
+                                        <MenuItem className={classes.inviteButton} >
+                                            <Button size='small' onClick={(e) => handleInvite(e)}>Invite</Button>
+                                            <Dialog
+                                                open={openWaiting}
+                                                onClose={(e) => handleCloseWaiting(e)}
+                                                aria-labelledby="alert-dialog-title"
+                                                aria-describedby="alert-dialog-description"
+                                            >
+                                                <DialogTitle id="alert-dialog-title">{"Waiting..."}</DialogTitle>
+                                                <DialogContent className={classes.dialogContent}>
+                                                    {message === ''
+                                                        ? <CircularProgress />
+                                                        : <Typography>{message}</Typography>}
+                                                    <DialogContentText id="alert-dialog-description">
+                                                        Closing this dialog will cancel the invitation.
                                             </DialogContentText>
-                                        </DialogContent>
-                                    </Dialog>
-                                </MenuItem>
-                            </Menu>
-
+                                                </DialogContent>
+                                            </Dialog>
+                                        </MenuItem>
+                                    </Menu>
+                                </>
+                            }
                         </ListItem>
                     )) : ""
                 }

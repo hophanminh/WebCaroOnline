@@ -83,9 +83,10 @@ const deleteRoom = (roomID) => {
     const index = rooms.findIndex((room) => room.roomID === roomID);
 
     if (index !== -1) {
-        clearInterval(room.timerID)
+        clearInterval(rooms[index].timerID)
         return rooms.splice(index, 1)[0]
     };
+    return null;
 }
 
 const resetTimer = (userID, roomID) => {
@@ -110,6 +111,7 @@ const getRemain = (roomID) => {
     if (room) {
         return room.remain;
     }
+    return -1;
 }
 
 const getReady = (roomID) => {
@@ -117,6 +119,7 @@ const getReady = (roomID) => {
     if (room) {
         return { hasStart: room.hasStart, isReady1: room.user1.isReady, isReady2: room.user2.isReady };
     }
+    return { hasStart: true, isReady1: true, isReady2: true };
 }
 
 const ready = (userID, roomID) => {
