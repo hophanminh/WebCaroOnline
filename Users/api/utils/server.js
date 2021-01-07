@@ -117,7 +117,6 @@ module.exports = function (io) {
       if (data[0].winner === -1) {
         createRoom(room, callTimeoutSocket)     // if there is no room yet => create room
         if (data[0].idUser1 === userID) {
-          console.log("here");
           joinRoom(userID, null, room);
         }
         else if (data[0].idUser2 === userID) {

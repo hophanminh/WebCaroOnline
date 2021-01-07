@@ -93,7 +93,7 @@ router.post("/room/joinRequest/player", async (req, res) => {
     res.status(200).send({ ID: roomID });
   }
   else if (room[0].idUser1 && room[0].idUser2) {
-    res.status(400).send({ message: "Room already had enough player" });
+    res.status(400).send({ message: "Room already had enough player. Please refesh list" });
   }
 });
 
