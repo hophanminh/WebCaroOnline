@@ -24,6 +24,8 @@ import Room from "./components/RoomCurrent/Room"
 import RoomFinish from "./components/RoomFinish/RoomFinish"
 import FinishRoomList from "./components/User/FinishRoomList.js";
 
+import Rank from './components/ranking';
+import UserProfile from "./components/User/UserProfile";
 
 import store from './utils/store.service';
 import AuthService from './utils/auth.service'
@@ -61,7 +63,6 @@ const routes = [
     main: (props) => <Room />
   },
   {
-
     path: "/activeAccount/:uuid",
     main: (props) => <ActiveAccount />
   },
@@ -83,6 +84,18 @@ const routes = [
     path: "/History/Room/:id",
     private: true,
     main: (props) => <RoomFinish />
+
+  },
+  {
+    path: "/Ranking",
+    private: true,
+    main: (props) => <Rank />
+
+  },
+  {
+    path: "/user/:id",
+    private: true,
+    main: (props) => <UserProfile />
 
   },
 ];

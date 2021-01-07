@@ -2,6 +2,12 @@ const db = require("./database");
 const config = require("../config/default.json");
 
 module.exports = {
+
+    getUsers: () => {
+        const sql = `SELECT * FROM user order by score desc`
+        return db.loadSafe(sql);
+    },
+
     getUserByID: (ID) =>
         db.loadSafe(`SELECT *
                 FROM user

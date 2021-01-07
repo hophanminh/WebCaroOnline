@@ -126,4 +126,29 @@ router.post('/finish/room', async (req, res) => {
   res.send({ data, gameData });
 });
 
+router.get("/ranking",async (req, res) => {
+  const users = await model.getUsers();
+  console.log(users);
+  if (users.length === 0)
+    res.send("No users to display");
+  res.send(users);
+})
+
+router.post("/search", async (req, res) => {
+  const search = req.body.target;
+  const user = await model.getUserByNameOrEmail(search, search);
+  console.log(user);
+  if(user.length === 0)
+    res.send("User is not found.")
+  res.send(user);
+})
+
+router.get("/:userId", async (req,res) => {
+  const ID = req.params.userId;
+  const user = await model.getUserByID(ID);
+  if (user.length === 0)
+    return res.status(400).send("User is not found");
+  return res.send(user);
+})
+
 module.exports = router;

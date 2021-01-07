@@ -6,6 +6,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import PeopleIcon from '@material-ui/icons/People';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import TableChartIcon from '@material-ui/icons/TableChart';
+import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 import {
   NavLink
 } from "react-router-dom";
@@ -50,6 +51,14 @@ export default function SideBarList(props) {
           </ListItemIcon>
           <ListItemText primary="History" />
         </ListItem>
+      )}
+      {currentUser && (
+          <ListItem button component={NavLink} to="/Ranking">
+            <ListItemIcon>
+              <AccountBalanceIcon />
+            </ListItemIcon>
+            <ListItemText primary="History" />
+          </ListItem>
       )}
     </div>
   )
