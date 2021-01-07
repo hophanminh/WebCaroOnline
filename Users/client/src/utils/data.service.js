@@ -60,6 +60,18 @@ const getMessage = (roomID) => {
   return axios.post(API_URL + `user/finish/message`, { roomID });
 };
 
+const getUsers = () => {
+  return axios.get(API_URL + `user/ranking`);
+}
+
+const getUserByUsernameOrEmail = (target) => {
+  return axios.post(API_URL + `user/search`, { target })
+}
+
+const getUserByUserId = (ID) => {
+  return axios.get(API_URL + `user/${ID}`);
+}
+
 const DataService = {
   getUserInfo,
   changeUserInfo,
@@ -74,6 +86,10 @@ const DataService = {
   forgotPass,
   resetPassword,
   getMessage,
+  getUsers,
+  getUserByUsernameOrEmail,
+  getUserByUserId,
+
 }
 
 export default DataService;

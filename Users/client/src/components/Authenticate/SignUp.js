@@ -15,6 +15,9 @@ import { connect } from 'react-redux';
 
 import Container from '@material-ui/core/Container';
 import AuthService from "../../utils/auth.service";
+import FacebookIcon from "@material-ui/icons/Facebook";
+import MailIcon from "@material-ui/icons/Mail";
+import red from "@material-ui/core/colors/red";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -208,24 +211,20 @@ function SignUp(props) {
           >
             Sign Up
           </Button>
-          <Button
-            href="http://localhost:9000/auth/facebook"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Sign up with Facebook
-          </Button>
-          <Button
-            href="http://localhost:9000/auth/google"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Sign up with Google
-          </Button>
+          <div >
+            <Grid container>
+              <Grid item>
+              </Grid>
+              <Grid item>
+                <Button href="http://localhost:9000/auth/facebook">
+                  <FacebookIcon color="primary" style={{ fontSize: 40 }}/>
+                </Button>
+              </Grid>
+              <Button href="http://localhost:9000/auth/google">
+                <MailIcon color="action" style={{ fontSize: 40, color: red[500] }}/>
+              </Button>
+            </Grid>
+          </div>
 
         </form>
       </div>

@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import DataService from "../../utils/data.service";
+import FinishRoomList from "./FinishRoomList";
 
 const useStyles = makeStyles((theme) => ({
   appBarSpacer: theme.mixins.toolbar,
@@ -41,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+
 }));
 
 export default function Account() {
@@ -120,9 +122,12 @@ export default function Account() {
   };
 
   return (
-    <Container component="main" maxWidth='xs' className={classes.container}>
+      <main className={classes.content}>
+      <Container component="main" className={classes.container}>
       <CssBaseline />
-      <Card className={classes.card}>
+      <Grid container>
+        <Grid item sm={8} xs={12}>
+          <Card maxWidth='xs' className={classes.card}>
         <Avatar className={classes.avatar}>
           <PeopleIcon />
         </Avatar>
@@ -191,6 +196,12 @@ export default function Account() {
           </Button>
         </form>
       </Card>
+        </Grid>
+        <Grid item sm={8} xs={12}>
+          <FinishRoomList />
+        </Grid>
+      </Grid>
     </Container>
+      </main>
   );
 }
