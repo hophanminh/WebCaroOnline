@@ -99,7 +99,8 @@ const FinishRoomList = (props) => {
   const {id} = useParams();
   const [data, setData] = useState();
   const [user, setUser] = useState([]);
-
+  const [nMatch, setNMatch] = useState(0);
+  const [rate, setRate] = useState(0);
 
   // get initial data
   useEffect(() => {
@@ -111,6 +112,7 @@ const FinishRoomList = (props) => {
         if (user) {
           const res = await DataService.getFinishRoomList(user.ID);
           setData(res.data);
+          setNMatch(res.data.length);
         }
       }
       catch (error) {
@@ -158,9 +160,14 @@ const FinishRoomList = (props) => {
         <Avatar className={classes.avatar}>
           <TableChartIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
-          Game History
-        </Typography>
+        <div display="flex" flexDirection="row" justifyContent="space-between">
+          <Typography component="h1" variant="h5" flex="1">
+            Game History
+          </Typography>
+          <Typography component="h1" variant="h5" flex="1">
+            Total Match: {nMatch}
+          </Typography>
+        </div>
         <Divider />
         <TableContainer className={classes.form}>
           <Table className={classes.table}>
@@ -183,7 +190,7 @@ const FinishRoomList = (props) => {
                     isWin = "Draw"
                   }
                   else if (isPlayer1 === row.winner) {
-                    isWin = "Won"
+                    isWin = "Won";
                   }
                   else if (isPlayer1 !== row.winner) {
                     isWin = "Lost"

@@ -26,6 +26,8 @@ const useStyles = makeStyles((theme) => ({
     avatar: {
         margin: theme.spacing(1),
         backgroundColor: theme.palette.secondary.main,
+        width: 200,
+        height: 200
     },
     form: {
         width: '100%', // Fix IE 11 issue.
@@ -75,65 +77,11 @@ export default function Account() {
         fetchData();
     }, [ID])
 
-    const onChangeUsername = (e) => {
-        const username = e.target.value;
-        setUsername(username);
-    };
-
-    const onChangeFullname = (e) => {
-        const fullname = e.target.value;
-        setFullname(fullname);
-    };
-
-    const onChangeEmail = (e) => {
-        const email = e.target.value;
-        setEmail(email);
-    };
-
     const banAccount = (userId) => {
         const ban = DataService.banAccount(userId);
 
     }
 
-    // auth
-    const signup = async (e) => {
-        e.preventDefault();
-        setMessage("");
-
-        const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-
-
-        if (username === "" || email === "" || fullname === "") {
-            setMessage("All fields must not be empty");
-            setStatus("error");
-        }
-        else if (username.length > 50 || email.length > 50 || fullname.length > 50) {
-            setMessage("All fields must not exceed 50 character");
-            setStatus("error");
-        }
-        else if (!regex.test(email)) {
-            setMessage("Email is invalid");
-            setStatus("error");
-        }
-        else {
-            try {
-                await DataService.changeUserInfo(username, fullname, email)
-                setMessage("Thanh đổi thành công");
-                setStatus("success");
-            }
-            catch (error) {
-                const resMessage =
-                    (error.response &&
-                        error.response.data &&
-                        error.response.data.message) ||
-                    error.message ||
-                    error.toString();
-
-                setMessage(resMessage);
-                setStatus("error");
-            }
-        }
-    };
 
     return (
         <main className={classes.content}>
@@ -142,8 +90,7 @@ export default function Account() {
                 <Grid container spacing={3} >
                     <Grid item sm={8} xs={12} >
                         <div className={classes.paper}>
-                            <Avatar className={classes.avatar}>
-                                <LockOutlinedIcon />
+                            <Avatar className={classes.avatar} src={'https://picsum.photos/200'}>
                             </Avatar>
                             <form className={classes.form} noValidate>
                                 <Grid container spacing={2}>
@@ -164,8 +111,7 @@ export default function Account() {
                                             id="username"
                                             label="Username"
                                             name="username"
-                                            autoFocus
-                                            onChange={(value) => onChangeUsername(value)}
+                                            disabled
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -178,7 +124,7 @@ export default function Account() {
                                             id="fullname"
                                             label="Full Name"
                                             name="fullname"
-                                            onChange={(value) => onChangeFullname(value)}
+                                            disabled
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -191,7 +137,7 @@ export default function Account() {
                                             label="Email Address"
                                             name="email"
                                             autoComplete="email"
-                                            onChange={(value) => onChangeEmail(value)}
+                                            disabled
                                         />
                                     </Grid>
                                 </Grid>
@@ -200,26 +146,15 @@ export default function Account() {
                                     type="submit"
                                     fullWidth
                                     variant="contained"
-                                    color="primary"
+                                    color="secondary"
                                     className={classes.submit}
                                 >
                                     Ban
-                                </Button>
-                                <Button
-                                    onClick={(e) => signup(e)}
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    className={classes.submit}
-                                >
-                                    Change account's info
                                 </Button>
                             </form>
                         </div>
                     </Grid>
                     <Grid item sm={8} xs={12} >
-                        Matches History
                         <FinishRoomList />
                     </Grid>
                 </Grid>
