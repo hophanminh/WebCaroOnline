@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     useHistory,
     useLocation
@@ -13,10 +13,16 @@ import Alert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
 
+import Grid from '@material-ui/core/Grid';
+import red from "@material-ui/core/colors/red";
+import FacebookIcon from '@material-ui/icons/Facebook';
+import MailIcon from '@material-ui/icons/Mail';
 import Container from '@material-ui/core/Container';
 import AuthService from "../../utils/auth.service";
 import socket from "../../utils/socket.service";
 import store from '../../utils/store.service';
+
+const queryString = require('query-string');
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -40,6 +46,20 @@ const useStyles = makeStyles((theme) => ({
 
 function Login(props) {
     const classes = useStyles();
+
+    useEffect(() => {
+        const parsed = queryString.parse(location.search);
+        if (parsed.id && parsed.name && parsed.token) {
+            AuthService.loginExternal(parsed.id, parsed.name, parsed.token)
+            store.dispatch({ type: 'user/updateUser' })
+            history.replace("/")
+
+            const user = store.getState().user;
+            socket.emit("online", { ID: user.ID, name: user.name });
+        }
+
+    }, [])
+
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
@@ -147,6 +167,20 @@ function Login(props) {
                     >
                         Sign In
                     </Button>
+                    <div >
+                        <Grid container>
+                            <Grid item>
+                            </Grid>
+                            <Grid item>
+                                <Button href="http://localhost:9000/auth/facebook">
+                                    <FacebookIcon color="primary" style={{ fontSize: 40 }}/>
+                                </Button>
+                            </Grid>
+                            <Button href="http://localhost:9000/auth/google">
+                                <MailIcon color="action" style={{ fontSize: 40, color: red[500] }}/>
+                            </Button>
+                        </Grid>
+                    </div>
                 </form>
             </div>
         </Container>

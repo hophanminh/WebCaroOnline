@@ -41,6 +41,15 @@ const login = (username, password) => {
         });
 };
 
+const loginExternal = (ID, name, token) => {
+    const data = {ID: Number(ID), name: name, token: token}
+    console.log(JSON.stringify(data))
+    localStorage.setItem("user", JSON.stringify(data));
+    // set axios header
+    const user = JSON.parse(localStorage.getItem('user'));
+    axios.defaults.headers.common["Authorization"] = "Bearer " + user.token;
+};
+
 const logout = () => {
     localStorage.removeItem("user");
     axios.defaults.headers.common["Authorization"] = "Bearer " + null;
@@ -55,6 +64,7 @@ const AuthService = {
     login,
     logout,
     getCurrentUser,
+    loginExternal
 }
 
 export default AuthService;

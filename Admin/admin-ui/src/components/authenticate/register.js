@@ -13,6 +13,10 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
+import FacebookIcon from '@material-ui/icons/Facebook';
+import MailIcon from '@material-ui/icons/Mail';
+
+import red from "@material-ui/core/colors/red";
 import Container from '@material-ui/core/Container';
 import AuthService from "../../utils/auth.service";
 import socket from "../../utils/socket.service";
@@ -220,6 +224,20 @@ function SignUp(props) {
                     >
                         Sign Up
                     </Button>
+                    <div >
+                        <Grid container>
+                            <Grid item>
+                            </Grid>
+                            <Grid item>
+                                <Button href="http://localhost:9000/auth/facebook">
+                                    <FacebookIcon color="primary" style={{ fontSize: 40 }}/>
+                                </Button>
+                            </Grid>
+                            <Button href="http://localhost:9000/auth/google">
+                                <MailIcon color="action" style={{ fontSize: 40, color: red[500] }}/>
+                            </Button>
+                        </Grid>
+                    </div>
                 </form>
             </div>
         </Container>

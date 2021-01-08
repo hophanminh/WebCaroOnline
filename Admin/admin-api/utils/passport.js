@@ -5,6 +5,10 @@ require("express-async-errors");
 const bcrypt = require('bcrypt');
 const JWTStrategy = passportJWT.Strategy;
 const LocalStrategy = require("passport-local").Strategy;
+
+const FacebookStrategy = require("passport-facebook").Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 const model = require("./sql-query");
 const config = require("../config/default-config.json");
 
@@ -53,4 +57,56 @@ passport.use(new JWTStrategy({
             const entity = { user, input };                    //entity[0]: user, entity[1]: input
             return done(null, entity);
         }
-    }))
+}))
+
+
+passport.use(new FacebookStrategy({
+        clientID: "3854315697953129",
+        clientSecret: "7d0b726582a352bf6f3598ddda08d3db",
+        callbackURL: `${config.API.LOCAL}/auth/facebook/callback`,
+        profileFields: ['id', 'emails', 'name'],
+    },
+    async (accessToken, refreshToken, profile, done) => {
+        const { id, email, first_name, last_name } = profile._json;
+        const createdEmail = email ? email : id + "@facebook.com";
+        const fullName = first_name + " " + last_name;
+
+        const user = await model.getUserByNameOrEmail(id, createdEmail);
+        console.log()
+        if (user && user !== undefined && user.length != 0) {
+            return done(null, user);
+        }
+        else {
+            const newU = await model.register([id, null, createdEmail, fullName]);
+            const newUser = await model.getUserByUsername(id);
+            return done(null, newUser);
+        }
+    }
+));
+
+passport.use(new GoogleStrategy({
+        clientID: "1014269270892-beli4unjkq6g9m75p8icinq3t3qniv6v.apps.googleusercontent.com",
+        clientSecret: "OMMbmN6zI4XbYVLuXzNpEzpE",
+        callbackURL: `${config.API.LOCAL}/auth/google/callback`
+    },
+    async (accessToken, refreshToken, profile, done) => {
+        console.log(profile);
+
+        const { sub, email, name } = profile._json;
+
+        const createdEmail = email ? email : sub + "@gmail.com";
+        const user = await model.getUserByNameOrEmail(sub, email);
+
+        if (user && user !== undefined && user.length != 0) {
+            return done(null, user);
+        }
+        else {
+            const newU = await model.register([sub, null, email, name]);
+            const newUser = await model.getUserByUsername(sub);
+            return done(null, newUser);
+        }
+
+    }
+
+));
+
