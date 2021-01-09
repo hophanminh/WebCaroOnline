@@ -15,13 +15,13 @@ const config = require("../config/default-config.json");
 passport.use(new LocalStrategy(
     async (username, password, done) => {
         const user = await model.getUserByUsername(username);
-        if(user && user !== undefined && user.length != 0) {
+        if (user && user !== undefined && user.length != 0) {
             const res = bcrypt.compareSync(password, user[0].password);
             if (res) {
-                return done(null, user, {message: "Logged in successfully"});
+                return done(null, user, { message: "Logged in successfully" });
             }
         }
-            return done(null, false, {message: "Incorrect username or password."});
+        return done(null, false, { message: "Incorrect username or password." });
     }
 ));
 
@@ -33,9 +33,9 @@ passport.use("local-signup", new LocalStrategy({
     async (req, username, password, done) => {
         const email = req.body.email;
         const fullname = req.body.fullname;
-        const user = await model.getUserByNameOrEmail({username, email});
-        if(user & user !== undefined && user.length != 0){
-            return done(null, false, {message: "That email or username is invalid"})
+        const user = await model.getUserByNameOrEmail({ username, email });
+        if (user & user !== undefined && user.length != 0) {
+            return done(null, false, { message: "That email or username is invalid" })
         }
         const hash = bcrypt.hashSync(password, config.saltBcryptjs);
         const newUser = await model.register([username, hash, email, fullname]);
@@ -57,15 +57,15 @@ passport.use(new JWTStrategy({
             const entity = { user, input };                    //entity[0]: user, entity[1]: input
             return done(null, entity);
         }
-}))
+    }))
 
 
 passport.use(new FacebookStrategy({
-        clientID: "3854315697953129",
-        clientSecret: "7d0b726582a352bf6f3598ddda08d3db",
-        callbackURL: `${config.API.LOCAL}/auth/facebook/callback`,
-        profileFields: ['id', 'emails', 'name'],
-    },
+    clientID: "3854315697953129",
+    clientSecret: "7d0b726582a352bf6f3598ddda08d3db",
+    callbackURL: `${config.API.LOCAL}/auth/facebook/callback`,
+    profileFields: ['id', 'emails', 'name'],
+},
     async (accessToken, refreshToken, profile, done) => {
         const { id, email, first_name, last_name } = profile._json;
         const createdEmail = email ? email : id + "@facebook.com";
@@ -85,10 +85,10 @@ passport.use(new FacebookStrategy({
 ));
 
 passport.use(new GoogleStrategy({
-        clientID: "1014269270892-beli4unjkq6g9m75p8icinq3t3qniv6v.apps.googleusercontent.com",
-        clientSecret: "OMMbmN6zI4XbYVLuXzNpEzpE",
-        callbackURL: `${config.API.LOCAL}/auth/google/callback`
-    },
+    clientID: "1014269270892-beli4unjkq6g9m75p8icinq3t3qniv6v.apps.googleusercontent.com",
+    clientSecret: "OMMbmN6zI4XbYVLuXzNpEzpE",
+    callbackURL: `${config.API.LOCAL}/auth/google/callback`
+},
     async (accessToken, refreshToken, profile, done) => {
         console.log(profile);
 
@@ -97,8 +97,11 @@ passport.use(new GoogleStrategy({
         const createdEmail = email ? email : sub + "@gmail.com";
         const user = await model.getUserByNameOrEmail(sub, email);
 
-        if (user && user !== undefined && user.length != 0) {
+        if (user && user !== undefined && user.length != 0 && user.permission === config.PERMISSION.ADMIN) {
             return done(null, user);
+        }
+        else if (user && user !== undefined && user.length != 0 && user.permission !== config.PERMISSION.ADMIN) {
+            return done(null, null);
         }
         else {
             const newU = await model.register([sub, null, email, name]);

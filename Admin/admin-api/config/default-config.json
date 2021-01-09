@@ -2,7 +2,7 @@
   "mysql-local": {
     "connectionLimit": 10,
     "host": "localhost",
-    "port": 3012,
+    "port": 3306,
     "user": "root",
     "password": "root",
     "database": "caro_online"

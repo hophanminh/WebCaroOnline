@@ -49,12 +49,15 @@ function Login(props) {
 
     useEffect(() => {
         const parsed = queryString.parse(location.search);
-        if (parsed.id && parsed.name && parsed.token) {
+        if (parsed.id && Number(parsed.id) === -1) {
+            alert("Unauthorized User Detected");
+        }
+        else if (parsed.id && parsed.name && parsed.token) {
             AuthService.loginExternal(parsed.id, parsed.name, parsed.token)
             store.dispatch({ type: 'user/updateUser' })
             history.replace("/")
 
-            const user = store.getState().user;
+            const user = store.getState();
             socket.emit("online", { ID: user.ID, name: user.name });
         }
 
@@ -91,7 +94,7 @@ function Login(props) {
                 props.dispatch({ type: 'user/updateUser' })
 
                 const user = store.getState();
-                socket.emit("online", {ID: user.ID, name: user.name});
+                socket.emit("online", { ID: user.ID, name: user.name });
 
                 history.replace(from);
             }
@@ -173,11 +176,11 @@ function Login(props) {
                             </Grid>
                             <Grid item>
                                 <Button href="http://localhost:9000/auth/facebook">
-                                    <FacebookIcon color="primary" style={{ fontSize: 40 }}/>
+                                    <FacebookIcon color="primary" style={{ fontSize: 40 }} />
                                 </Button>
                             </Grid>
                             <Button href="http://localhost:9000/auth/google">
-                                <MailIcon color="action" style={{ fontSize: 40, color: red[500] }}/>
+                                <MailIcon color="action" style={{ fontSize: 40, color: red[500] }} />
                             </Button>
                         </Grid>
                     </div>
