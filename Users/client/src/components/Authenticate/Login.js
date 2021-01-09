@@ -6,8 +6,8 @@ import {
 } from "react-router-dom";
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import FacebookIcon from '@material-ui/icons/Facebook';
-import MailIcon from '@material-ui/icons/Mail';
+import { SiGmail } from "react-icons/si";
+import { FaFacebookSquare } from "react-icons/fa";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -20,8 +20,7 @@ import Container from '@material-ui/core/Container';
 import AuthService from "../../utils/auth.service";
 import socket from "../../utils/socket.service";
 import store from '../../utils/store.service';
-import {Grid} from "@material-ui/core";
-import red from "@material-ui/core/colors/red";
+import Divider from "@material-ui/core/Divider";
 const queryString = require('query-string');
 
 const useStyles = makeStyles((theme) => ({
@@ -42,6 +41,21 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(1, 0, 2),
   },
+  flexContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  buttonSeparate: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    justifyContent: "flex-start",
+    paddingLeft: theme.spacing(10)
+  },
+  marginTop: {
+    marginTop: theme.spacing(1),
+  }
 }));
 
 function Login(props) {
@@ -158,32 +172,31 @@ function Login(props) {
             autoComplete="new-password"
             onChange={(value) => onChangePassword(value)}
           />
+          <div className={classes.flexContainer}>
           <Link to={'/forgotPassword'}>
             Forgot password???
           </Link>
           <Button
             onClick={(e) => login(e)}
             type="submit"
-            fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
           >
             Sign In
           </Button>
-          <div >
-            <Grid container>
-              <Grid item>
-              </Grid>
-              <Grid item>
-                <Button href="http://localhost:9000/auth/facebook">
-                  <FacebookIcon color="primary" style={{ fontSize: 40 }}/>
-                </Button>
-              </Grid>
-              <Button href="http://localhost:9000/auth/google">
-                <MailIcon color="action" style={{ fontSize: 40, color: red[500] }}/>
-              </Button>
-            </Grid>
+          </div>
+          <Divider />
+          <div className={classes.marginTop}>
+            <Button className={classes.buttonSeparate} fullWidth variant="outlined" href="http://localhost:9000/auth/facebook" color="primary"
+            >
+              <FaFacebookSquare style={{ fontSize: 40 }}/>
+              &nbsp;&nbsp;&nbsp;Register with Facebook
+            </Button>
+            <Button className={classes.buttonSeparate} fullWidth variant="outlined" href="http://localhost:9000/auth/google" color="secondary">
+              <SiGmail style={{ fontSize: 40}}/>
+              &nbsp;&nbsp;&nbsp;Register with Gmail
+            </Button>
           </div>
         </form>
       </div>

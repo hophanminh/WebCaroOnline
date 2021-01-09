@@ -28,6 +28,8 @@ import TableChartIcon from "@material-ui/icons/TableChart";
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import { GiPodiumWinner } from "react-icons/gi";
+
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -183,7 +185,7 @@ const Rank = () => {
                     <Grid container >
                         <Grid item justifyContent="flex-start">
                             <Avatar className={classes.avatar}>
-                                <TableChartIcon />
+                                <GiPodiumWinner />
                             </Avatar>
                             <Typography component="h1" variant="h5">
                                 List of user
