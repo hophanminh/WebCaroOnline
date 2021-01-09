@@ -6,7 +6,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import PeopleIcon from '@material-ui/icons/People';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import TableChartIcon from '@material-ui/icons/TableChart';
-import { GiPodiumWinner } from "react-icons/gi";
+import { BsFillBarChartFill } from "react-icons/bs";
 import {
   NavLink
 } from "react-router-dom";
@@ -55,7 +55,7 @@ export default function SideBarList(props) {
       {currentUser && (
           <ListItem button component={NavLink} to="/Ranking">
             <ListItemIcon>
-              <GiPodiumWinner style={{ fontSize: 25 }} />
+              <BsFillBarChartFill style={{ fontSize: 25 }} />
             </ListItemIcon>
             <ListItemText primary="History" />
           </ListItem>
