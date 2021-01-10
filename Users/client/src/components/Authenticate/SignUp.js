@@ -13,11 +13,11 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
+import { SiGmail } from "react-icons/si";
+import { FaFacebookSquare } from "react-icons/fa";
 import Container from '@material-ui/core/Container';
 import AuthService from "../../utils/auth.service";
-import FacebookIcon from "@material-ui/icons/Facebook";
-import MailIcon from "@material-ui/icons/Mail";
-import red from "@material-ui/core/colors/red";
+import {Divider} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -37,6 +37,21 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  flexContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  buttonSeparate: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    justifyContent: "flex-start",
+    paddingLeft: theme.spacing(10)
+  },
+  marginTop: {
+    marginTop: theme.spacing(1),
+  }
 }));
 
 function SignUp(props) {
@@ -211,19 +226,17 @@ function SignUp(props) {
           >
             Sign Up
           </Button>
-          <div >
-            <Grid container>
-              <Grid item>
-              </Grid>
-              <Grid item>
-                <Button href="http://localhost:9000/auth/facebook">
-                  <FacebookIcon color="primary" style={{ fontSize: 40 }}/>
-                </Button>
-              </Grid>
-              <Button href="http://localhost:9000/auth/google">
-                <MailIcon color="action" style={{ fontSize: 40, color: red[500] }}/>
-              </Button>
-            </Grid>
+          <Divider />
+          <div className={classes.marginTop}>
+            <Button className={classes.buttonSeparate} fullWidth variant="outlined" href="http://localhost:9000/auth/facebook" color="primary"
+            >
+              <FaFacebookSquare style={{ fontSize: 40 }}/>
+              &nbsp;&nbsp;&nbsp;Register with Facebook
+            </Button>
+            <Button className={classes.buttonSeparate} fullWidth variant="outlined" href="http://localhost:9000/auth/google" color="secondary">
+              <SiGmail style={{ fontSize: 40}}/>
+              &nbsp;&nbsp;&nbsp;Register with Gmail
+            </Button>
           </div>
 
         </form>
