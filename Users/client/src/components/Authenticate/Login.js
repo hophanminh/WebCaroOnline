@@ -187,7 +187,7 @@ function Login(props) {
           </div>
         </form>
       </div>
-    </Container >
+    </Container>
   );
 }
 

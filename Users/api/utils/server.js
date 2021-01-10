@@ -128,10 +128,10 @@ module.exports = function (io) {
     const callTimeoutSocket = async (userID, roomID) => {       // call when someone's timeout
       const { data } = await getRoomInfo(roomID);
       if (userID === data[0].idUser1) {            // player 1 timeout
-        data[0].winner = 2;
+        data[0].winner = 1;
       }
       else if (userID === data[0].idUser2) {       // player 2 timeout
-        data[0].winner = 1;
+        data[0].winner = 2;
       }
       else {                                       // something's wrong
         data[0].winner = 0;
@@ -347,6 +347,54 @@ module.exports = function (io) {
         data[0]['remain'] = getRemain(roomID);
         data[0]['ready'] = getReady(roomID);
         io.to(roomID).emit('roomData', data);
+      }
+    });
+
+    // draw
+    socket.on('ask_draw', async ({ userID, roomID }) => {
+      socket.broadcast.to(roomID).emit('waiting_ask_draw', { userID });
+    });
+    socket.on('accept_ask_draw', async ({ userID, roomID }) => {
+      const { data } = await getRoomInfo(roomID);
+
+      // draw
+      if (data[0].winner === -1) {
+        data[0].winner = 0;
+        model.updateRoomWinner(roomID, data[0].winner);
+        data[0]["remain"] = -1;
+        data[0]['ready'] = getReady(roomID);
+        io.to(roomID).emit('roomData', data);
+        deleteRoom(roomID);
+      }
+    });
+
+
+    socket.on('resign', async ({ userID, roomID }) => {
+      const { data } = await getRoomInfo(roomID);
+
+      if (data[0].winner === -1) {
+        // update room when someone win
+        if (userID === data[0].idUser1) {            // player 1 win
+          data[0].winner = 2;
+        }
+        else if (userID === data[0].idUser2) {       // player 2 win
+          data[0].winner = 1;
+        }
+        else {
+          return;
+        }
+
+        const { newScore1, newScore2 } = calculatePoints(data[0].score1, data[0].score2, data[0].winner);
+        model.updateRoomWinner(roomID, data[0].winner);
+        model.updateScore(data[0].idUser1, newScore1)
+        model.updateScore(data[0].idUser2, newScore2)
+
+        data[0].score1 = newScore1;
+        data[0].score2 = newScore2;
+        data[0]["remain"] = -1;
+        data[0]['ready'] = getReady(roomID);
+        io.to(roomID).emit('roomData', data);
+        deleteRoom(roomID);
       }
     });
 

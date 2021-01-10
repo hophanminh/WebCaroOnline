@@ -162,7 +162,7 @@ const FinishRoomList = (props) => {
                                 <TableCell className={classes.bold}>Created</TableCell>
                                 <TableCell className={classes.bold} align="right">Host match</TableCell>
                                 <TableCell className={classes.bold} align="right">Player 2</TableCell>
-                                <TableCell className={classes.bold} align="right">Status</TableCell>
+                                <TableCell className={classes.bold} align="right">Winner</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>

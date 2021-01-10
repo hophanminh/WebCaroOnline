@@ -86,7 +86,6 @@ passport.use(new FacebookStrategy({
         const fullName = first_name + " " + last_name;
 
         const user = await model.getUserByNameOrEmail(id, createdEmail);
-        console.log()
         if (user && user !== undefined && user.length != 0) {
             return done(null, user);
         }
@@ -103,9 +102,7 @@ passport.use(new GoogleStrategy({
     clientSecret: "OMMbmN6zI4XbYVLuXzNpEzpE",
     callbackURL: `${config.API.LOCAL}/auth/google/callback`
 },
-    async (accessToken, refreshToken, profile, done) => {
-        console.log(profile);
-        
+    async (accessToken, refreshToken, profile, done) => {        
         const { sub, email, name } = profile._json;
 
         const createdEmail = email ? email : sub + "@gmail.com";

@@ -12,10 +12,11 @@ import {
   CardContent,
   Box,
   Snackbar,
-  Button
+  IconButton,
+  Tooltip
 } from '@material-ui/core';
 import { IconContext } from "react-icons";
-import { FaTrophy } from "react-icons/fa";
+import { FaTrophy, FaInfoCircle } from "react-icons/fa";
 
 import Game from './Game/game';
 import { Chat } from './ChatOnline'
@@ -56,6 +57,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row-reverse",
   },
+  topButton: {
+    marginLeft: '5px',
+    marginRight: '5px',
+    borderRight: '1px solid #fff',
+    borderRadius: '0px'
+  },
+
   nameContainerLeft: {
     display: "flex",
     flexDirection: "column",
@@ -137,9 +145,11 @@ export default function RoomFinish(props) {
           <Grid item sm={8} xs={12} className={classes.gridHeight} >
             <Card>
               <Box className={classes.shareButtonContainer}>
-                <Button size="small" variant="contained" color="primary" onClick={() => copyLink()}>
-                  Get room's ID
-                </Button>
+                <Tooltip title="Get room's ID" aria-label="Get room's ID">
+                  <IconButton className={classes.topButton} size="small" onClick={() => copyLink()}>
+                    <FaInfoCircle></FaInfoCircle>
+                  </IconButton>
+                </Tooltip>
                 <Snackbar
                   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                   open={open}

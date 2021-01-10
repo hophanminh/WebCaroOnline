@@ -13,12 +13,12 @@ const Room = function (roomID, callTimeoutSocket) {
         isReady: false
     }
     this.hasStart = false;
-    this.currentTurnUserID = null;      // whose turn
+    this.lastTurnUserID = null;      // whose turn
     this.remain = null;                 // time remaining
 
     // reset timer function
     this.reset = (userID) => {                                                      // reset -> ask every player to reset timer
-        this.currentTurnUserID = userID
+        this.lastTurnUserID = userID
         this.remain = config.timeout;
     }
 
@@ -27,9 +27,8 @@ const Room = function (roomID, callTimeoutSocket) {
     this.timerFunction = () => {                                              // if remain === 0 -> socket announces that game ended
         if (this.remain === 0) {
             clearInterval(this.timerID);
-            this.callTimeoutSocket(this.currentTurnUserID, this.roomID);
+            this.callTimeoutSocket(this.lastTurnUserID, this.roomID);
         }
-        console.log(this.remain, this.user1.ID, this.user2.ID, this.currentTurnUserID, this.roomID, rooms.length);
         this.remain--;
     }
     this.timer = () => { return setInterval(this.timerFunction.bind(this), 1000) };
@@ -100,7 +99,7 @@ const startTimer = (roomID) => {
     const room = getRoom(roomID);
     if (room) {
         room.hasStart = true;
-        room.currentTurnUserID = room.user1.ID;
+        room.lastTurnUserID = room.user1.ID;
         room.remain = config.timeout;
         room.timerID = room.timer();
     }

@@ -107,7 +107,7 @@ const calculatePoints = (score1, score2, status) => {
     }
 
     if (diff >= 200) {
-        const upsetPoint = diff * 10 / 100;
+        const upsetPoint = Math.floor(diff * 10 / 100);
         if (status === 1 && score1 < score2) {                           // if player 1 win and has lower score than player 2
             newScore1 += upsetPoint;
             newScore2 -= upsetPoint;

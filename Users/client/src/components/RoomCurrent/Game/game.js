@@ -243,6 +243,9 @@ function Game(props) {
     }
 
     const handleClick = (i, previousMove) => {
+        if (!props.isPlayer) {
+            return;
+        }
         // handle click
         const newHistory = history.slice(0, stepNumber + 1);
         const current = newHistory[newHistory.length - 1];
@@ -370,8 +373,7 @@ function Game(props) {
                                         <Typography>Player 2: {roomData.ready.isReady2 ? "Ready" : "Not Ready"}</Typography>
                                     </div>
                                 </Box>
-                                {(roomData.idUser1 === store.getState().user.ID || roomData.idUser2 === store.getState().user.ID)
-                                    &&
+                                {props.isPlayer &&
                                     (<Box className={classes.buttonContainer}>
                                         <Button fullWidth className={classes.button} variant="contained" color="primary" onClick={() => handleReady()} >
                                             Ready

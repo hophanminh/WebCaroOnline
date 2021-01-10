@@ -11,12 +11,24 @@ import {
   Card,
   Divider,
   CardContent,
+  Tooltip,
   Box,
   Snackbar,
-  Button, CircularProgress
+  Button,
+  CircularProgress,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+
 } from '@material-ui/core';
 import { IconContext } from "react-icons";
-import { FaTrophy } from "react-icons/fa";
+import { FaTrophy, FaHandshake, FaInfoCircle } from "react-icons/fa";
+import FlagOutlinedIcon from '@material-ui/icons/FlagOutlined';
+import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from '@material-ui/icons/Check';
 
 import Game from './Game/game';
 import Countdown from '../Countdown/Countdown'
@@ -56,9 +68,18 @@ const useStyles = makeStyles((theme) => ({
   winColor: {
     color: "green",
   },
-  shareButtonContainer: {
+  drawColor: {
+    color: "red",
+  },
+  topButtonContainer: {
     display: "flex",
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-end ',
+  },
+  topButton: {
+    marginLeft: '5px',
+    marginRight: '5px',
+    borderRight: '1px solid #fff',
+    borderRadius: '0px'
   },
   nameContainerLeft: {
     display: "flex",
@@ -99,7 +120,11 @@ export default function Room(props) {
   const [user, setUser] = useState(store.getState().user);
   store.subscribe(() => {
     setUser(store.getState().user);
+    if (user && room && (room.idUser1 === user.ID || room.idUser2 === user.ID)) {
+      setIsPlayer(true)
+    }
   });
+  const [isPlayer, setIsPlayer] = useState(false);
 
   // join room
   useEffect(() => {
@@ -118,6 +143,9 @@ export default function Room(props) {
       setCounter(data[0].remain);
       setRoom(data[0]);
       setGameData(gameData);
+      if (user && (data[0].idUser1 === user.ID || data[0].idUser2 === user.ID)) {
+        setIsPlayer(true);
+      }
     });
 
     socket.on('roomData', (data) => {
@@ -162,22 +190,89 @@ export default function Room(props) {
   // leave room
   const [leave, setLeave] = useState(true);
   useEffect(() => {
-    if (leave) {
-      window.onbeforeunload = () => "Don't leave"
+    if (leave && isPlayer) {
+      window.onbeforeunload = () => ""
     }
     else {
       window.onbeforeunload = undefined
     }
   }, [leave]);
 
+  // ask for draw
+  const [askDraw, setAskDraw] = useState(false);
+  const handleAskDraw = () => {
+    socket.emit("ask_draw", { userID: user.ID, roomID: ID });
+  }
+  const handleCloseAskDraw = () => {
+    setAskDraw(false);
+  };
+  const handleAcceptAskDraw = () => {
+    socket.emit("accept_ask_draw", { userID: user.ID, roomID: ID });
+    setAskDraw(false);
+  };
 
+  useEffect(() => {           /// wait for ask draw
+    if (user && isPlayer) {
+      socket.on("waiting_ask_draw", ({ userID }) => {
+        if (user.ID !== userID) {
+          setAskDraw(true);
+        }
+      });
+      return () => socket.off("waiting_ask_draw");
+    }
+  }, [user, isPlayer]);
+
+  // resign
+  const [resign, setResign] = useState(false);
+  const handleOpenResign = () => {
+    setResign(true);
+  }
+  const handleCloseResign = () => {
+    setResign(false);
+  }
+  const handleResign = () => {
+    socket.emit("resign", { userID: user.ID, roomID: ID });
+    setResign(false);
+  }
 
   return (
     <React.Fragment>
+
       <Prompt
-        when={leave}
+        when={leave && isPlayer}
         message='You are leaving current room. Are you sure ?'
       />
+      <Dialog open={resign} onClose={handleCloseResign} aria-labelledby="form-dialog-title">
+        <DialogContent>
+          Are you sure you want to resign ?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseResign} color="primary">
+            Cancel
+              </Button>
+          <Button onClick={handleResign} color="primary">
+            Resign
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        open={askDraw}
+        onClose={() => handleCloseAskDraw()}
+        message="Your opponent asked for draw. "
+        action={
+          <React.Fragment>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={handleAcceptAskDraw}>
+              <CheckIcon fontSize="small" />
+            </IconButton>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={handleCloseAskDraw}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
+
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
@@ -186,10 +281,26 @@ export default function Room(props) {
             <Grid container spacing={3}>
               <Grid item sm={8} xs={12} className={classes.leftGrid} >
                 <Card>
-                  <Box className={classes.shareButtonContainer}>
-                    <Button size="small" variant="contained" color="primary" onClick={() => copyLink()}>
-                      Get room's ID
-                </Button>
+                  <Box className={classes.topButtonContainer}>
+                    {isPlayer && room.winner === -1 &&
+                      (<Tooltip title="Ask for draw" aria-label="Ask for draw">
+                        <IconButton disabled={!(room.ready && room.ready.hasStart)} className={classes.topButton} size="small" onClick={() => handleAskDraw()}>
+                          <FaHandshake></FaHandshake>
+                        </IconButton>
+                      </Tooltip>)
+                    }
+                    {isPlayer && room.winner === -1 &&
+                      (<Tooltip title="Resign" aria-label="Resign">
+                        <IconButton disabled={!(room.ready && room.ready.hasStart)} className={classes.topButton} size="small" onClick={() => handleOpenResign()}>
+                          <FlagOutlinedIcon></FlagOutlinedIcon>
+                        </IconButton>
+                      </Tooltip>)
+                    }
+                    <Tooltip title="Get room's ID" aria-label="Get room's ID">
+                      <IconButton className={classes.topButton} size="small" onClick={() => copyLink()}>
+                        <FaInfoCircle></FaInfoCircle>
+                      </IconButton>
+                    </Tooltip>
                     <Snackbar
                       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                       open={open}
@@ -212,8 +323,8 @@ export default function Room(props) {
                         </Grid>
                         <Grid container item xs={4} className={classes.countdown}>
                           {room.winner === -1 && <Countdown counter={counter} setCounter={setCounter} reset={resetCountdown} setReset={setResetCountdown} />}
-                          {room.winner === 0 && <Typography variant="h5">Draw</Typography>}
-                          {(room.winner !== 0 || room.winner !== -1) && <Typography variant="h5">VS</Typography>}
+                          {room.winner === 0 && <Typography className={classes.drawColor} variant="h5">Draw</Typography>}
+                          {(room.winner !== 0 && room.winner !== -1) && <Typography variant="h5">VS</Typography>}
                         </Grid>
                         <Grid container item xs={4} className={classes.nameContainerRight} zeroMinWidth>
                           <Typography variant="h5" noWrap className={room.winner === 2 ? classes.winColor : null}>{room.name2 ? "(O) " + room.name2 : "(O) Waiting"}</Typography>
@@ -229,7 +340,7 @@ export default function Room(props) {
                       : <></>
                     }
                     <Divider />
-                    <Game roomID={ID} roomData={room} gameData={gameData} reset={resetCountdown} setReset={setResetCountdown} />
+                    <Game roomID={ID} roomData={room} gameData={gameData} reset={resetCountdown} isPlayer={isPlayer} setReset={setResetCountdown} />
                   </CardContent>
                 </Card>
               </Grid>
