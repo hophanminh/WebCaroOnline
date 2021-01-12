@@ -5,6 +5,7 @@ const ExtractJWT = passportJWT.ExtractJwt;
 const bcrypt = require('bcrypt');
 const cryptoRandomString = require('crypto-random-string');
 const MailTemplate = require("../utils/mailTemplate");
+const uuid = require("uuid");
 
 const JWTStrategy = passportJWT.Strategy;
 const LocalStrategy = require('passport-local').Strategy;
@@ -20,8 +21,9 @@ passport.use(new LocalStrategy(
         const user = await model.getUserByUsername(username);
         if (user && user !== undefined && user.length != 0) {
             const res = bcrypt.compareSync(password, user[0].password);
+            console.log(user)
             if (res) {
-                if (res.status === config.status.INACTIVE) {
+                if (user[0].status === config.status.INACTIVE) {
                     return done(null, false, { message: 'Account is inactive. Please verify it in your email.' });
                 }
                 else {
@@ -49,7 +51,7 @@ passport.use('local-signup', new LocalStrategy({
         const hash = bcrypt.hashSync(password, 10);
         const newU = await model.register([username, hash, email, fullname]);
 
-        const hashLink = cryptoRandomString({ length: 40, type: 'base64' });
+        const hashLink = uuid.v4();
         await model.saveHashLinkToPageVerrify(newU.insertId, hashLink);
         MailTemplate.activeAccountMail(hashLink, email);
 

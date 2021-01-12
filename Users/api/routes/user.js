@@ -139,7 +139,7 @@ router.post("/search", async (req, res) => {
   const search = req.body.target;
   const user = await model.getUserByNameOrEmail(search, search);
   if (user.length === 0)
-    res.send("User is not found.")
+    res.send(null);
   res.send(user);
 })
 

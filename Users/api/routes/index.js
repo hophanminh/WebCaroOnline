@@ -14,6 +14,7 @@ router.get('/', function(req, res, next) {
 router.post("/activeAccount/:uuid", async (req, res) => {
   console.log("hash link: "+ req.params.uuid);
   const user = await model.activeUser(req.params.uuid);
+  console.log(user);
   await model.updateVerrifyPage(req.params.uuid);
   res.send(user);
 })

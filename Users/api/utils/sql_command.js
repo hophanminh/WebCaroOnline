@@ -46,6 +46,7 @@ module.exports = {
             email: email,
             fullname: fullname,
             status: config.status.INACTIVE,
+            score: 1000,
         }
         return db.add(`user`, newUser)
     },

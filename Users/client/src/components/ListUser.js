@@ -167,12 +167,6 @@ const ListUser = (props) => {
                 }
             </List>
             <Divider />
-            <Box display="flex" justifyContent="flex-end" p={1} >
-                <Button color="primary" endIcon={<ArrowRightIcon />} size="small" variant="text" >
-                    View all
-                </Button>
-            </Box>
-
         </Card>
     );
 };
