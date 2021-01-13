@@ -173,31 +173,6 @@ function Game(props) {
         })
     }
 
-    const handleClick = (i, previousMove) => {
-        // handle click
-        const newHistory = history.slice(0, stepNumber + 1);
-        const current = newHistory[newHistory.length - 1];
-        const squares = current.squares.slice();
-
-        // check if move is valid locally
-        const checkFinish = calculateWinner(squares, stepNumber, previousMove);
-        if (checkFinish.status !== -1 || squares[i]) {
-            return;
-        }
-
-        squares[i] = xIsNext ? 'X' : 'O';
-
-        setHistory(
-            newHistory.concat([{
-                squares: squares,
-                move: i,
-            }])
-        );
-        setStepNumber(newHistory.length);
-        setXIsNext(!xIsNext);
-    }
-
-
     /*     
     //undo
     const jumpTo = (step) => {
@@ -274,7 +249,6 @@ function Game(props) {
                                     column={column}
                                     row={row}
                                     squares={current.squares}
-                                    onClick={(i) => handleClick(i, current.move)}
                                     winnerLine={winner.line}
                                 />
                             </Box>

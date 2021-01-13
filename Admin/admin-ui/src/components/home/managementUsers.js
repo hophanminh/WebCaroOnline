@@ -144,7 +144,7 @@ const Users = () => {
     }
 
     const convertStatus = (type) =>{
-        if(type == 1)
+        if(type === 1)
             return "ACTIVE";
         return "INACTIVE";
     }
@@ -170,8 +170,9 @@ const Users = () => {
             setRows(res.data);
         } else {
             const user = await DataService.getUserByUsernameOrEmail(target);
-            console.log("User when search: "+user.data[0].ID);
-            setRows(user.data);
+            if(user)
+                setRows(user.data);
+            else setRows(null);
         }
     }
 
@@ -236,7 +237,7 @@ const Users = () => {
                                             <TableCell align="left" className={classes.nameCell}>{row.username}</TableCell>
                                             <TableCell align="left" className={classes.nameCell}>{row.email}</TableCell>
                                             <TableCell align="left" className={classes.nameCell}>{row.score}</TableCell>
-                                            <TableCell align="left" className={classes.nameCell}>{convertStatus(row.status.data)}</TableCell>
+                                            <TableCell align="left" className={classes.nameCell}>{convertStatus(row.status)}</TableCell>
                                             <TableCell align="left" className={classes.nameCell}>{typeAccount(row.permission)}</TableCell>
                                         </TableRow>
                                 )

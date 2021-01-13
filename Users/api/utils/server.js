@@ -237,15 +237,20 @@ module.exports = function (io) {
           diff += 50;
         } while (diff <= 500);
 
-        quickPlayQueue.splice(0, 1);
-        quickPlayQueue.splice(0, 1);
+        //KIEM TRA XEM USER CON KHONG
+        const checkUser1StillWait = quickPlayQueue.findIndex((user) => user.ID === user1.ID);
+        const checkUser2StillWait = quickPlayQueue.findIndex((user) => user.ID === user2.ID);
+        if(checkUser1StillWait.length !== 0 && checkUser2StillWait.length !== 0) {
+          quickPlayQueue.splice(0, 1);
+          quickPlayQueue.splice(checkUser2StillWait, 1);
 
-        const roomID = uuidv4();
-        await model.createRoom([roomID, user1.ID, user2.ID])
-          .then(() => {
-            io.to("waiting_room").emit('waiting_room_' + user1.ID, { status: true, ID: roomID });
-            io.to("waiting_room").emit('waiting_room_' + user2.ID, { status: true, ID: roomID });
-          });
+          const roomID = uuidv4();
+          await model.createRoom([roomID, user1.ID, user2.ID])
+              .then(() => {
+                io.to("waiting_room").emit('waiting_room_' + user1.ID, {status: true, ID: roomID});
+                io.to("waiting_room").emit('waiting_room_' + user2.ID, {status: true, ID: roomID});
+              });
+        }
       }
     }
     // stop quick play

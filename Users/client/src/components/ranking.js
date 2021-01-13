@@ -138,19 +138,6 @@ const Rank = () => {
     };
     const emptyRows = rows ? rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage) : 0;
 
-
-    const typeAccount = (type) => {
-        if(type === 1)
-            return "ADMIN";
-        return "USER"
-    }
-
-    const convertStatus = (type) =>{
-        if(type == 1)
-            return "ACTIVE";
-        return "INACTIVE";
-    }
-
     const history = useHistory();
     const profileUser = () => {
         const path_url = `/user/${id}`
@@ -172,8 +159,11 @@ const Rank = () => {
             setRows(res.data);
         } else {
             const user = await DataService.getUserByUsernameOrEmail(target);
-            console.log("User when search: "+user.data[0].ID);
-            setRows(user.data);
+            console.log(user);
+            if(user)
+                setRows(user.data);
+            else setRows(null);
+            console.log(rows);
         }
     }
 
@@ -188,7 +178,7 @@ const Rank = () => {
                                 <BsFillBarChartFill />
                             </Avatar>
                             <Typography component="h1" variant="h5">
-                                List of user
+                                Ranking
                             </Typography>
                         </Grid>
                         <Grid item justifyContent="flex-end" alignItems={"center"}>
@@ -216,7 +206,6 @@ const Rank = () => {
                                 <TableCell className={classes.bold} align="left">Username</TableCell>
                                 <TableCell className={classes.bold} align="left">Email</TableCell>
                                 <TableCell className={classes.bold} align="left">Score</TableCell>
-                                <TableCell className={classes.bold} align="left">Status</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -234,7 +223,6 @@ const Rank = () => {
                                             <TableCell align="left" className={classes.nameCell}>{row.username}</TableCell>
                                             <TableCell align="left" className={classes.nameCell}>{row.email}</TableCell>
                                             <TableCell align="left" className={classes.nameCell}>{row.score}</TableCell>
-                                            <TableCell align="left" className={classes.nameCell}>{convertStatus(row.status.data)}</TableCell>
                                         </TableRow>
                                     )
                                 })
