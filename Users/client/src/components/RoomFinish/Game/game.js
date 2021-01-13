@@ -241,15 +241,28 @@ function Game(props) {
 
         let statusDes;
         const finalMoves = moves.slice().reverse();
-        if (winner.status === -1) {
-            statusDes = 'Next player: ' + (xIsNext ? 'X' : 'O');
-        }
-        else if (winner.status === 0) {
-            statusDes = 'Draw';
+
+        if (roomData.winner === -1) {
+            if (winner.status === -1) {
+                statusDes = 'Next player: ' + (xIsNext ? 'X' : 'O');
+            }
+            else if (winner.status === 0) {
+                statusDes = 'Draw';
+            }
+            else {
+                statusDes = 'Winner: ' + winner.status;
+            }
         }
         else {
-            statusDes = 'Winner: ' + winner.status;
+            if (roomData.winner === 0) {
+                statusDes = 'Draw';
+            }
+            else {
+                
+                statusDes = 'Winner: ' + (roomData.winner === 1 ? "X" : "O");
+            }
         }
+
 
         return (
             <Box className="game" >
