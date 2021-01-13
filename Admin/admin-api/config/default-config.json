@@ -36,12 +36,12 @@
   "win": 5,
   "HOST": {
     "LOCAL": "http://localhost:3000",
-    "ONLINE": "https://caroonline-admin.herokuapp.com/",
-    "CURRENT": "https://caroonline-admin.herokuapp.com/"
+    "ONLINE": "https://caroonline-admin.herokuapp.com",
+    "CURRENT": "https://caroonline-admin.herokuapp.com"
   },
   "API": {
     "LOCAL": "http://localhost:9000",
-    "ONLINE": "https://caroonline-admin-api.herokuapp.com/",
-    "CURRENT": "https://caroonline-admin-api.herokuapp.com/"
+    "ONLINE": "https://caroonline-admin-api.herokuapp.com",
+    "CURRENT": "https://caroonline-admin-api.herokuapp.com"
   }
 }
