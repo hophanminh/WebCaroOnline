@@ -72,9 +72,12 @@ passport.use(new FacebookStrategy({
         const fullName = first_name + " " + last_name;
 
         const user = await model.getUserByNameOrEmail(id, createdEmail);
-        console.log()
-        if (user && user !== undefined && user.length != 0) {
+        console.log(user.permission)
+        if (user && user !== undefined && user.length != 0 && user[0].permission === config.PERMISSION.ADMIN) {
             return done(null, user);
+        }
+        else if (user && user !== undefined && user.length != 0 && user[0].permission !== config.PERMISSION.ADMIN) {
+            return done(null, null);
         }
         else {
             const newU = await model.register([id, null, createdEmail, fullName]);
@@ -97,10 +100,10 @@ passport.use(new GoogleStrategy({
         const createdEmail = email ? email : sub + "@gmail.com";
         const user = await model.getUserByNameOrEmail(sub, email);
 
-        if (user && user !== undefined && user.length != 0 && user.permission === config.PERMISSION.ADMIN) {
+        if (user && user !== undefined && user.length != 0 && user[0].permission === config.PERMISSION.ADMIN) {
             return done(null, user);
         }
-        else if (user && user !== undefined && user.length != 0 && user.permission !== config.PERMISSION.ADMIN) {
+        else if (user && user !== undefined && user.length != 0 && user[0].permission !== config.PERMISSION.ADMIN) {
             return done(null, null);
         }
         else {

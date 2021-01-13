@@ -2,5 +2,9 @@
   "square-size": 25,
   "column": 50,
   "row": 50,
-  "drawerWidth": 240
+  "drawerWidth": 240,
+  "STATUS": {
+    "ACTIVE": 1,
+    "INACTIVE": 0
+  }
 }

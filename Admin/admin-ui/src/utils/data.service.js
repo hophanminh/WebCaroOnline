@@ -35,8 +35,8 @@ const getMatchesByUserID = (ID) => {
     return axios.get(API_URL + `admin/users/${ID}/matches`);
 }
 
-const banAccount = (ID) => {
-    return axios.post(API_URL + `admin/users/${ID}/ban`);
+const banAccount = (ID, isBan) => {
+    return axios.post(API_URL + `admin/users/${ID}/ban`, {isBan});
 }
 
 

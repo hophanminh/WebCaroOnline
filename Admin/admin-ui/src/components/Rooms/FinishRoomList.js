@@ -36,8 +36,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(4),
   },
   container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
+    padding: '0px'
   },
   avatar: {
     margin: theme.spacing(1),
@@ -106,11 +105,11 @@ const FinishRoomList = (props) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await DataService.getUserByUserId(id);
-        setUser(res.data[0]);
-        console.log("User name: " + user.username );
-        if (user) {
-          const res = await DataService.getFinishRoomList(user.ID);
+        const res1 = await DataService.getUserByUserId(id);
+        setUser(res1.data[0]);
+        if (res1) {
+          const res = await DataService.getFinishRoomList(res1.data[0].ID);
+          console.log()
           setData(res.data);
           setNMatch(res.data.length);
         }
@@ -124,7 +123,7 @@ const FinishRoomList = (props) => {
       }
     }
     fetchData();
-  }, [user]);
+  }, [id]);
 
   // table
   const [selected, setSelected] = useState();
@@ -154,7 +153,7 @@ const FinishRoomList = (props) => {
   }
 
   return (
-    <Container component="main" maxWidth={false} className={classes.container}>
+    <Container maxWidth={false} className={classes.container}>
       <CssBaseline />
       <Card className={classes.card}>
         <Avatar className={classes.avatar}>

@@ -58,7 +58,7 @@ router.post("/updatePassword", async (req, res) => {
   }
 })
 
-router.get("/users",async (req, res) => {
+router.get("/users", async (req, res) => {
   const users = await model.getUsers();
   console.log(users);
   if (users.length === 0)
@@ -71,12 +71,12 @@ router.post("/users/search", async (req, res) => {
   const search = req.body.target;
   const user = await model.getUserByNameOrEmail(search, search);
   console.log(user);
-  if(user.length === 0)
+  if (user.length === 0)
     res.send(null)
   res.send(user);
 })
 
-router.get("/users/:userId", async (req,res) => {
+router.get("/users/:userId", async (req, res) => {
   const ID = req.params.userId;
   const user = await model.getUserByID(ID);
   if (user.length === 0)
@@ -87,30 +87,34 @@ router.get("/users/:userId", async (req,res) => {
 
 router.post("/users/:id/ban", async (req, res) => {
   const ID = req.params.id;
-  const user = await model.banUser(ID);
-  console.log(user);
+  const isBan = req.body.isBan;
+  if (isBan === config.STATUS.ACTIVE) {
+    const user = await model.banUser(ID);
+  }
+  else {
+    const user = await model.unBanUser(ID);
+  }
   res.status(200).send("Update user success");
 
 })
 
 router.get("/matches", async (req, res) => {
-
   const matches = await model.getMatches();
-  if(matches.length === 0)
+  if (matches.length === 0)
     res.send("No match to display");
   res.send(matches);
 })
 
-router.get("/matches/:uuidMatch", async (req,res ) => {
+router.get("/matches/:uuidMatch", async (req, res) => {
   const UUIDMatch = req.params.uuidMatch;
   const match = await model.getMatch(UUIDMatch);
-  if(match.length === 0)
+  if (match.length === 0)
     res.send("Could not found match");
   res.send(match);
 })
 
 
-router.get("/users/:userID/matches", async (req, res)=>{
+router.get("/users/:userID/matches", async (req, res) => {
   console.log("Come to here to get matches");
   const userID = req.params.userID;
   console.log(userID);

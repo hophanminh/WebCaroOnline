@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
@@ -15,6 +16,7 @@ import Container from '@material-ui/core/Container';
 import DataService from "../../utils/data.service";
 import FinishRoomList from "../Rooms/FinishRoomList";
 import isPlainObject from "react-redux/lib/utils/isPlainObject";
+const config = require("../../utils/config.json");
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -22,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
+        padding: theme.spacing(4),
     },
     avatar: {
         margin: theme.spacing(1),
@@ -43,12 +46,22 @@ const useStyles = makeStyles((theme) => ({
         marginTop: '20px',
     },
     container: {
+        width: '80%',
         paddingTop: theme.spacing(4),
         paddingBottom: theme.spacing(4),
     },
     fixedHeight: {
         height: 240,
     },
+    card: {
+        width: '60%', // Fix IE 11 issue.
+        marginTop: theme.spacing(8),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: theme.spacing(4),
+    },
+
 }));
 
 export default function Account() {
@@ -56,6 +69,7 @@ export default function Account() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [fullname, setFullname] = useState("");
+    const [isBan, setIsBan] = useState("");
     const [message, setMessage] = useState("");
     const [status, setStatus] = useState("error");
 
@@ -69,17 +83,23 @@ export default function Account() {
                 setUsername(res.data[0].username);
                 setEmail(res.data[0].email);
                 setFullname(res.data[0].fullname);
+                setIsBan(res.data[0].status);
             }
             catch (error) {
-                history.back();
             }
         }
         fetchData();
     }, [ID])
 
-    const banAccount = (userId) => {
-        const ban = DataService.banAccount(userId);
-
+    const banAccount = (e) => {
+        e.preventDefault();
+        const ban = DataService.banAccount(ID, isBan);
+        if (isBan === config.STATUS.ACTIVE) {
+            setIsBan(config.STATUS.INACTIVE);
+        }
+        else {
+            setIsBan(config.STATUS.ACTIVE);
+        }
     }
 
 
@@ -88,8 +108,8 @@ export default function Account() {
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
                 <Grid container spacing={3} >
-                    <Grid item sm={8} xs={12} >
-                        <div className={classes.paper}>
+                    <Grid item xs={12} >
+                        <Card className={classes.paper}>
                             <Avatar className={classes.avatar} src={'https://picsum.photos/200'}>
                             </Avatar>
                             <form className={classes.form} noValidate>
@@ -146,15 +166,15 @@ export default function Account() {
                                     type="submit"
                                     fullWidth
                                     variant="contained"
-                                    color="secondary"
+                                    color={isBan === config.STATUS.ACTIVE ? "primary" : "secondary"}
                                     className={classes.submit}
                                 >
-                                    Ban
+                                {isBan === config.STATUS.ACTIVE ? "Ban" : "Unban"}
                                 </Button>
                             </form>
-                        </div>
+                        </Card>
                     </Grid>
-                    <Grid item sm={8} xs={12} >
+                    <Grid item xs={12} >
                         <FinishRoomList />
                     </Grid>
                 </Grid>

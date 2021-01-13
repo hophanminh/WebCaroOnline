@@ -132,6 +132,7 @@ function Login(props) {
   }
 
   const hostFacebook = HostURL.getHostURL() + "auth/facebook";
+  
   const hostGoogle = HostURL.getHostURL() + "auth/google";
 
   return (

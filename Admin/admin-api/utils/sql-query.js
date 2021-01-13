@@ -50,10 +50,10 @@ module.exports = {
         return db.add(`user`, newUser)
     },
     banUser(ID) {
-        return db.loadSafe(`UPDATE user set status = ${config.STATUS.INACTIVE} where id = ${ID}`);
+        return db.loadSafe(`UPDATE user set status = ${config.STATUS.INACTIVE} where ID = ${ID}`);
     },
-    unbanUser(ID) {
-        return db.loadSafe(`UPDATE user u set u.status = ${config.STATUS.ACTIVE} where id = ${ID}`)
+    unBanUser(ID) {
+        return db.loadSafe(`UPDATE user u set u.status = ${config.STATUS.ACTIVE} where ID = ${ID}`)
     },
     getMatches() {
         return db.loadSafe(`SELECT * FROM room`);
