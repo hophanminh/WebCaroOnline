@@ -12,7 +12,7 @@ require('express-async-errors');
 require('./utils/passport');
 
 const URL =  "http://localhost:3000";
-// const URL = /caroonline-admin.herokuapp\.com$/;
+//const URL = /caroonline-admin.herokuapp\.com$/;
 
 const corsOptions = {
   origin: URL

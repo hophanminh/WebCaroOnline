@@ -16,10 +16,14 @@ import DataService from "../../utils/data.service";
 const useStyles = makeStyles((theme) => ({
     appBarSpacer: theme.mixins.toolbar,
     container: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',    
         paddingTop: theme.spacing(4),
         paddingBottom: theme.spacing(4),
     },
     card: {
+        width: '60%', // Fix IE 11 issue.
         marginTop: theme.spacing(8),
         display: 'flex',
         flexDirection: 'column',
@@ -99,7 +103,7 @@ export default function ChangePass() {
     };
 
     return (
-        <Container component="main" maxWidth='xs' className={classes.container}>
+        <Container component="main" className={classes.container}>
             <CssBaseline />
             <Card className={classes.card}>
                 <Avatar className={classes.avatar}>

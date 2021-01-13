@@ -312,7 +312,7 @@ export default function Room(props) {
                     {room
                       ?
                       <Grid container spacing={3} >
-                        <Grid container item xs={4} className={classes.nameContainerLeft} zeroMinWidth>
+                        <Grid container item lg={4} xs={12} className={classes.nameContainerLeft} zeroMinWidth>
                           <Typography variant="h5" noWrap className={room.winner === 1 ? classes.winColor : null}>{room.name1 ? "(X) " + room.name1 : "(X) Waiting"}</Typography>
                           <Box className={classes.trophyCount}>
                             <IconContext.Provider value={{ color: '#e5c100' }}>
@@ -321,12 +321,12 @@ export default function Room(props) {
                             <Typography noWrap> - {room.name1 ? room.score1 : 0}</Typography>
                           </Box>
                         </Grid>
-                        <Grid container item xs={4} className={classes.countdown}>
+                        <Grid container item lg={4} xs={12} className={classes.countdown}>
                           {room.winner === -1 && <Countdown counter={counter} setCounter={setCounter} reset={resetCountdown} setReset={setResetCountdown} />}
                           {room.winner === 0 && <Typography className={classes.drawColor} variant="h5">Draw</Typography>}
                           {(room.winner !== 0 && room.winner !== -1) && <Typography variant="h5">VS</Typography>}
                         </Grid>
-                        <Grid container item xs={4} className={classes.nameContainerRight} zeroMinWidth>
+                        <Grid container item lg={4} xs={12} className={classes.nameContainerRight} zeroMinWidth>
                           <Typography variant="h5" noWrap className={room.winner === 2 ? classes.winColor : null}>{room.name2 ? "(O) " + room.name2 : "(O) Waiting"}</Typography>
                           <Box className={classes.trophyCount}>
                             <Typography noWrap>{room.name2 ? room.score2 : 0} - </Typography>

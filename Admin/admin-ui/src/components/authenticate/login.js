@@ -21,6 +21,8 @@ import Container from '@material-ui/core/Container';
 import AuthService from "../../utils/auth.service";
 import socket from "../../utils/socket.service";
 import store from '../../utils/store.service';
+import HostURL from '../../utils/host.service';
+
 import Divider from "@material-ui/core/Divider";
 import {FaFacebookSquare} from "react-icons/fa";
 import {SiGmail} from "react-icons/si";
@@ -135,6 +137,9 @@ function Login(props) {
         history.replace('/');
     }
 
+    const hostFacebook = HostURL.getHostURL() + "auth/facebook";
+    const hostGoogle = HostURL.getHostURL() + "auth/google";
+  
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -190,12 +195,12 @@ function Login(props) {
                     </Button>
                     <Divider />
                     <div className={classes.marginTop}>
-                        <Button className={classes.buttonSeparate} fullWidth variant="outlined" href="http://localhost:9000/auth/facebook" color="primary"
+                        <Button className={classes.buttonSeparate} fullWidth variant="outlined" href={hostFacebook} color="primary"
                         >
                             <FaFacebookSquare style={{ fontSize: 40 }}/>
                             &nbsp;&nbsp;&nbsp;Register with Facebook
                         </Button>
-                        <Button className={classes.buttonSeparate} fullWidth variant="outlined" href="http://localhost:9000/auth/google" color="secondary">
+                        <Button className={classes.buttonSeparate} fullWidth variant="outlined" href={hostGoogle} color="secondary">
                             <SiGmail style={{ fontSize: 40}}/>
                             &nbsp;&nbsp;&nbsp;Register with Gmail
                         </Button>

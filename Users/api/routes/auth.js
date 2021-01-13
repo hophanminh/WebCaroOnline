@@ -56,7 +56,7 @@ router.get("/facebook/callback", function (req, res, next) {
             }
             // generate a signed son web token with the contents of user object and return it in the response
             const token = jwt.sign(JSON.stringify(user), 'your_jwt_secret');
-            return res.redirect(`${config.HOST.LOCAL}/Login/?id=${user[0].ID}&name=${user[0].username}&token=${token}`)
+            return res.redirect(`${config.HOST.CURRENT}/Login/?id=${user[0].ID}&name=${user[0].username}&token=${token}`)
         });
     })(req, res);
 });
@@ -77,7 +77,7 @@ router.get('/google/callback', function (req, res, next) {
             }
             // generate a signed son web token with the contents of user object and return it in the response
             const token = jwt.sign(JSON.stringify(user), 'your_jwt_secret');
-            return res.redirect(`${config.HOST.LOCAL}/Login/?id=${user[0].ID}&name=${user[0].username}&token=${token}`)
+            return res.redirect(`${config.HOST.CURRENT}/Login/?id=${user[0].ID}&name=${user[0].username}&token=${token}`)
         });
     })(req, res);
 });

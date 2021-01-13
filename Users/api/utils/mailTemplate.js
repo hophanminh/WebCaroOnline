@@ -20,7 +20,7 @@ const activeAccountMail = (hashLink, email) => {
         <div style="padding: 10px; background-color: #003375">
             <div style="padding: 10px; background-color: white;">
                 <h4 style="color: #0085ff">Active account using link below</h4>
-                <span style="color: black">${config.HOST.LOCAL + '/activeAccount/' + hashLink} </span>
+                <span style="color: black">${config.HOST.CURRENT + '/activeAccount/' + hashLink} </span>
             </div>
         </div>
     `;
@@ -44,7 +44,7 @@ const forgotPassword = (hashLink, email) => {
         <div style="padding: 10px; background-color: #003375">
             <div style="padding: 10px; background-color: white;">
                 <h4 style="color: #0085ff">Change password</h4>
-                <span style="color: black">${config.HOST.LOCAL + '/resetPassword/' + hashLink} </span>
+                <span style="color: black">${config.HOST.CURRENT + '/resetPassword/' + hashLink} </span>
             </div>
         </div>
     `;

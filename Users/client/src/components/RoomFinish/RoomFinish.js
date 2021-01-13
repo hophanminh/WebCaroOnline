@@ -159,8 +159,8 @@ export default function RoomFinish(props) {
               <CardContent>
                 {room
                   ?
-                  <Grid container spacing={3} >
-                    <Grid container item xs={4} className={classes.nameContainerLeft} zeroMinWidth>
+                  <Grid container spacing={1} >
+                    <Grid container item lg={4} xs={12} className={classes.nameContainerLeft} zeroMinWidth>
                       <Typography variant="h5" noWrap className={room.winner === 1 ? classes.winColor : null}>{room.name1 ? "(X) " + room.name1 : "(X) Waiting"}</Typography>
                       {room.name1
                         ? <Box className={classes.trophyCount}>
@@ -171,10 +171,10 @@ export default function RoomFinish(props) {
                         </Box>
                         : <></>}
                     </Grid>
-                    <Grid container item xs={4} justify="center">
+                    <Grid container item lg={4} xs={12} justify="center">
                       <Typography variant="h5">VS</Typography>
                     </Grid>
-                    <Grid container item xs={4} className={classes.nameContainerRight} zeroMinWidth>
+                    <Grid container item lg={4} xs={12} className={classes.nameContainerRight} zeroMinWidth>
                       <Typography variant="h5" noWrap className={room.winner === 2 ? classes.winColor : null}>{room.name2 ? "(O) " + room.name2 : "(O) Waiting"}</Typography>
                       {room.name2
                         ? <Box className={classes.trophyCount}>

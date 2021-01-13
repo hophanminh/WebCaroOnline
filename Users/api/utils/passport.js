@@ -79,7 +79,7 @@ passport.use(new JWTStrategy({
 passport.use(new FacebookStrategy({
     clientID: "3854315697953129",
     clientSecret: "7d0b726582a352bf6f3598ddda08d3db",
-    callbackURL: `${config.API.LOCAL}/auth/facebook/callback`,
+    callbackURL: `${config.API.CURRENT}/auth/facebook/callback`,
     profileFields: ['id', 'emails', 'name'],
 },
     async (accessToken, refreshToken, profile, done) => {
@@ -102,7 +102,7 @@ passport.use(new FacebookStrategy({
 passport.use(new GoogleStrategy({
     clientID: "1014269270892-beli4unjkq6g9m75p8icinq3t3qniv6v.apps.googleusercontent.com",
     clientSecret: "OMMbmN6zI4XbYVLuXzNpEzpE",
-    callbackURL: `${config.API.LOCAL}/auth/google/callback`
+    callbackURL: `${config.API.CURRENT}/auth/google/callback`
 },
     async (accessToken, refreshToken, profile, done) => {        
         const { sub, email, name } = profile._json;

@@ -16,6 +16,9 @@ import FinishRoomList from "./FinishRoomList";
 const useStyles = makeStyles((theme) => ({
   appBarSpacer: theme.mixins.toolbar,
   container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
   },
@@ -25,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '20px',
   },
   card: {
+    width: '60%', // Fix IE 11 issue.
     marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
@@ -122,86 +126,79 @@ export default function Account() {
   };
 
   return (
-      <main className={classes.content}>
+    <main className={classes.content}>
       <Container component="main" className={classes.container}>
-      <CssBaseline />
-      <Grid container>
-        <Grid item sm={8} xs={12}>
-          <Card maxWidth='xs' className={classes.card}>
-        <Avatar className={classes.avatar}>
-          <PeopleIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Account's info
+        <CssBaseline />
+        <Card maxWidth='xs' className={classes.card}>
+          <Avatar className={classes.avatar}>
+            <PeopleIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Account's info
         </Typography>
-        <form className={classes.form} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              {message && (
-                <div className="form-group">
-                  <Alert severity={status}>
-                    {message}
-                  </Alert>
-                </div>
-              )}
-              <TextField
-                autoComplete="username"
-                variant="outlined"
-                required
-                fullWidth
-                value={username}
-                id="username"
-                label="Username"
-                name="username"
-                autoFocus
-                onChange={(value) => onChangeUsername(value)}
-              />
+          <form className={classes.form} noValidate>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                {message && (
+                  <div className="form-group">
+                    <Alert severity={status}>
+                      {message}
+                    </Alert>
+                  </div>
+                )}
+                <TextField
+                  autoComplete="username"
+                  variant="outlined"
+                  required
+                  fullWidth
+                  value={username}
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoFocus
+                  onChange={(value) => onChangeUsername(value)}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  autoComplete="fname"
+                  variant="outlined"
+                  required
+                  fullWidth
+                  value={fullname}
+                  id="fullname"
+                  label="Full Name"
+                  name="fullname"
+                  onChange={(value) => onChangeFullname(value)}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  value={email}
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  onChange={(value) => onChangeEmail(value)}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                autoComplete="fname"
-                variant="outlined"
-                required
-                fullWidth
-                value={fullname}
-                id="fullname"
-                label="Full Name"
-                name="fullname"
-                onChange={(value) => onChangeFullname(value)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                value={email}
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                onChange={(value) => onChangeEmail(value)}
-              />
-            </Grid>
-          </Grid>
-          <Button
-            onClick={(e) => signup(e)}
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Change account's info
+            <Button
+              onClick={(e) => signup(e)}
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+            >
+              Change account's info
           </Button>
-        </form>
-      </Card>
-        </Grid>
-        <Grid item sm={8} xs={12}>
-          <FinishRoomList />
-        </Grid>
-      </Grid>
-    </Container>
-      </main>
+          </form>
+        </Card>
+      </Container>
+    </main>
   );
 }

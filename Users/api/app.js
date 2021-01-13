@@ -12,7 +12,7 @@ const config = require("./config/default.json");
 require('express-async-errors');
 require('./utils/passport');
 
-const URL =  config.HOST.LOCAL;
+const URL =  config.HOST.CURRENT;
 //const URL = /caroonline-user.herokuapp\.com$/;
 
 const corsOptions = {

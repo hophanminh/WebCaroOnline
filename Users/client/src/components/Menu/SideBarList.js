@@ -57,7 +57,7 @@ export default function SideBarList(props) {
             <ListItemIcon>
               <BsFillBarChartFill style={{ fontSize: 25 }} />
             </ListItemIcon>
-            <ListItemText primary="History" />
+            <ListItemText primary="Ranking" />
           </ListItem>
       )}
     </div>

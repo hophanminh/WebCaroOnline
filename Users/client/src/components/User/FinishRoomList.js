@@ -28,6 +28,7 @@ import store from '../../utils/store.service';
 
 const useStyles = makeStyles((theme) => ({
   card: {
+
     marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
@@ -147,7 +148,7 @@ const FinishRoomList = (props) => {
   }
 
   return (
-    <Container component="main" maxWidth={false} className={classes.container}>
+    <Container maxWidth={false} className={classes.container}>
       <CssBaseline />
       <Card className={classes.card}>
         <Avatar className={classes.avatar}>

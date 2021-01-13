@@ -48,7 +48,7 @@ router.get("/facebook", passport.authenticate("facebook", { session: false, scop
 router.get("/facebook/callback", function (req, res, next) {
     passport.authenticate("facebook", { session: false }, (err, user, info) => {
         if (err || !user || user === undefined || user.length == 0) {
-            return res.redirect(`${config.HOST.LOCAL}/Login/?id=${-1}`)
+            return res.redirect(`${config.HOST.CURRENT}/Login/?id=${-1}`)
         }
         req.login(user, { session: false }, (err) => {
             if (err) {
@@ -56,7 +56,7 @@ router.get("/facebook/callback", function (req, res, next) {
             }
             // generate a signed son web token with the contents of user object and return it in the response
             const token = jwt.sign(JSON.stringify(user), 'your_jwt_secret');
-            return res.redirect(`${config.HOST.LOCAL}/Login/?id=${user[0].ID}&name=${user[0].username}&token=${token}`)
+            return res.redirect(`${config.HOST.CURRENT}/Login/?id=${user[0].ID}&name=${user[0].username}&token=${token}`)
         });
     })(req, res);
 });
@@ -66,7 +66,7 @@ router.get('/google', passport.authenticate('google', { session: false, scope: [
 router.get('/google/callback', function (req, res, next) {
     passport.authenticate('google', { session: false }, (err, user, info) => {
         if (err || !user || user === undefined || user.length == 0) {
-            return res.redirect(`${config.HOST.LOCAL}/Login/?id=${-1}`)
+            return res.redirect(`${config.HOST.CURRENT}/Login/?id=${-1}`)
         }
         req.login(user, { session: false }, (err) => {
             if (err) {
@@ -74,7 +74,7 @@ router.get('/google/callback', function (req, res, next) {
             }
             // generate a signed son web token with the contents of user object and return it in the response
             const token = jwt.sign(JSON.stringify(user), 'your_jwt_secret');
-            return res.redirect(`${config.HOST.LOCAL}/Login/?id=${user[0].ID}&name=${user[0].username}&token=${token}`)
+            return res.redirect(`${config.HOST.CURRENT}/Login/?id=${user[0].ID}&name=${user[0].username}&token=${token}`)
         });
     })(req, res);
 });

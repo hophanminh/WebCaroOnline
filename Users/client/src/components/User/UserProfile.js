@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(8),
         display: 'flex',
         flexDirection: 'row',
+        justifyContent: 'center',
         alignItems: 'center',
     },
     avatar: {
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.secondary.main,
     },
     form: {
-        width: '100%', // Fix IE 11 issue.
+        width: '50%', // Fix IE 11 issue.
         marginTop: theme.spacing(3),
     },
     submit: {
@@ -78,9 +79,9 @@ export default function Account() {
     return (
         <main className={classes.content}>
             <div className={classes.appBarSpacer} />
-            <Container maxWidth="lg" className={classes.container}>
+            <Container maxWidth={false} className={classes.container}>
                 <Grid container spacing={3} >
-                    <Grid item sm={8} xs={12} >
+                    <Grid item xs={12} >
                         <div className={classes.paper}>
                             <Avatar className={classes.avatar}>
                                 <LockOutlinedIcon />
@@ -138,8 +139,7 @@ export default function Account() {
                             </form>
                         </div>
                     </Grid>
-                    <Grid item sm={8} xs={12} >
-                        Matches History
+                    <Grid item xs={12} >
                         <FinishRoomList />
                     </Grid>
                 </Grid>
