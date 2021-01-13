@@ -17,7 +17,7 @@ const URL =  config.HOST.CURRENT;
 
 const corsOptions = {
   // test
-  origin: URL
+  origin: [/caroonline-user.herokuapp\.com$/, "http://localhost:3000"]
 };
 
 
@@ -25,7 +25,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: URL,
+    origin: [/caroonline-user.herokuapp\.com$/, "http://localhost:3000"]
     methods: ["GET", "POST"]
   }
 });

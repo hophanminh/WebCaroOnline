@@ -38,12 +38,12 @@
   },
   "HOST": {
     "LOCAL": "http://localhost:3000",
-    "ONLINE": "/caroonline-user.herokuapp\\.com$/",
-    "CURRENT": "http://localhost:3000"
+    "ONLINE": "https://caroonline-user.herokuapp.com/",
+    "CURRENT": "https://caroonline-user.herokuapp.com/"
   },
   "API": {
     "LOCAL": "http://localhost:9000",
     "ONLINE": "https://caroonline-user-api.herokuapp.com/",
-    "CURRENT": "http://localhost:9000"
+    "CURRENT": "https://caroonline-user-api.herokuapp.com/"
   }
 }
