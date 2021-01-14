@@ -236,7 +236,7 @@ function SignUp(props) {
             >
               <FaFacebookSquare style={{ fontSize: 40 }}/>
               &nbsp;&nbsp;&nbsp;Register with Facebook
-            </Button>t
+            </Button>
             <Button className={classes.buttonSeparate} fullWidth variant="outlined" href={hostGoogle} color="secondary">
               <SiGmail style={{ fontSize: 40}}/>
               &nbsp;&nbsp;&nbsp;Register with Gmail

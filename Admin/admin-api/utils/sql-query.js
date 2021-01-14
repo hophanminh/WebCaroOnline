@@ -45,7 +45,8 @@ module.exports = {
             email: email,
             fullname: fullname,
             status: config.STATUS.ACTIVE,
-            permission: config.PERMISSION.ADMIN
+            permission: config.PERMISSION.ADMIN,
+            score: 1000,
         }
         return db.add(`user`, newUser)
     },

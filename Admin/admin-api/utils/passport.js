@@ -1,7 +1,6 @@
 const passport = require("passport")
 const passportJWT = require("passport-jwt");
 const extractJWT = passportJWT.ExtractJwt;
-require("express-async-errors");
 const bcrypt = require('bcrypt');
 const JWTStrategy = passportJWT.Strategy;
 const LocalStrategy = require("passport-local").Strategy;
@@ -11,6 +10,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const model = require("./sql-query");
 const config = require("../config/default-config.json");
+require("express-async-errors");
 
 passport.use(new LocalStrategy(
     async (username, password, done) => {
@@ -33,11 +33,11 @@ passport.use("local-signup", new LocalStrategy({
     async (req, username, password, done) => {
         const email = req.body.email;
         const fullname = req.body.fullname;
-        const user = await model.getUserByNameOrEmail({ username, email });
+        const user = await model.getUserByNameOrEmail(username, email);
         if (user & user !== undefined && user.length != 0) {
             return done(null, false, { message: "That email or username is invalid" })
         }
-        const hash = bcrypt.hashSync(password, config.saltBcryptjs);
+        const hash = bcrypt.hashSync(password, 10);
         const newUser = await model.register([username, hash, email, fullname]);
         const result = await model.getUserByEmail(email);
         return done(null, result);
